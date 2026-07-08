@@ -91,21 +91,29 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
 #region-transition.active{display:flex;}
 #rt-name{font-size:42px;font-weight:bold;letter-spacing:8px;color:#fff;text-shadow:0 0 30px currentColor;}
 #rt-sub{font-size:13px;letter-spacing:3px;color:rgba(255,255,255,0.6);}
+#boss-alert{
+  position:absolute;top:70px;left:50%;transform:translateX(-50%) translateY(-14px);
+  background:rgba(30,0,0,0.88);border:2px solid rgba(255,60,60,0.85);
+  border-radius:8px;padding:10px 26px;text-align:center;
+  pointer-events:none;opacity:0;transition:opacity .35s ease,transform .35s ease;
+  box-shadow:0 0 30px rgba(255,30,30,0.5);z-index:20;
+  animation:boss-alert-pulse 0.9s ease-in-out infinite;
+}
+#boss-alert.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#boss-alert-title{font-size:15px;font-weight:bold;letter-spacing:3px;color:#ff5555;text-shadow:0 0 12px #ff0000;}
+#boss-alert-sub{font-size:12px;letter-spacing:1.5px;color:#ffaaaa;margin-top:4px;}
+@keyframes boss-alert-pulse{
+  0%,100%{box-shadow:0 0 30px rgba(255,30,30,0.5);border-color:rgba(255,60,60,0.85);}
+  50%{box-shadow:0 0 46px rgba(255,30,30,0.85);border-color:rgba(255,120,120,1);}
+}
 #death-screen{
   display:none;position:absolute;inset:0;
   background:rgba(0,0,0,0.82);flex-direction:column;
-  align-items:center;justify-content:center;gap:14px;pointer-events:all;
-  z-index:50;
+  align-items:center;justify-content:center;gap:14px;pointer-events:none;
+  z-index:50;transition:opacity .5s ease;
 }
 #death-screen h2{color:#ff4444;font-size:38px;letter-spacing:4px;text-shadow:0 0 20px #ff0000;}
 #death-screen p{color:#888;font-size:13px;}
-#restart-btn{
-  margin-top:8px;padding:10px 32px;
-  background:rgba(80,255,80,0.12);border:1px solid rgba(80,255,80,0.45);
-  color:#80ff80;font-family:'Courier New',monospace;font-size:14px;
-  letter-spacing:2px;cursor:pointer;border-radius:4px;pointer-events:all;transition:background .2s;
-}
-#restart-btn:hover{background:rgba(80,255,80,0.28);}
 #minimap{
   position:absolute;bottom:30px;right:16px;
   width:120px;height:80px;
@@ -212,6 +220,12 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
   transition:color .3s ease,border-color .3s ease;
 }
 #cam-indicator.chase{color:rgba(56,189,248,0.85);border-color:rgba(56,189,248,0.4);}
+#mute-btn{
+  background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.2);
+  border-radius:6px;padding:6px 10px;font-size:15px;cursor:pointer;
+  color:#ddd;pointer-events:all;transition:border-color .15s ease,background .15s ease;
+}
+#mute-btn:hover{border-color:rgba(255,255,255,0.5);background:rgba(0,0,0,0.75);}
 #click-aim{
   position:absolute;pointer-events:none;width:32px;height:32px;
   border:2px solid rgba(255,200,50,0.85);border-radius:50%;margin:-16px 0 0 -16px;
@@ -336,11 +350,12 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
   <!-- Region Banner -->
   <div id="region-banner">
     <div id="region-name">FOREST MEADOW</div>
-    <div style="font-size:10px;margin-top:2px;color:#777;letter-spacing:1px;">REGION 1</div>
+    <div id="region-sub" style="font-size:10px;margin-top:2px;color:#777;letter-spacing:1px;">REGION 1</div>
   </div>
 
   <!-- Top Right -->
   <div id="top-right">
+    <button id="mute-btn" onclick="UI.toggleMute()">🔊</button>
     <div id="kill-counter">KILLS <span id="ui-kills">0</span></div>
     <div id="boss-hp-panel">
       <div class="boss-name" id="boss-name-label">BOSS</div>
@@ -363,6 +378,12 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
   <div id="region-transition">
     <div id="rt-name">LAVA CAVE</div>
     <div id="rt-sub">REGION 2 · DANGER AHEAD</div>
+  </div>
+
+  <!-- World Boss Alert -->
+  <div id="boss-alert">
+    <div id="boss-alert-title">⚠ WORLD BOSS SIGHTED ⚠</div>
+    <div id="boss-alert-sub">MAGMA TITAN · LAVA CAVE</div>
   </div>
 
   <!-- Shop Prompt -->
@@ -452,9 +473,9 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
 
   <!-- Death Screen -->
   <div id="death-screen">
-    <h2>YOU DIED</h2>
+    <h2>DEFEATED</h2>
     <p id="death-stats"></p>
-    <button id="restart-btn" onclick="Game.restart()">[ RESTART ]</button>
+    <p style="letter-spacing:2px;color:#666;">Returning to Safe Town…</p>
   </div>
 </div>
 
@@ -495,54 +516,163 @@ function getEvolution(level){
 }
 
 // ════════════════════════════════════════════════════════════
-//  DATA: REGIONS
+//  DATA: REGIONS  (10 terrains beyond Safe Town)
 // ════════════════════════════════════════════════════════════
-const WORLD_W = 2400, TOWN_H = 400, ZONE_H = 1200, WORLD_H = TOWN_H + ZONE_H * 3;
+const WORLD_W = 2400, TOWN_H = 400, ZONE_H = 720, REGION_COUNT = 10;
+const WORLD_H = TOWN_H + ZONE_H * REGION_COUNT;
+
+// zoneTop(i) = top Y edge of the i-th non-town region (0-indexed)
+function zoneTop(i){ return -WORLD_H/2 + TOWN_H + ZONE_H*(i+1); }
+function zoneBottom(i){ return -WORLD_H/2 + TOWN_H + ZONE_H*i; }
+
 const REGIONS = [
   {
-    id:'town', name:'Safe Town', sub:'SAFE ZONE', isSafeZone:true,
+    id:'town', name:'Safe Town', sub:'SAFE ZONE', dangerLabel:'SAFE ZONE', isSafeZone:true,
     yMin:-WORLD_H/2, yMax:-WORLD_H/2+TOWN_H,
-    bgColor:new THREE.Color(0x0d1a0d), tileA:0x1a2d1a, tileB:0x202f20,
-    ambientColor:0x112211, borderColor:0x44aa55, minLevel:0,
+    bgColor:new THREE.Color(0x0d1a0d), ambientColor:0x112211, borderColor:0x44aa55,
+    mmColor:'rgba(20,80,20,.75)', minLevel:0,
     monsters:[],
   },
   {
-    id:0, name:'Forest Meadow', sub:'REGION 1',
-    yMin:-WORLD_H/2+TOWN_H, yMax:-WORLD_H/2+TOWN_H+ZONE_H,
-    bgColor:new THREE.Color(0x0a1a08), tileA:0x0d2a0a, tileB:0x0f3510,
-    ambientColor:0x224422, borderColor:0x226622, minLevel:1,
+    id:0, name:'Forest Meadow', sub:'REGION 1', dangerLabel:'SAFE ZONE',
+    yMin:zoneBottom(0), yMax:zoneTop(0),
+    bgColor:new THREE.Color(0x0a1a08), ambientColor:0x224422, borderColor:0x226622,
+    mmColor:'rgba(20,60,20,.7)', minLevel:1, goldMult:1.0, bossGold:[50,90],
     monsters:[
       {name:'Rabbit',          color:0xeeeecc,hpMult:0.5,atkMult:0.4,spdMult:1.1,xpReward:15,radius:12,shape:'round'},
       {name:'Mushroom Monster',color:0xcc4488,hpMult:1.2,atkMult:1.0,spdMult:0.5,xpReward:40,radius:18,shape:'round'},
     ],
     boss:{name:'Ancient Tree Spirit',color:0x228833,hpMult:18,atkMult:4,spdMult:0.4,xpReward:800,radius:36,minLevel:8},
+    decos:[{type:'tree',n:40,sc:52},{type:'rock',n:12,sc:38},{type:'mushroom',n:14,sc:30}],
   },
   {
-    id:1, name:'Lava Cave', sub:'REGION 2',
-    yMin:-WORLD_H/2+TOWN_H+ZONE_H, yMax:-WORLD_H/2+TOWN_H+ZONE_H*2,
-    bgColor:new THREE.Color(0x1a0800), tileA:0x2a0d00, tileB:0x331000,
-    ambientColor:0x441100, borderColor:0xcc3300, minLevel:12,
+    id:1, name:'Lava Cave', sub:'REGION 2', dangerLabel:'DANGER ZONE',
+    yMin:zoneBottom(1), yMax:zoneTop(1),
+    bgColor:new THREE.Color(0x1a0800), ambientColor:0x441100, borderColor:0xcc3300,
+    mmColor:'rgba(60,20,0,.7)', minLevel:12, goldMult:1.6, bossGold:[85,150],
     monsters:[
       {name:'Fire Lizard',color:0xff6600,hpMult:1.8,atkMult:1.8,spdMult:1.2,xpReward:90,radius:16,shape:'round'},
       {name:'Lava Golem', color:0xff2200,hpMult:4.0,atkMult:2.5,spdMult:0.5,xpReward:160,radius:26,shape:'round'},
     ],
     boss:{name:'Magma Titan',color:0xff4400,hpMult:30,atkMult:7,spdMult:0.35,xpReward:2000,radius:44,minLevel:22},
+    decos:[{type:'lava_rock',n:32,sc:50},{type:'rock',n:10,sc:36}],
   },
   {
-    id:2, name:'Frozen Mountain', sub:'REGION 3',
-    yMin:-WORLD_H/2+TOWN_H+ZONE_H*2, yMax:WORLD_H/2,
-    bgColor:new THREE.Color(0x080e1a), tileA:0x0a1230, tileB:0x0c1840,
-    ambientColor:0x112244, borderColor:0x4488cc, minLevel:25,
+    id:2, name:'Frozen Mountain', sub:'REGION 3', dangerLabel:'EXTREME ZONE',
+    yMin:zoneBottom(2), yMax:zoneTop(2),
+    bgColor:new THREE.Color(0x080e1a), ambientColor:0x112244, borderColor:0x4488cc,
+    mmColor:'rgba(10,20,60,.7)', minLevel:25, goldMult:2.3, bossGold:[140,240],
     monsters:[
       {name:'Snow Wolf', color:0xaaccff,hpMult:2.5,atkMult:2.2,spdMult:1.6,xpReward:130,radius:17,shape:'round'},
       {name:'Ice Spirit',color:0x88eeff,hpMult:1.8,atkMult:2.8,spdMult:1.3,xpReward:200,radius:20,shape:'round'},
     ],
     boss:{name:'Frost Dragon',color:0x66ccff,hpMult:55,atkMult:12,spdMult:0.5,xpReward:5000,radius:52,minLevel:40},
+    decos:[{type:'ice_crystal',n:26,sc:54},{type:'snow_mound',n:20,sc:46},{type:'rock',n:6,sc:34}],
+  },
+  {
+    id:3, name:'Desert Wastes', sub:'REGION 4', dangerLabel:'SCORCHED ZONE',
+    yMin:zoneBottom(3), yMax:zoneTop(3),
+    bgColor:new THREE.Color(0x1a1206), ambientColor:0x332508, borderColor:0xddaa33,
+    mmColor:'rgba(120,90,20,.7)', minLevel:40, goldMult:3.2, bossGold:[235,390],
+    tileCols:['#2a2008','#31260c','#241c07','#362a0e'], accentColor:0xddbb66,
+    monsters:[
+      {name:'Sand Scorpion',color:0xddbb66,hpMult:2.2,atkMult:2.0,spdMult:1.4,xpReward:150,radius:15,shape:'round'},
+      {name:'Dune Wraith',  color:0xcc9944,hpMult:4.5,atkMult:2.8,spdMult:0.9,xpReward:260,radius:20,shape:'round'},
+    ],
+    boss:{name:'Sphinx Guardian',color:0xeecc77,hpMult:90,atkMult:20,spdMult:0.4,xpReward:11000,radius:46,minLevel:58},
+    decos:[{type:'generic',shape:'ruin',tint:0xccaa55,n:14,sc:48},{type:'generic',shape:'husk',tint:0x997733,n:20,sc:36}],
+  },
+  {
+    id:4, name:'Swamp Marsh', sub:'REGION 5', dangerLabel:'TOXIC ZONE',
+    yMin:zoneBottom(4), yMax:zoneTop(4),
+    bgColor:new THREE.Color(0x0d150a), ambientColor:0x1a2a10, borderColor:0x669933,
+    mmColor:'rgba(50,70,20,.7)', minLevel:58, goldMult:4.3, bossGold:[390,620],
+    tileCols:['#182410','#1c2a13','#152009','#202c15'], accentColor:0x7a9944,
+    monsters:[
+      {name:'Bog Leech',   color:0x557733,hpMult:2.8,atkMult:2.3,spdMult:1.0,xpReward:200,radius:14,shape:'round'},
+      {name:'Swamp Troll', color:0x334422,hpMult:5.5,atkMult:3.2,spdMult:0.5,xpReward:340,radius:28,shape:'round'},
+    ],
+    boss:{name:'Marsh Hydra',color:0x448855,hpMult:150,atkMult:32,spdMult:0.4,xpReward:23000,radius:48,minLevel:78},
+    decos:[{type:'generic',shape:'pod',tint:0x668833,n:22,sc:40},{type:'generic',shape:'husk',tint:0x445522,n:16,sc:34}],
+  },
+  {
+    id:5, name:'Crystal Cavern', sub:'REGION 6', dangerLabel:'CRYSTALLINE ZONE',
+    yMin:zoneBottom(5), yMax:zoneTop(5),
+    bgColor:new THREE.Color(0x0f0a1a), ambientColor:0x2a1550, borderColor:0xbb66ff,
+    mmColor:'rgba(80,30,120,.7)', minLevel:78, goldMult:5.6, bossGold:[650,1000],
+    tileCols:['#1c1030','#221438','#180c2a','#261640'], accentColor:0xaa66ff,
+    monsters:[
+      {name:'Gem Wisp',      color:0x44ddcc,hpMult:2.2,atkMult:2.6,spdMult:1.8,xpReward:260,radius:13,shape:'round'},
+      {name:'Crystal Golem', color:0x9944ff,hpMult:6.5,atkMult:3.5,spdMult:0.5,xpReward:420,radius:26,shape:'round'},
+    ],
+    boss:{name:'Prism Colossus',color:0xcc88ff,hpMult:250,atkMult:50,spdMult:0.4,xpReward:45000,radius:50,minLevel:100},
+    decos:[{type:'generic',shape:'crystal',tint:0xaa66ff,n:26,sc:50},{type:'generic',shape:'crystal',tint:0x44ddcc,n:16,sc:38}],
+  },
+  {
+    id:6, name:'Storm Peaks', sub:'REGION 7', dangerLabel:'TEMPEST ZONE',
+    yMin:zoneBottom(6), yMax:zoneTop(6),
+    bgColor:new THREE.Color(0x10141c), ambientColor:0x223355, borderColor:0x7799dd,
+    mmColor:'rgba(40,60,100,.7)', minLevel:100, goldMult:7.2, bossGold:[1100,1650],
+    tileCols:['#1c2230','#212838','#181e2a','#242c3c'], accentColor:0x88aaee,
+    monsters:[
+      {name:'Thunder Hawk',    color:0x88aaee,hpMult:3.0,atkMult:3.2,spdMult:2.0,xpReward:360,radius:16,shape:'round'},
+      {name:'Storm Elemental', color:0x5577cc,hpMult:7.5,atkMult:4.0,spdMult:0.7,xpReward:520,radius:28,shape:'round'},
+    ],
+    boss:{name:'Tempest Wyvern',color:0xaaccff,hpMult:400,atkMult:75,spdMult:0.5,xpReward:80000,radius:52,minLevel:125},
+    decos:[{type:'generic',shape:'spike',tint:0x8899cc,n:20,sc:46},{type:'generic',shape:'ruin',tint:0x667799,n:10,sc:44}],
+  },
+  {
+    id:7, name:'Corrupted Forest', sub:'REGION 8', dangerLabel:'CORRUPTED ZONE',
+    yMin:zoneBottom(7), yMax:zoneTop(7),
+    bgColor:new THREE.Color(0x0e0a16), ambientColor:0x2a1040, borderColor:0x883399,
+    mmColor:'rgba(60,20,80,.7)', minLevel:125, goldMult:9.0, bossGold:[1800,2600],
+    tileCols:['#180c24','#1e0f2c','#140a1e','#221030'], accentColor:0x663388,
+    monsters:[
+      {name:'Wraith Spawn',  color:0x8844ff,hpMult:3.5,atkMult:3.8,spdMult:1.6,xpReward:460,radius:17,shape:'round'},
+      {name:'Blight Treant', color:0x442266,hpMult:9.0,atkMult:4.2,spdMult:0.4,xpReward:680,radius:30,shape:'round'},
+    ],
+    boss:{name:'Corruption Avatar',color:0x9955cc,hpMult:620,atkMult:110,spdMult:0.5,xpReward:135000,radius:54,minLevel:155},
+    decos:[{type:'generic',shape:'pod',tint:0x663388,n:24,sc:44},{type:'generic',shape:'spike',tint:0x442266,n:14,sc:40}],
+  },
+  {
+    id:8, name:'Volcanic Ridge', sub:'REGION 9', dangerLabel:'INFERNAL ZONE',
+    yMin:zoneBottom(8), yMax:zoneTop(8),
+    bgColor:new THREE.Color(0x1a0300), ambientColor:0x440a00, borderColor:0xff4400,
+    mmColor:'rgba(120,20,0,.7)', minLevel:155, goldMult:11.2, bossGold:[3000,4200],
+    tileCols:['#2a0800','#330a00','#240600','#3a0d00'], accentColor:0xff3300,
+    monsters:[
+      {name:'Ember Wraith',  color:0xff6633,hpMult:4.2,atkMult:4.4,spdMult:1.7,xpReward:560,radius:18,shape:'round'},
+      {name:'Obsidian Beast',color:0x882200,hpMult:10.5,atkMult:5.0,spdMult:0.6,xpReward:820,radius:30,shape:'round'},
+    ],
+    boss:{name:'Inferno Behemoth',color:0xff5500,hpMult:950,atkMult:160,spdMult:0.4,xpReward:220000,radius:56,minLevel:190},
+    decos:[{type:'generic',shape:'spike',tint:0xff3300,n:22,sc:48},{type:'generic',shape:'ruin',tint:0x882200,n:12,sc:42}],
+  },
+  {
+    id:9, name:'Void Abyss', sub:'REGION 10', dangerLabel:'ABYSSAL ZONE',
+    yMin:zoneBottom(9), yMax:WORLD_H/2,
+    bgColor:new THREE.Color(0x05020a), ambientColor:0x1a0033, borderColor:0xaa33ff,
+    mmColor:'rgba(30,0,60,.8)', minLevel:190, goldMult:14.0, bossGold:[4200,5000],
+    tileCols:['#0a0614','#0d081a','#080410','#0f0a1e'], accentColor:0x8800ff,
+    monsters:[
+      {name:'Void Stalker',color:0xaa33ff,hpMult:5.0,atkMult:5.5,spdMult:2.2,xpReward:720,radius:18,shape:'round'},
+      {name:'Null Horror', color:0x330066,hpMult:13.0,atkMult:6.0,spdMult:0.5,xpReward:1000,radius:32,shape:'round'},
+    ],
+    boss:{name:'The Devourer',color:0xcc66ff,hpMult:1450,atkMult:230,spdMult:0.5,xpReward:350000,radius:60,minLevel:230},
+    decos:[{type:'generic',shape:'crystal',tint:0x8800ff,n:18,sc:52},{type:'generic',shape:'husk',tint:0x330066,n:20,sc:40}],
   },
 ];
 function getRegion(worldY){
   for(const r of REGIONS) if(worldY>=r.yMin && worldY<r.yMax) return r;
-  return REGIONS[3];
+  return REGIONS[REGIONS.length-1];
+}
+function regionGoldMult(regionId){
+  const r=REGIONS.find(rr=>rr.id===regionId);
+  return (r&&r.goldMult)||1;
+}
+function rollBossGold(regionId){
+  const r=REGIONS.find(rr=>rr.id===regionId);
+  const range=(r&&r.bossGold)||[50,90];
+  return range[0]+Math.floor(Math.random()*(range[1]-range[0]+1));
 }
 
 // ════════════════════════════════════════════════════════════
@@ -561,147 +691,231 @@ const ITEM_TYPES = [
 ];
 
 // ════════════════════════════════════════════════════════════
-//  DATA: SKILLS
+//  DATA: SKILLS  (10 effect archetypes × 10 elements = 100 skills)
+//  Every skill gets its own gold price (250G ~ ~65,000G) from
+//  archetype-tier × element-cost-multiplier. Upgrading a skill
+//  always costs 10× its own buy cost (see SKILL_UPGRADE_MULT).
+//  Every element also nudges damage/healing/crowd-control/mana/
+//  cooldown, so same-tier skills genuinely play differently, not
+//  just look different.
+//
+//  Each archetype is split into:
+//    getImpactPoint(p,ecs) -> {x,y,id?} | null   (resolved at cast time)
+//    applyImpact(p,ecs,particles,damages,lvl,el,pt) (resolved on landing,
+//      after the sky-strike flight — see playSkyStrike)
 // ════════════════════════════════════════════════════════════
-const SKILL_TYPES = [
-  {
-    id:'speed', name:'SWIFT RUN', icon:'⚡',
-    color:0xffee00, glowRGB:'255,238,0', manaCost:15, cooldown:6, dropRate:5, buyCost:60,
-    apply(p, ecs, particles, damages, lvl=1){
-      p._speedBonus=p.spd*(0.8+lvl*0.1); p._speedBonusTimer=3.5+lvl*0.8;
-      particles.emit(p.x,p.y,0xffee00,18,160);
+const SKILL_ARCHETYPES = [
+  { key:'haste', label:'Haste', icon:'⚡', tier:1,
+    getImpactPoint(p){ return {x:p.x,y:p.y}; },
+    applyImpact(p, ecs, particles, damages, lvl, el){
+      p._speedBonus=p.spd*(0.5+lvl*0.12)*(0.85+el.dmgMult*0.15); p._speedBonusTimer=(3+lvl*0.7)*el.ccMult;
+      particles.emit(p.x,p.y,el.color,16,150);
     }
   },
-  {
-    id:'heal', name:'HEAL BURST', icon:'💚',
-    color:0x44ff88, glowRGB:'68,255,136', manaCost:25, cooldown:8, dropRate:4.5, buyCost:80,
-    apply(p, ecs, particles, damages, lvl=1){
-      const pct=0.25+0.07*(lvl-1);
+  { key:'heal', label:'Heal', icon:'💚', tier:2,
+    getImpactPoint(p){ return {x:p.x,y:p.y}; },
+    applyImpact(p, ecs, particles, damages, lvl, el){
+      const pct=(0.18+0.06*(lvl-1))*el.healMult;
       p.hp=Math.min(p.maxHp,p.hp+Math.floor(p.maxHp*pct));
-      particles.emit(p.x,p.y,0x44ff88,24,120);
-      particles.emitRing(p.x,p.y,0x44ff88,14);
+      particles.emit(p.x,p.y,el.color,20,120);
+      particles.emitRing(p.x,p.y,el.color,12);
     }
   },
-  {
-    id:'fireball', name:'FIREBALL', icon:'🔥',
-    color:0xff4400, glowRGB:'255,68,0', manaCost:20, cooldown:4, dropRate:3.5, buyCost:80,
-    apply(p, ecs, particles, damages, lvl=1){
-      const mult=1+(lvl-1)*0.25, range=200*(1+(lvl-1)*0.12);
-      const dmg=Math.floor((p.atk+(p._atkBonus||0))*1.5*mult);
+  { key:'bolt', label:'Bolt', icon:'🎯', tier:3,
+    getImpactPoint(p,ecs){
+      let target=null, bestD=260;
+      for(const m of ecs.query('tag','tmpl')){
+        if(m.tag!=='monster') continue;
+        const d=V2.dist(p.x,p.y,m.x,m.y);
+        if(d<bestD){bestD=d;target=m;}
+      }
+      return target?{x:target.x,y:target.y,id:target.id}:null;
+    },
+    applyImpact(p, ecs, particles, damages, lvl, el, pt){
+      const target=ecs.get(pt.id); if(!target) return;
+      const mult=1+(lvl-1)*0.28;
+      const dmg=Math.floor((p.atk+(p._atkBonus||0))*2.0*mult*el.dmgMult);
+      target.hp-=dmg; target.hitFlash=0.25;
+      damages.emit(target.x,target.y,dmg,false,true);
+      particles.emit(target.x,target.y,el.color,10,180);
+    }
+  },
+  { key:'regen', label:'Regen', icon:'🌸', tier:4,
+    getImpactPoint(p){ return {x:p.x,y:p.y}; },
+    applyImpact(p, ecs, particles, damages, lvl, el){
+      const pct=(0.1+0.02*(lvl-1))*el.healMult;
+      p.hp=Math.min(p.maxHp,p.hp+Math.floor(p.maxHp*pct));
+      p._regenPerSec=p.maxHp*(0.02+0.006*(lvl-1))*el.healMult;
+      p._regenTimer=(4+lvl)*el.ccMult;
+      particles.emit(p.x,p.y,el.color,14,90);
+    }
+  },
+  { key:'berserk', label:'Berserk', icon:'💢', tier:5,
+    getImpactPoint(p){ return {x:p.x,y:p.y}; },
+    applyImpact(p, ecs, particles, damages, lvl, el){
+      p._atkBonus=Math.floor(p.atk*(0.8+lvl*0.22)*el.dmgMult); p._atkBonusTimer=(5+lvl)*el.ccMult;
+      particles.emit(p.x,p.y,el.color,22,150);
+      particles.emitRing(p.x,p.y,el.color,14);
+    }
+  },
+  { key:'nova', label:'Nova', icon:'💥', tier:6,
+    getImpactPoint(p){ return {x:p.x,y:p.y}; },
+    applyImpact(p, ecs, particles, damages, lvl, el){
+      const mult=1+(lvl-1)*0.25, range=210*(1+(lvl-1)*0.1);
+      const dmg=Math.floor((p.atk+(p._atkBonus||0))*1.4*mult*el.dmgMult);
       for(const m of ecs.query('tag','tmpl')){
         if(m.tag!=='monster') continue;
         if(V2.dist(p.x,p.y,m.x,m.y)<range){
-          m.hp-=dmg; m.hitFlash=0.2;
+          m.hp-=dmg; m.hitFlash=0.2; m.stunTimer=Math.max(m.stunTimer||0,0.5*el.ccMult);
           damages.emit(m.x,m.y,dmg,false,true);
-          particles.emit(m.x,m.y,0xff4400,8,160);
+          particles.emit(m.x,m.y,el.color,8,160);
         }
       }
-      particles.emitRing(p.x,p.y,0xff4400,22);
+      particles.emitRing(p.x,p.y,el.color,24);
     }
   },
-  {
-    id:'berserk', name:'BERSERK', icon:'💢',
-    color:0xff2200, glowRGB:'255,34,0', manaCost:30, cooldown:10, dropRate:2.5, buyCost:120,
-    apply(p, ecs, particles, damages, lvl=1){
-      p._atkBonus=Math.floor(p.atk*(1.0+lvl*0.2)); p._atkBonusTimer=5+lvl;
-      particles.emit(p.x,p.y,0xff2200,22,150);
-      particles.emitRing(p.x,p.y,0xff4400,14);
+  { key:'shield', label:'Shield', icon:'🛡️', tier:7,
+    getImpactPoint(p){ return {x:p.x,y:p.y}; },
+    applyImpact(p, ecs, particles, damages, lvl, el){
+      p.invincible=Math.max(p.invincible||0, (1.5+lvl*0.5)*el.ccMult);
+      particles.emitRing(p.x,p.y,el.color,26);
+      particles.emit(p.x,p.y,el.color,18,100);
     }
   },
-  {
-    id:'nova', name:'ICE NOVA', icon:'❄️',
-    color:0x88ddff, glowRGB:'136,221,255', manaCost:22, cooldown:7, dropRate:2, buyCost:100,
-    apply(p, ecs, particles, damages, lvl=1){
-      const mult=1+(lvl-1)*0.25, range=210*(1+(lvl-1)*0.12);
-      const dmg=Math.floor((p.atk+(p._atkBonus||0))*0.7*mult);
+  { key:'chain', label:'Chain', icon:'🌩️', tier:8,
+    getImpactPoint(p,ecs){
+      const targets=[];
       for(const m of ecs.query('tag','tmpl')){
         if(m.tag!=='monster') continue;
-        if(V2.dist(p.x,p.y,m.x,m.y)<range){
-          m.hp-=dmg; m.hitFlash=0.3; m.stunTimer=1.8+(lvl-1)*0.3;
-          damages.emit(m.x,m.y,dmg,false,false);
-          particles.emit(m.x,m.y,0x88ddff,7,100);
-        }
+        if(V2.dist(p.x,p.y,m.x,m.y)<270) targets.push(m);
       }
-      particles.emitRing(p.x,p.y,0x88ddff,28);
+      if(!targets.length) return null;
+      targets.sort((a,b)=>a.hp-b.hp);
+      return {x:targets[0].x,y:targets[0].y,id:targets[0].id};
+    },
+    applyImpact(p, ecs, particles, damages, lvl, el, pt){
+      const primary=ecs.get(pt.id); if(!primary) return;
+      const mult=1+(lvl-1)*0.25;
+      const dmg=Math.floor((p.atk+(p._atkBonus||0))*2.4*mult*el.dmgMult);
+      primary.hp-=dmg; primary.hitFlash=0.3; primary.stunTimer=1.4*el.ccMult;
+      damages.emit(primary.x,primary.y,dmg,false,true);
+      particles.emit(primary.x,primary.y,el.color,14,200);
+      const others=ecs.query('tag','tmpl').filter(m=>m.tag==='monster'&&m.id!==primary.id&&V2.dist(p.x,p.y,m.x,m.y)<270);
+      others.slice(0,Math.min(4,1+lvl)).forEach(m=>{
+        const chainDmg=Math.floor(dmg*0.55);
+        m.hp-=chainDmg; m.hitFlash=0.2;
+        damages.emit(m.x,m.y,chainDmg,false,false);
+        particles.emit(m.x,m.y,el.color,8,160);
+      });
+      particles.emitRing(p.x,p.y,el.color,22);
     }
   },
-  {
-    id:'drain', name:'SOUL DRAIN', icon:'🌀',
-    color:0xcc44ff, glowRGB:'204,68,255', manaCost:32, cooldown:9, dropRate:1.5, buyCost:150,
-    apply(p, ecs, particles, damages, lvl=1){
-      const mult=1+(lvl-1)*0.25, range=220*(1+(lvl-1)*0.1);
+  { key:'drain', label:'Drain', icon:'🌀', tier:9,
+    getImpactPoint(p){ return {x:p.x,y:p.y}; },
+    applyImpact(p, ecs, particles, damages, lvl, el){
+      const mult=1+(lvl-1)*0.25, range=230*(1+(lvl-1)*0.1);
       let totalHeal=0;
       for(const m of ecs.query('tag','tmpl')){
         if(m.tag!=='monster') continue;
         if(V2.dist(p.x,p.y,m.x,m.y)<range){
-          const dmg=Math.floor((p.atk+(p._atkBonus||0))*0.55*mult);
+          const dmg=Math.floor((p.atk+(p._atkBonus||0))*0.7*mult*el.dmgMult);
           m.hp-=dmg; m.hitFlash=0.25;
           damages.emit(m.x,m.y,dmg,false,false);
-          particles.emit(m.x,m.y,0xcc44ff,6,120);
-          totalHeal+=Math.floor(dmg*0.5);
+          particles.emit(m.x,m.y,el.color,7,120);
+          totalHeal+=Math.floor(dmg*0.55*el.healMult);
         }
       }
       if(totalHeal>0){
         p.hp=Math.min(p.maxHp,p.hp+totalHeal);
-        particles.emit(p.x,p.y,0xcc44ff,16,100);
-        particles.emitRing(p.x,p.y,0xcc44ff,12);
+        particles.emit(p.x,p.y,el.color,16,100);
+        particles.emitRing(p.x,p.y,el.color,12);
       }
     }
   },
-  {
-    id:'thunder', name:'THUNDER STRIKE', icon:'🌩️',
-    color:0xffee44, glowRGB:'255,238,68', manaCost:28, cooldown:5, dropRate:1, buyCost:180,
-    apply(p, ecs, particles, damages, lvl=1){
-      const mult=1+(lvl-1)*0.25, range=260;
+  { key:'meteor', label:'Meteor', icon:'☄️', tier:10,
+    getImpactPoint(p,ecs){
       const targets=[];
       for(const m of ecs.query('tag','tmpl')){
         if(m.tag!=='monster') continue;
-        if(V2.dist(p.x,p.y,m.x,m.y)<range) targets.push(m);
+        if(V2.dist(p.x,p.y,m.x,m.y)<340) targets.push(m);
       }
-      if(!targets.length) return;
-      targets.sort((a,b)=>a.hp-b.hp);
-      const primary=targets[0];
-      const dmg=Math.floor((p.atk+(p._atkBonus||0))*2.2*mult);
-      primary.hp-=dmg; primary.hitFlash=0.3; primary.stunTimer=1.5;
-      damages.emit(primary.x,primary.y,dmg,false,true);
-      particles.emit(primary.x,primary.y,0xffee44,14,200);
-      targets.slice(1,Math.min(4,1+lvl)).forEach(m=>{
-        const chainDmg=Math.floor(dmg*0.6);
-        m.hp-=chainDmg; m.hitFlash=0.2;
-        damages.emit(m.x,m.y,chainDmg,false,false);
-        particles.emit(m.x,m.y,0xffee44,8,160);
-      });
-      particles.emitRing(p.x,p.y,0xffee44,20);
-    }
-  },
-  {
-    id:'meteor', name:'METEOR', icon:'☄️',
-    color:0xff6600, glowRGB:'255,102,0', manaCost:45, cooldown:14, dropRate:0.5, buyCost:250,
-    apply(p, ecs, particles, damages, lvl=1){
-      const mult=1+(lvl-1)*0.25, impactRange=180*(1+(lvl-1)*0.1);
-      const targets=[];
-      for(const m of ecs.query('tag','tmpl')){
-        if(m.tag!=='monster') continue;
-        if(V2.dist(p.x,p.y,m.x,m.y)<320) targets.push(m);
-      }
-      if(!targets.length) return;
+      if(!targets.length) return null;
       const target=targets[Math.floor(Math.random()*targets.length)];
-      const tx=target.x,ty=target.y;
+      return {x:target.x,y:target.y,id:target.id};
+    },
+    applyImpact(p, ecs, particles, damages, lvl, el, pt){
+      const mult=1+(lvl-1)*0.25, impactRange=190*(1+(lvl-1)*0.1);
+      const tx=pt.x,ty=pt.y;
+      let hitAny=false;
       for(const m of ecs.query('tag','tmpl')){
         if(m.tag!=='monster') continue;
         if(V2.dist(tx,ty,m.x,m.y)<impactRange){
-          const dmg=Math.floor((p.atk+(p._atkBonus||0))*3.2*mult);
+          hitAny=true;
+          const dmg=Math.floor((p.atk+(p._atkBonus||0))*3.6*mult*el.dmgMult);
           m.hp-=dmg; m.hitFlash=0.4;
           damages.emit(m.x,m.y,dmg,false,true);
-          particles.emit(m.x,m.y,0xff6600,12,180);
+          particles.emit(m.x,m.y,el.color,12,180);
         }
       }
-      particles.emitRing(tx,ty,0xff6600,36);
-      particles.emit(tx,ty,0xffaa00,24,240);
-      Camera.shake(16,0.35);
+      if(hitAny){
+        particles.emitRing(tx,ty,el.color,38);
+        particles.emit(tx,ty,el.color,26,240);
+        Camera.shake(16,0.35);
+      }
     }
   },
 ];
+
+// Element flavor: distinct damage/healing/crowd-control/mana/cooldown/price
+// multipliers so all 100 skills genuinely differ, not just in color.
+const SKILL_ELEMENTS = [
+  {key:'flame',  name:'Flame',  color:0xff4400, glowRGB:'255,68,0',   dmgMult:1.25, healMult:0.75, ccMult:0.55, manaMult:1.00, cdMult:0.95, costMult:1.06},
+  {key:'frost',  name:'Frost',  color:0x88ddff, glowRGB:'136,221,255',dmgMult:0.85, healMult:0.90, ccMult:1.60, manaMult:1.05, cdMult:1.05, costMult:0.98},
+  {key:'storm',  name:'Storm',  color:0xffee44, glowRGB:'255,238,68', dmgMult:1.05, healMult:0.85, ccMult:1.10, manaMult:1.10, cdMult:0.80, costMult:1.11},
+  {key:'nature', name:'Nature', color:0x44ff88, glowRGB:'68,255,136', dmgMult:0.80, healMult:1.40, ccMult:0.80, manaMult:0.90, cdMult:1.00, costMult:0.94},
+  {key:'shadow', name:'Shadow', color:0x8844ff, glowRGB:'136,68,255', dmgMult:1.35, healMult:0.70, ccMult:0.70, manaMult:1.15, cdMult:1.10, costMult:1.22},
+  {key:'holy',   name:'Holy',   color:0xffffaa, glowRGB:'255,255,170',dmgMult:0.75, healMult:1.35, ccMult:0.90, manaMult:0.95, cdMult:1.00, costMult:1.15},
+  {key:'gale',   name:'Gale',   color:0xaaffcc, glowRGB:'170,255,204',dmgMult:0.95, healMult:0.90, ccMult:1.00, manaMult:0.85, cdMult:0.80, costMult:0.90},
+  {key:'stone',  name:'Stone',  color:0xaa8844, glowRGB:'170,136,68', dmgMult:1.10, healMult:0.85, ccMult:1.35, manaMult:1.00, cdMult:1.20, costMult:0.965},
+  {key:'tide',   name:'Tide',   color:0x4488ff, glowRGB:'68,136,255', dmgMult:0.90, healMult:1.10, ccMult:1.40, manaMult:1.00, cdMult:1.00, costMult:1.03},
+  {key:'arcane', name:'Arcane', color:0xcc44ff, glowRGB:'204,68,255', dmgMult:1.40, healMult:1.00, ccMult:1.00, manaMult:1.30, cdMult:1.15, costMult:1.30},
+];
+
+// Base mana/cooldown/drop-rate/price by archetype tier (1=cheapest/most common);
+// each is then nudged per-element above so every one of the 100 skills is unique.
+const SKILL_TIER_COST=[250,450,800,1450,2600,4700,8500,15300,27500,50000];
+const SKILL_TIER_MANA=[14,18,22,26,30,34,38,42,46,50];
+const SKILL_TIER_CD=[4,5,6,7,8,9,10,11,13,15];
+const SKILL_TIER_DROP=[6,5.4,4.8,4.1,3.4,2.7,2,1.4,0.8,0.4];
+const MAX_SKILL_LEVEL=5;
+const SKILL_UPGRADE_MULT=10; // upgrading a skill costs 10× its buy cost
+const SKILL_FALL_HEIGHT=280; // sky-strike flight distance, in world units
+
+const SKILL_TYPES=[];
+SKILL_ARCHETYPES.forEach(arch=>{
+  const t=arch.tier-1;
+  SKILL_ELEMENTS.forEach(el=>{
+    SKILL_TYPES.push({
+      id:`${arch.key}_${el.key}`,
+      name:`${el.name.toUpperCase()} ${arch.label.toUpperCase()}`,
+      icon:arch.icon,
+      color:el.color, glowRGB:el.glowRGB,
+      manaCost:Math.round(SKILL_TIER_MANA[t]*el.manaMult),
+      cooldown:Math.round(SKILL_TIER_CD[t]*el.cdMult*10)/10,
+      dropRate:SKILL_TIER_DROP[t],
+      buyCost:Math.round(SKILL_TIER_COST[t]*el.costMult/5)*5,
+      fallDuration:0.26+arch.tier*0.018,
+      apply(p, ecs, particles, damages, lvl=1){
+        const pt=arch.getImpactPoint(p,ecs);
+        if(!pt) return; // no valid target — mana was already spent by the caller, matching a "whiffed" cast
+        playSkyStrike(pt.x, pt.y, el.color, el.glowRGB, this.fallDuration, ()=>{
+          SFX.skillImpact();
+          arch.applyImpact(p,ecs,particles,damages,lvl,el,pt);
+        });
+      }
+    });
+  });
+});
 
 // ════════════════════════════════════════════════════════════
 //  ECS
@@ -951,7 +1165,7 @@ function makeTileTex(regId,variant){
       cx.beginPath();cx.ellipse(Math.random()*SZ,Math.random()*SZ,4+Math.random()*10,3+Math.random()*8,Math.random()*Math.PI,0,Math.PI*2);
       cx.fillStyle='rgba(8,3,0,0.25)';cx.fill();
     }
-  }else{
+  }else if(regId===2){
     const cols=['#080f1c','#091224','#0a1428','#07101e'];
     cx.fillStyle=cols[variant];cx.fillRect(0,0,SZ,SZ);
     cx.strokeStyle='rgba(80,140,220,0.36)';cx.lineWidth=1;
@@ -970,6 +1184,31 @@ function makeTileTex(regId,variant){
       const g=cx.createRadialGradient(gx,gy,0,gx,gy,6+Math.random()*12);
       g.addColorStop(0,'rgba(100,160,240,0.14)');g.addColorStop(1,'rgba(0,0,0,0)');
       cx.fillStyle=g;cx.fillRect(0,0,SZ,SZ);
+    }
+  }else{
+    // Generic biome renderer (regions 3-9), driven by the region's own palette
+    const region=REGIONS.find(r=>r.id===regId);
+    const cols=(region&&region.tileCols)||['#111111','#151515','#191919','#0d0d0d'];
+    cx.fillStyle=cols[variant];cx.fillRect(0,0,SZ,SZ);
+    const acc=(region&&region.accentColor)||0x888888;
+    const ahex=acc.toString(16).padStart(6,'0');
+    const ar=parseInt(ahex.slice(0,2),16),ag=parseInt(ahex.slice(2,4),16),ab=parseInt(ahex.slice(4,6),16);
+    cx.strokeStyle=`rgba(${ar},${ag},${ab},0.4)`;cx.lineWidth=1;
+    for(let i=0;i<6;i++){
+      let lx=Math.random()*SZ,ly=Math.random()*SZ;
+      cx.beginPath();cx.moveTo(lx,ly);
+      for(let j=0;j<3;j++){lx+=(Math.random()-.5)*22;ly+=(Math.random()-.5)*22;cx.lineTo(lx,ly);}
+      cx.stroke();
+    }
+    for(let i=0;i<5;i++){
+      const gx=Math.random()*SZ,gy=Math.random()*SZ;
+      const g=cx.createRadialGradient(gx,gy,0,gx,gy,6+Math.random()*12);
+      g.addColorStop(0,`rgba(${ar},${ag},${ab},0.22)`);g.addColorStop(1,'rgba(0,0,0,0)');
+      cx.fillStyle=g;cx.fillRect(0,0,SZ,SZ);
+    }
+    for(let i=0;i<4;i++){
+      cx.beginPath();cx.ellipse(Math.random()*SZ,Math.random()*SZ,3+Math.random()*8,2+Math.random()*6,Math.random()*Math.PI,0,Math.PI*2);
+      cx.fillStyle=`rgba(${Math.floor(ar*.3)},${Math.floor(ag*.3)},${Math.floor(ab*.3)},0.25)`;cx.fill();
     }
   }
   const eg=cx.createRadialGradient(SZ/2,SZ/2,SZ*.18,SZ/2,SZ/2,SZ*.78);
@@ -1034,11 +1273,54 @@ function makeDecoTex(type){
   const t=new THREE.CanvasTexture(cv);t.needsUpdate=true;_texCache[key]=t;return t;
 }
 
+// Tint-driven decoration shapes for the generic biomes (regions 3-9)
+function makeGenericDecoTex(shape,tint){
+  const key=`gd_${shape}_${tint}`;
+  if(_texCache[key]) return _texCache[key];
+  const SZ=96,cv=document.createElement('canvas');cv.width=cv.height=SZ;
+  const cx=cv.getContext('2d'),mx=SZ/2,my=SZ/2;
+  const hex=tint.toString(16).padStart(6,'0');
+  const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);
+  const dark=`rgba(${Math.max(r-90,0)},${Math.max(g-90,0)},${Math.max(b-90,0)},0.9)`;
+  const mid=`rgba(${r},${g},${b},0.85)`;
+  const light=`rgba(${Math.min(r+90,255)},${Math.min(g+90,255)},${Math.min(b+90,255)},0.7)`;
+  const glow=cx.createRadialGradient(mx,my,4,mx,my,40);
+  glow.addColorStop(0,`rgba(${r},${g},${b},0.28)`);glow.addColorStop(1,'rgba(0,0,0,0)');
+  cx.fillStyle=glow;cx.fillRect(0,0,SZ,SZ);
+  if(shape==='crystal'){
+    cx.fillStyle=dark;cx.beginPath();cx.moveTo(mx,my-30);cx.lineTo(mx+14,my-4);cx.lineTo(mx+8,my+26);cx.lineTo(mx-8,my+26);cx.lineTo(mx-14,my-4);cx.closePath();cx.fill();
+    cx.fillStyle=mid;cx.beginPath();cx.moveTo(mx,my-30);cx.lineTo(mx+14,my-4);cx.lineTo(mx,my+2);cx.lineTo(mx-14,my-4);cx.closePath();cx.fill();
+    cx.fillStyle=light;cx.beginPath();cx.moveTo(mx,my-30);cx.lineTo(mx+5,my-10);cx.lineTo(mx-3,my-6);cx.closePath();cx.fill();
+  }else if(shape==='spike'){
+    [[-10,26],[0,38],[11,22]].forEach(([dx,h])=>{
+      cx.fillStyle=dark;cx.beginPath();cx.moveTo(mx+dx,my+20);cx.lineTo(mx+dx+7,my+20);cx.lineTo(mx+dx+3.5,my+20-h);cx.closePath();cx.fill();
+      cx.fillStyle=mid;cx.beginPath();cx.moveTo(mx+dx+1,my+18);cx.lineTo(mx+dx+5,my+18);cx.lineTo(mx+dx+3,my+20-h);cx.closePath();cx.fill();
+    });
+  }else if(shape==='ruin'){
+    cx.fillStyle=dark;cx.fillRect(mx-16,my-4,32,26);
+    cx.fillStyle=mid;cx.fillRect(mx-14,my-6,10,28);
+    cx.fillStyle=mid;cx.fillRect(mx+4,my-14,10,36);
+    cx.fillStyle=light;cx.fillRect(mx-14,my-6,10,4);
+    cx.fillStyle=light;cx.fillRect(mx+4,my-14,10,4);
+  }else if(shape==='pod'){
+    cx.fillStyle=dark;cx.beginPath();cx.ellipse(mx,my+6,18,22,0,0,Math.PI*2);cx.fill();
+    cx.fillStyle=mid;cx.beginPath();cx.ellipse(mx-2,my+2,12,16,-.2,0,Math.PI*2);cx.fill();
+    cx.strokeStyle=light;cx.lineWidth=1.4;
+    cx.beginPath();cx.moveTo(mx,my-14);cx.lineTo(mx,my+22);cx.stroke();
+    cx.beginPath();cx.moveTo(mx-8,my);cx.lineTo(mx+8,my+2);cx.stroke();
+  }else{ // husk (default)
+    cx.fillStyle=dark;cx.beginPath();cx.ellipse(mx,my+10,22,13,0,0,Math.PI*2);cx.fill();
+    cx.fillStyle=mid;cx.beginPath();cx.ellipse(mx-3,my+2,16,11,-.2,0,Math.PI*2);cx.fill();
+    cx.fillStyle=light;cx.beginPath();cx.ellipse(mx-6,my-4,7,4,-.4,0,Math.PI*2);cx.fill();
+  }
+  const t=new THREE.CanvasTexture(cv);t.needsUpdate=true;_texCache[key]=t;return t;
+}
+
 let worldGroup=null;
 function buildWorld(){
   if(worldGroup){scene.remove(worldGroup);worldGroup=null;}
   const group=new THREE.Group();
-  const TILE=48;
+  const TILE=64; // larger tiles keep mesh count sane across 10 regions
   REGIONS.forEach(reg=>{
     const zoneH=reg.isSafeZone?TOWN_H:ZONE_H;
     const cols=Math.ceil(WORLD_W/TILE)+1,rows=Math.ceil(zoneH/TILE)+1;
@@ -1069,18 +1351,13 @@ function buildWorld(){
       const signSp=makeSprite(makeTownSignTex(),220);
       signSp.position.set(0,yCenter+70,1);group.add(signSp);
     }else{
-      // Decorations (seeded RNG for stable placement)
-      const decoSets=[
-        [{type:'tree',n:40,sc:52},{type:'rock',n:12,sc:38},{type:'mushroom',n:14,sc:30}],
-        [{type:'lava_rock',n:32,sc:50},{type:'rock',n:10,sc:36}],
-        [{type:'ice_crystal',n:26,sc:54},{type:'snow_mound',n:20,sc:46},{type:'rock',n:6,sc:34}],
-      ];
+      // Decorations (seeded RNG for stable placement), driven by the region's own decos list
       let sd=reg.id*999983+7;
       const rng=()=>{sd=(sd*1664525+1013904223)>>>0;return sd/4294967296;};
-      for(const{type,n,sc} of decoSets[reg.id]||[]){
-        const dtex=makeDecoTex(type);
-        for(let i=0;i<n;i++){
-          const x=(rng()-.5)*(WORLD_W-120),y=reg.yMin+40+rng()*(ZONE_H-80),s=sc*(0.6+rng()*0.8);
+      for(const deco of reg.decos||[]){
+        const dtex=deco.type==='generic'?makeGenericDecoTex(deco.shape,deco.tint):makeDecoTex(deco.type);
+        for(let i=0;i<deco.n;i++){
+          const x=(rng()-.5)*(WORLD_W-120),y=reg.yMin+40+rng()*(ZONE_H-80),s=deco.sc*(0.6+rng()*0.8);
           const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:dtex,transparent:true}));
           sp.scale.set(s,s,1);sp.position.set(x,y,-0.5+rng()*0.3);
           group.add(sp);
@@ -1095,7 +1372,7 @@ function buildWorld(){
       new THREE.Vector3(-WORLD_W/2,reg.yMin,0),
     ];
     group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),bmat));
-    if(reg.isSafeZone||reg.id<2){
+    if(reg.isSafeZone||(typeof reg.id==='number'&&reg.id<REGION_COUNT-1)){
       // Glow strip at zone boundary
       const wMesh=new THREE.Mesh(
         new THREE.PlaneGeometry(WORLD_W,22),
@@ -1145,6 +1422,7 @@ function updateHpBar(bar,ratio){
 const Input=(()=>{
   const keys=new Set();
   window.addEventListener('keydown',e=>{
+    SFX.unlock();
     keys.add(e.code);
     if(e.code==='KeyH') Game.usePotion();
     if(e.code==='KeyV') Game.toggleCam();
@@ -1154,6 +1432,9 @@ const Input=(()=>{
     if(e.code==='Digit3') Game.useSkill(2);
     if(e.code==='Digit4') Game.useSkill(3);
     if(e.code==='Digit5') Game.useSkill(4);
+    if(e.code==='Digit6') Game.useSkill(5);
+    if(e.code==='Digit7') Game.useSkill(6);
+    if(e.code==='Digit8') Game.useSkill(7);
   });
   window.addEventListener('keyup',e=>keys.delete(e.code));
   return{
@@ -1194,6 +1475,43 @@ class ParticleSystem{
       p.sprite.material.opacity=r;p.sprite.scale.setScalar(14*r);
     }
   }
+}
+
+// ════════════════════════════════════════════════════════════
+//  SKY STRIKE  —  every skill lands like a meteor: a telegraph
+//  shadow + ring grows on the ground while a glowing bolt falls
+//  from off-screen and accelerates in, then bursts on impact.
+// ════════════════════════════════════════════════════════════
+function playSkyStrike(x, y, color, glowRGB, duration, onImpact){
+  const shadow=makeSprite(_ptex,30);
+  shadow.material=shadow.material.clone();shadow.material.color.set(0x000000);shadow.material.opacity=0.3;
+  shadow.position.set(x,y,0.4);scene.add(shadow);
+  const ring=makeSprite(_ptex,10);
+  ring.material=ring.material.clone();ring.material.color.set(color);ring.material.opacity=0.55;
+  ring.position.set(x,y,0.45);scene.add(ring);
+  const bolt=makeSprite(_ptex,60);
+  bolt.material=bolt.material.clone();bolt.material.color.set(color);
+  bolt.position.set(x,y+SKILL_FALL_HEIGHT,8);scene.add(bolt);
+  const start=performance.now();
+  function tick(){
+    const t=Math.min(1,(performance.now()-start)/(duration*1000));
+    const ease=t*t; // gravity-like acceleration
+    bolt.position.y=y+SKILL_FALL_HEIGHT*(1-ease);
+    bolt.scale.setScalar(60*(0.35+ease*0.85));
+    shadow.scale.setScalar(30*(0.4+ease*1.1));
+    shadow.material.opacity=0.12+ease*0.28;
+    ring.scale.setScalar(10+ease*46);
+    ring.material.opacity=Math.max(0,0.55-ease*0.5);
+    if(t<1){
+      requestAnimationFrame(tick);
+    }else{
+      scene.remove(bolt);bolt.material.dispose();
+      scene.remove(shadow);shadow.material.dispose();
+      scene.remove(ring);ring.material.dispose();
+      onImpact();
+    }
+  }
+  requestAnimationFrame(tick);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1265,20 +1583,237 @@ const Camera={
 };
 
 // ════════════════════════════════════════════════════════════
+//  AUDIO  —  fully procedural (Web Audio API), no external files.
+//  A looping fantasy-adventure track (bass + arpeggio + pad + hats)
+//  plus synthesized one-shot SFX for combat, UI and game events.
+// ════════════════════════════════════════════════════════════
+const SFX=(()=>{
+  let ctx=null, master=null, musicBus=null, musicFilter=null, sfxBus=null;
+  let unlocked=false, muted=false, musicTimer=null;
+
+  function init(){
+    if(ctx) return;
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    master=ctx.createGain();master.gain.value=0.55;master.connect(ctx.destination);
+    musicFilter=ctx.createBiquadFilter();musicFilter.type='lowpass';musicFilter.frequency.value=2200;
+    musicBus=ctx.createGain();musicBus.gain.value=0.3;
+    musicBus.connect(musicFilter);musicFilter.connect(master);
+    sfxBus=ctx.createGain();sfxBus.gain.value=0.8;sfxBus.connect(master);
+  }
+
+  function unlock(){
+    if(unlocked) return;
+    init();
+    if(ctx.state==='suspended') ctx.resume();
+    unlocked=true;
+    startMusic();
+  }
+
+  function setMuted(v){
+    muted=v;
+    if(master) master.gain.setTargetAtTime(muted?0:0.55,ctx.currentTime,0.05);
+  }
+  function toggleMute(){ setMuted(!muted); return muted; }
+
+  // ── low-level synth helpers ──
+  function tone(freq,dur,type,bus,startAt,vol,slideTo){
+    if(!ctx) return;
+    const t=startAt??ctx.currentTime;
+    const osc=ctx.createOscillator();osc.type=type;
+    osc.frequency.setValueAtTime(freq,t);
+    if(slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo,t+dur);
+    const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(Math.max(vol,0.001),t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    osc.connect(g);g.connect(bus||sfxBus);
+    osc.start(t);osc.stop(t+dur+0.03);
+    return osc;
+  }
+  function noiseBurst(dur,bus,vol,startAt){
+    if(!ctx) return;
+    const t=startAt??ctx.currentTime;
+    const n=Math.max(1,Math.floor(ctx.sampleRate*dur));
+    const buf=ctx.createBuffer(1,n,ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*(1-i/n);
+    const src=ctx.createBufferSource();src.buffer=buf;
+    const g=ctx.createGain();g.gain.value=vol;
+    src.connect(g);g.connect(bus||sfxBus);
+    src.start(t);
+  }
+
+  // ── one-shot SFX ──
+  function hit(isCrit){
+    if(!ctx) return;
+    tone(isCrit?320:190,isCrit?0.14:0.08,isCrit?'sawtooth':'square',sfxBus,null,isCrit?0.22:0.14,isCrit?140:120);
+    if(isCrit) tone(560,0.1,'square',sfxBus,ctx.currentTime+0.02,0.14,420);
+  }
+  function playerHit(){
+    if(!ctx) return;
+    tone(130,0.16,'sawtooth',sfxBus,null,0.2,70);
+    noiseBurst(0.12,sfxBus,0.18);
+  }
+  function monsterDeath(isBoss){
+    if(!ctx) return;
+    if(isBoss){
+      tone(180,0.5,'sawtooth',sfxBus,null,0.28,50);
+      noiseBurst(0.4,sfxBus,0.22);
+      tone(90,0.6,'triangle',sfxBus,ctx.currentTime+0.05,0.22,40);
+    }else{
+      tone(240,0.18,'square',sfxBus,null,0.14,90);
+    }
+  }
+  function levelUp(){
+    if(!ctx) return;
+    const t=ctx.currentTime;
+    [523.25,659.25,783.99].forEach((f,i)=>tone(f,0.22,'triangle',sfxBus,t+i*0.09,0.18));
+  }
+  function evolution(){
+    if(!ctx) return;
+    const t=ctx.currentTime;
+    [392,523.25,659.25,783.99,1046.5].forEach((f,i)=>tone(f,0.3,'triangle',sfxBus,t+i*0.1,0.2));
+    tone(196,0.9,'sawtooth',sfxBus,t+0.4,0.12);
+  }
+  function regionTransition(){
+    if(!ctx) return;
+    tone(120,0.6,'sine',sfxBus,null,0.12,320);
+    noiseBurst(0.5,sfxBus,0.06);
+  }
+  function bossAlert(){
+    if(!ctx) return;
+    const t=ctx.currentTime;
+    for(let i=0;i<3;i++){
+      tone(880,0.16,'square',sfxBus,t+i*0.34,0.18);
+      tone(560,0.16,'square',sfxBus,t+i*0.34+0.17,0.18);
+    }
+  }
+  function skillCast(){
+    if(!ctx) return;
+    tone(300,0.18,'sawtooth',sfxBus,null,0.14,650);
+  }
+  function skillImpact(){
+    if(!ctx) return;
+    tone(160,0.3,'sawtooth',sfxBus,null,0.22,60);
+    noiseBurst(0.22,sfxBus,0.18);
+  }
+  function goldPickup(){
+    if(!ctx) return;
+    const t=ctx.currentTime;
+    tone(880,0.07,'square',sfxBus,t,0.12);
+    tone(1318.5,0.09,'square',sfxBus,t+0.05,0.12);
+  }
+  function itemPickup(){
+    if(!ctx) return;
+    const t=ctx.currentTime;
+    tone(659.25,0.1,'triangle',sfxBus,t,0.15);
+    tone(987.77,0.14,'triangle',sfxBus,t+0.07,0.15);
+  }
+  function skillPickup(){
+    if(!ctx) return;
+    const t=ctx.currentTime;
+    [783.99,987.77,1174.66].forEach((f,i)=>tone(f,0.13,'triangle',sfxBus,t+i*0.06,0.15));
+  }
+  function potionUse(){
+    if(!ctx) return;
+    tone(440,0.35,'sine',sfxBus,null,0.16,880);
+  }
+  function uiBlip(){
+    if(!ctx) return;
+    tone(500,0.05,'square',sfxBus,null,0.1);
+  }
+  function buySuccess(){
+    if(!ctx) return;
+    const t=ctx.currentTime;
+    tone(523.25,0.08,'square',sfxBus,t,0.14);
+    tone(783.99,0.12,'square',sfxBus,t+0.06,0.14);
+  }
+  function errorBuzz(){
+    if(!ctx) return;
+    tone(140,0.14,'sawtooth',sfxBus,null,0.14,110);
+  }
+  function death(){
+    if(!ctx) return;
+    tone(300,0.9,'sawtooth',sfxBus,null,0.22,60);
+    noiseBurst(0.6,sfxBus,0.12);
+  }
+  function respawn(){
+    if(!ctx) return;
+    tone(220,0.5,'sine',sfxBus,null,0.14,440);
+  }
+
+  // ── background music: looping bass + arpeggio + pad + hats ──
+  const CHORDS=[
+    {bass:82.41, notes:[164.81,196.00,246.94,329.63]}, // Em
+    {bass:65.41, notes:[130.81,164.81,196.00,261.63]}, // C
+    {bass:98.00, notes:[196.00,246.94,293.66,392.00]}, // G
+    {bass:73.42, notes:[146.83,185.00,220.00,293.66]}, // D
+  ];
+  const STEP_DUR=0.25, STEPS_PER_CHORD=8, LOOKAHEAD=0.1, SCHEDULE_AHEAD=0.22;
+  let step=0, nextStepTime=0;
+
+  function scheduleStep(s,t){
+    const chord=CHORDS[Math.floor(s/STEPS_PER_CHORD)%CHORDS.length];
+    const local=s%STEPS_PER_CHORD;
+    if(local===0||local===4){
+      tone(chord.bass,0.85,'triangle',musicBus,t,0.5,null);
+    }
+    if(local===0){
+      // soft sustained pad, root + third
+      tone(chord.notes[0],1.9,'sawtooth',musicBus,t,0.05);
+      tone(chord.notes[1],1.9,'sawtooth',musicBus,t,0.04);
+    }
+    if(!(local===7&&Math.random()<0.3)){
+      const n=chord.notes[local%chord.notes.length];
+      tone(n,0.2,'square',musicBus,t,0.09);
+    }
+    if(local%2===1){
+      noiseBurst(0.04,musicBus,0.025,t);
+    }
+  }
+  function musicScheduler(){
+    while(nextStepTime<ctx.currentTime+SCHEDULE_AHEAD){
+      scheduleStep(step,nextStepTime);
+      nextStepTime+=STEP_DUR;
+      step=(step+1)%(STEPS_PER_CHORD*CHORDS.length);
+    }
+  }
+  function startMusic(){
+    if(musicTimer) return;
+    step=0;nextStepTime=ctx.currentTime+0.05;
+    musicScheduler();
+    musicTimer=setInterval(musicScheduler,LOOKAHEAD*1000);
+  }
+  function setZone(isSafeZone){
+    if(!musicFilter) return;
+    musicFilter.frequency.setTargetAtTime(isSafeZone?1400:3200,ctx.currentTime,0.8);
+  }
+
+  return{
+    unlock,toggleMute,setZone,
+    hit,playerHit,monsterDeath,levelUp,evolution,regionTransition,bossAlert,
+    skillCast,skillImpact,goldPickup,itemPickup,skillPickup,potionUse,
+    uiBlip,buySuccess,errorBuzz,death,respawn,
+    get muted(){return muted;},
+  };
+})();
+
+// ════════════════════════════════════════════════════════════
 //  SKILL CINEMA
 // ════════════════════════════════════════════════════════════
 const SkillCinema=(()=>{
-  const CONFIGS={
-    fireball:{flashCol:'rgba(255,80,0,0.6)',glowCol:'#ff4400',shake:10,shakeDur:.22,
-      cascades:[{c:0xff4400,n:18,spd:200},{c:0xff8800,n:12,spd:260},{c:0xffcc44,n:8,spd:180}],delays:[0,80,180]},
-    heal:{flashCol:'rgba(50,255,130,0.5)',glowCol:'#44ff88',shake:0,shakeDur:0,
-      cascades:[{c:0x44ff88,n:20,spd:140},{c:0xaaffcc,n:16,spd:120},{c:0xffffff,n:10,spd:100}],delays:[0,120,260]},
-    speed:{flashCol:'rgba(255,240,0,0.5)',glowCol:'#ffee00',shake:4,shakeDur:.12,
-      cascades:[{c:0xffee00,n:22,spd:220},{c:0xffffff,n:14,spd:280}],delays:[0,100]},
-    berserk:{flashCol:'rgba(220,20,0,0.65)',glowCol:'#ff2200',shake:14,shakeDur:.28,
-      cascades:[{c:0xff2200,n:22,spd:180},{c:0xff6600,n:16,spd:240},{c:0xff0055,n:10,spd:160},{c:0xffcc44,n:8,spd:120}],delays:[0,60,150,260]},
-    nova:{flashCol:'rgba(130,210,255,0.5)',glowCol:'#88ddff',shake:8,shakeDur:.18,
-      cascades:[{c:0x88ddff,n:26,spd:160},{c:0xffffff,n:18,spd:200},{c:0x4488ff,n:12,spd:130}],delays:[0,90,200]},
+  // Keyed by archetype (skill id is "<archetype>_<element>"); color/glow comes from the skill itself,
+  // so every one of the 100 skills gets a themed cinematic.
+  const ARCH_CONFIGS={
+    haste:  {shake:4,  shakeDur:.12, cascades:[{n:22,spd:220},{n:14,spd:280}], delays:[0,100]},
+    heal:   {shake:0,  shakeDur:0,   cascades:[{n:20,spd:140},{n:16,spd:120},{n:10,spd:100}], delays:[0,120,260]},
+    bolt:   {shake:6,  shakeDur:.15, cascades:[{n:16,spd:200},{n:10,spd:240}], delays:[0,90]},
+    regen:  {shake:0,  shakeDur:0,   cascades:[{n:18,spd:110},{n:12,spd:90}], delays:[0,150]},
+    berserk:{shake:14, shakeDur:.28, cascades:[{n:22,spd:180},{n:16,spd:240},{n:10,spd:160},{n:8,spd:120}], delays:[0,60,150,260]},
+    nova:   {shake:10, shakeDur:.22, cascades:[{n:18,spd:200},{n:12,spd:260},{n:8,spd:180}], delays:[0,80,180]},
+    shield: {shake:0,  shakeDur:0,   cascades:[{n:24,spd:130},{n:16,spd:100}], delays:[0,120]},
+    chain:  {shake:8,  shakeDur:.18, cascades:[{n:26,spd:160},{n:18,spd:200},{n:12,spd:130}], delays:[0,90,200]},
+    drain:  {shake:6,  shakeDur:.15, cascades:[{n:20,spd:150},{n:14,spd:120}], delays:[0,110]},
+    meteor: {shake:16, shakeDur:.35, cascades:[{n:24,spd:200},{n:18,spd:260},{n:12,spd:180}], delays:[0,80,180]},
   };
   let _flash=null,_card=null,_cardIcon=null,_cardName=null,_timers=[];
   function _init(){
@@ -1296,11 +1831,12 @@ const SkillCinema=(()=>{
   function play(skillType, player, particles){
     if(!_flash) _init();
     cancel();
-    const cfg=CONFIGS[skillType.id];
+    const archKey=skillType.id.split('_')[0];
+    const cfg=ARCH_CONFIGS[archKey];
     if(!cfg) return;
-    // CSS vars for color theming
-    _flash.style.setProperty('--sf-col', cfg.flashCol);
-    _card.style.setProperty('--sc-glow', cfg.glowCol);
+    // CSS vars for color theming, taken from the skill's own element color
+    _flash.style.setProperty('--sf-col', `rgba(${skillType.glowRGB},0.55)`);
+    _card.style.setProperty('--sc-glow', `#${skillType.color.toString(16).padStart(6,'0')}`);
     // Flash in
     _flash.style.opacity='1';
     _timers.push(setTimeout(()=>{ _flash.style.opacity='0'; },320));
@@ -1319,8 +1855,8 @@ const SkillCinema=(()=>{
     // Particle cascades
     cfg.cascades.forEach((cv,i)=>{
       _timers.push(setTimeout(()=>{
-        particles.emit(player.x,player.y,cv.c,cv.n,cv.spd);
-        if(i===0) particles.emitRing(player.x,player.y,cv.c,Math.floor(cv.n*.7));
+        particles.emit(player.x,player.y,skillType.color,cv.n,cv.spd);
+        if(i===0) particles.emitRing(player.x,player.y,skillType.color,Math.floor(cv.n*.7));
       },cfg.delays[i]));
     });
   }
@@ -1344,6 +1880,7 @@ const UI={
     this.evoSub=this._el('evo-subtitle');
     this.evoIcon=this._el('evo-icon');this.evoName=this._el('evo-name');
     this.regionName=this._el('region-name');
+    this.regionSub=this._el('region-sub');
     this.rtOverlay=this._el('region-transition');
     this.rtName=this._el('rt-name');this.rtSub=this._el('rt-sub');
     this.bossPanel=this._el('boss-hp-panel');
@@ -1443,23 +1980,44 @@ const UI={
   },
   showRegionTransition(reg){
     this.regionName.textContent=reg.name.toUpperCase();
+    this.regionSub.textContent=reg.sub.toUpperCase();
     this.rtName.textContent=reg.name.toUpperCase();
-    this.rtSub.textContent=`${reg.sub} · ${reg.id===0?'SAFE ZONE':reg.id===1?'DANGER ZONE':'EXTREME ZONE'}`;
+    this.rtSub.textContent=`${reg.sub} · ${reg.dangerLabel||'DANGER ZONE'}`;
     this.rtOverlay.style.opacity='0';this.rtOverlay.style.transition='none';
     this.rtOverlay.classList.add('active');
     setTimeout(()=>{this.rtOverlay.style.transition='opacity .5s ease';this.rtOverlay.style.opacity='1';},10);
     setTimeout(()=>{this.rtOverlay.style.opacity='0';setTimeout(()=>this.rtOverlay.classList.remove('active'),600);},2000);
   },
+  showBossAlert(boss,region){
+    if(!this.bossAlert) this.bossAlert=this._el('boss-alert');
+    if(!this.bossAlertTitle) this.bossAlertTitle=this._el('boss-alert-title');
+    if(!this.bossAlertSub) this.bossAlertSub=this._el('boss-alert-sub');
+    this.bossAlertTitle.textContent=`⚠ WORLD BOSS SIGHTED ⚠`;
+    this.bossAlertSub.textContent=`${boss.name.toUpperCase()} · ${region.name.toUpperCase()}`;
+    this.bossAlert.classList.add('show');
+    clearTimeout(this._bossAlertTimer);
+    this._bossAlertTimer=setTimeout(()=>this.bossAlert.classList.remove('show'),5000);
+  },
   showDeath(player){
     this.deathStats.textContent=`Level ${player.level}  ·  Kills ${player.kills}  ·  Total XP ${player.xp}`;
+    this.deathScreen.style.transition='none';this.deathScreen.style.opacity='1';
     this.deathScreen.style.display='flex';
   },
-  hideDeath(){this.deathScreen.style.display='none';},
+  hideDeath(){
+    this.deathScreen.style.transition='opacity .5s ease';this.deathScreen.style.opacity='0';
+    setTimeout(()=>{this.deathScreen.style.display='none';},500);
+  },
   showItemNotify(name){
     const el=this.itemNotify;
     el.textContent='+ '+name;el.classList.add('show');
     clearTimeout(this._notifyTimer);
     this._notifyTimer=setTimeout(()=>el.classList.remove('show'),1600);
+  },
+  toggleMute(){
+    SFX.unlock();
+    const muted=SFX.toggleMute();
+    const btn=document.getElementById('mute-btn');
+    if(btn) btn.textContent=muted?'🔇':'🔊';
   },
   updateSkillsPanel(player){
     const panel=this.skillsPanel;
@@ -1489,7 +2047,7 @@ const UI={
     ctx.fillStyle='rgba(0,0,0,0.9)';ctx.fillRect(0,0,W,H);
     regions.forEach(r=>{
       const y1=(r.yMin+WORLD_H/2)/WORLD_H*H,y2=(r.yMax+WORLD_H/2)/WORLD_H*H;
-      ctx.fillStyle=['rgba(20,60,20,.7)','rgba(60,20,0,.7)','rgba(10,20,60,.7)'][r.id];
+      ctx.fillStyle=r.mmColor;
       ctx.fillRect(0,y1,W,y2-y1);
     });
     ctx.fillStyle='#ff4444';
@@ -1507,11 +2065,11 @@ const UI={
 //  MONSTER STAT FACTORY
 // ════════════════════════════════════════════════════════════
 function calcMonsterStats(tmpl,playerLevel,regionId){
-  const regionScale=1+regionId*0.6,lvScale=1+(playerLevel-1)*0.15;
+  const regionScale=1+regionId*0.6,lvScale=1+(playerLevel-1)*0.15,spdRegionScale=1+regionId*0.12;
   return{
     maxHp:Math.floor(28*tmpl.hpMult*lvScale*regionScale),
     atk:Math.floor(7*tmpl.atkMult*lvScale*regionScale),
-    spd:Math.floor(52*tmpl.spdMult*(1+(playerLevel-1)*.03)),
+    spd:Math.floor(52*tmpl.spdMult*(1+(playerLevel-1)*.03)*spdRegionScale),
     xp:Math.floor(tmpl.xpReward*(1+(playerLevel-1)*.08)*regionScale),
   };
 }
@@ -1532,16 +2090,17 @@ const ShopUI=(()=>{
     {name:'Mana Crystal',icon:'🌊',desc:'Permanently +25 MaxMP',cost:70,
      buy(p){p.maxMana=(p.maxMana||100)+25;p.statBonusMana=(p.statBonusMana||0)+25;}},
   ];
-  const UPGRADE_COSTS=[50,100,200,400];
+  // Upgrading a skill always costs SKILL_UPGRADE_MULT (10×) its own buy cost, up to MAX_SKILL_LEVEL.
   let _getPlayer=null,_activeTab='items';
   function init(fn){_getPlayer=fn;}
   function open(){
     const panel=document.getElementById('shop-panel');
-    if(panel){panel.classList.add('active');showTab(_activeTab);}
+    if(panel){panel.classList.add('active');showTab(_activeTab);SFX.uiBlip();}
   }
   function close(){
     const panel=document.getElementById('shop-panel');
     if(panel) panel.classList.remove('active');
+    SFX.uiBlip();
   }
   function showTab(tab){
     _activeTab=tab;
@@ -1561,7 +2120,7 @@ const ShopUI=(()=>{
       const owned=(p&&p.skills?p.skills:[]).map(s=>s.type.id);
       const skillsOwned=(p&&p.skills?p.skills:[]).map((skill,i)=>{
         const lvl=skill.level||1;
-        const nextCost=lvl<5?UPGRADE_COSTS[lvl-1]:null;
+        const nextCost=lvl<MAX_SKILL_LEVEL?skill.type.buyCost*SKILL_UPGRADE_MULT:null;
         return `<div class="shop-item">
           <span class="si-icon">${skill.type.icon}</span>
           <div class="si-info">
@@ -1592,28 +2151,28 @@ const ShopUI=(()=>{
   function buyItem(index){
     const p=_getPlayer&&_getPlayer();if(!p) return;
     const item=SHOP_ITEMS[index];
-    if((p.gold||0)<item.cost){UI.showItemNotify('NOT ENOUGH GOLD!');return;}
+    if((p.gold||0)<item.cost){UI.showItemNotify('NOT ENOUGH GOLD!');SFX.errorBuzz();return;}
     p.gold-=item.cost;item.buy(p);
-    UI.showItemNotify(`BOUGHT: ${item.name}`);showTab(_activeTab);
+    UI.showItemNotify(`BOUGHT: ${item.name}`);SFX.buySuccess();showTab(_activeTab);
   }
   function upgradeSkill(index){
     const p=_getPlayer&&_getPlayer();if(!p) return;
     const skill=(p.skills||[])[index];if(!skill) return;
-    const lvl=skill.level||1;if(lvl>=5) return;
-    const cost=UPGRADE_COSTS[lvl-1];
-    if((p.gold||0)<cost){UI.showItemNotify('NOT ENOUGH GOLD!');return;}
+    const lvl=skill.level||1;if(lvl>=MAX_SKILL_LEVEL) return;
+    const cost=skill.type.buyCost*SKILL_UPGRADE_MULT;
+    if((p.gold||0)<cost){UI.showItemNotify('NOT ENOUGH GOLD!');SFX.errorBuzz();return;}
     p.gold-=cost;skill.level=lvl+1;
-    UI.showItemNotify(`${skill.type.name} → Lv.${skill.level}!`);showTab(_activeTab);
+    UI.showItemNotify(`${skill.type.name} → Lv.${skill.level}!`);SFX.buySuccess();showTab(_activeTab);
   }
   function buySkill(skillId){
     const p=_getPlayer&&_getPlayer();if(!p) return;
     const sk=SKILL_TYPES.find(s=>s.id===skillId);if(!sk) return;
-    if((p.gold||0)<sk.buyCost){UI.showItemNotify('NOT ENOUGH GOLD!');return;}
-    if((p.skills||[]).length>=8){UI.showItemNotify('SKILL SLOTS FULL!');return;}
+    if((p.gold||0)<sk.buyCost){UI.showItemNotify('NOT ENOUGH GOLD!');SFX.errorBuzz();return;}
+    if((p.skills||[]).length>=8){UI.showItemNotify('SKILL SLOTS FULL!');SFX.errorBuzz();return;}
     p.gold-=sk.buyCost;
     if(!p.skills) p.skills=[];
     p.skills.push({type:sk,cd:0,level:1});
-    UI.showItemNotify(`LEARNED: ${sk.name}`);showTab(_activeTab);
+    UI.showItemNotify(`LEARNED: ${sk.name}`);SFX.buySuccess();showTab(_activeTab);
   }
   return{init,open,close,showTab,buyItem,upgradeSkill,buySkill};
 })();
@@ -1626,17 +2185,21 @@ const Game=(()=>{
   let playerEnt,playerSprite;
   let currentRegion=REGIONS[0],lastRegionId=-1;
   let currentEvolution=EVOLUTIONS[0],lastEvolutionLevel=1,evolutionLocked=false;
-  let bossEnt=null,bossSpawnedRegion={};
+  let bossEnt=null;
+  const WORLD_BOSS_INTERVAL=180; // 3 minutes
+  let worldBossTimer=WORLD_BOSS_INTERVAL;
   let spawnTimer=0,running=false,animId=null,lastTime=0;
 
   function getPlayer(){return ecs.get(playerEnt);}
   function getBoss(){return bossEnt?ecs.get(bossEnt):null;}
 
-  function baseStats(level,ev){
+  // Leveling itself no longer buffs stats — only evolution milestones,
+  // manually-allocated stat points, and items/shop purchases do.
+  function baseStats(ev){
     return{
-      maxHp:100+(level-1)*28+ev.hpBonus,
-      atk:10+(level-1)*5+ev.atkBonus,
-      spd:180+(level-1)*2.5+ev.spdBonus,
+      maxHp:100+ev.hpBonus,
+      atk:10+ev.atkBonus,
+      spd:180+ev.spdBonus,
     };
   }
 
@@ -1653,13 +2216,14 @@ const Game=(()=>{
     if(newEv.level===currentEvolution.level) return;
     evolutionLocked=true;
     const fromName=currentEvolution.name,toEv=newEv;
+    SFX.evolution();
     particles.emitRing(player.x,player.y,toEv.particleColor,36);
     setTimeout(()=>particles.emitRing(player.x,player.y,0xffffff,20),200);
     UI.showEvolution(fromName,toEv,()=>{
       currentEvolution=toEv;
       const itemAtk=player.itemAtk||0,itemHp=player.itemHp||0;
       const statBonusHp=player.statBonusHp||0,statBonusAtk=player.statBonusAtk||0;
-      const s=baseStats(player.level,toEv);
+      const s=baseStats(toEv);
       player.maxHp=s.maxHp+itemHp+statBonusHp;player.hp=player.maxHp;
       player.atk=s.atk+itemAtk+statBonusAtk;player.spd=s.spd;
       const statBonusMana=player.statBonusMana||0;
@@ -1682,7 +2246,7 @@ const Game=(()=>{
       const ev=getEvolution(player.level);
       const itemAtk=player.itemAtk||0,itemHp=player.itemHp||0;
       const statBonusHp=player.statBonusHp||0,statBonusAtk=player.statBonusAtk||0;
-      const s=baseStats(player.level,ev);
+      const s=baseStats(ev);
       player.maxHp=s.maxHp+itemHp+statBonusHp;player.hp=player.maxHp;
       player.atk=s.atk+itemAtk+statBonusAtk;player.spd=s.spd;
       player.pendingStatPoints=(player.pendingStatPoints||0)+1;
@@ -1690,6 +2254,7 @@ const Game=(()=>{
     }
     if(advanced){
       UI.flashLevelUp();
+      SFX.levelUp();
       particles.emit(player.x,player.y,currentEvolution.particleColor,22,160);
       checkEvolution(player);
       showStatOverlayIfNeeded(player);
@@ -1762,12 +2327,32 @@ const Game=(()=>{
     return SKILL_TYPES[0];
   }
 
-  function trySpawnBoss(reg,player){
-    if(!reg.boss||reg.isSafeZone) return;
-    if(bossSpawnedRegion[reg.id]) return;
-    if(player.level<reg.boss.minLevel) return;
-    bossSpawnedRegion[reg.id]=true;
-    spawnMonster(reg,player,reg.boss,true);
+  // ── World Boss: one roams the world at a time. It spawns in a
+  // random region every WORLD_BOSS_INTERVAL (3 min); killing it
+  // restarts that same 3-minute countdown for the next spawn.
+  function spawnWorldBoss(player){
+    const allBossRegions=REGIONS.filter(r=>r.boss);
+    if(!allBossRegions.length){ worldBossTimer=5; return; } // nothing to spawn, retry soon
+    // Random region, but weighted toward ones the player has a shot at —
+    // a level-3 player shouldn't have their very first world boss be an
+    // unreachable end-game one nine times out of ten.
+    const reachable=allBossRegions.filter(r=>player.level>=r.boss.minLevel-15);
+    const pool=reachable.length?reachable:[allBossRegions[0]];
+    const reg=pool[Math.floor(Math.random()*pool.length)];
+    spawnMonster(reg,player,reg.boss,true); // sets bossEnt internally
+    UI.showBossAlert(reg.boss,reg);
+    SFX.bossAlert();
+  }
+  function onWorldBossKilled(){
+    bossEnt=null;
+    worldBossTimer=WORLD_BOSS_INTERVAL;
+  }
+  function sysWorldBoss(dt){
+    const p=getPlayer();if(p.dead) return;
+    if(bossEnt&&!ecs.get(bossEnt)) bossEnt=null; // defensive: boss entity vanished unexpectedly
+    if(bossEnt) return; // a world boss is already alive somewhere
+    worldBossTimer-=dt;
+    if(worldBossTimer<=0) spawnWorldBoss(p);
   }
 
   // ── SYSTEM: Movement ──
@@ -1792,10 +2377,21 @@ const Game=(()=>{
     const p=getPlayer();
     const reg=getRegion(p.y);
     if(reg.id!==lastRegionId){
+      const leavingId=lastRegionId;
       lastRegionId=reg.id;currentRegion=reg;
       scene.background.set(reg.bgColor);
       UI.showRegionTransition(reg);
-      if(!reg.isSafeZone) trySpawnBoss(reg,p);
+      SFX.regionTransition();
+      SFX.setZone(reg.isSafeZone);
+      // Clear the region we're leaving behind — except the world boss, if it's there.
+      if(leavingId!==-1){
+        for(const m of ecs.query('tag','tmpl')){
+          if(m.tag==='monster'&&!m.isBoss&&m.regionId===leavingId){
+            scene.remove(m.sprite);m.sprite.material.dispose();
+            scene.remove(m.hpBar);ecs.destroy(m.id);
+          }
+        }
+      }
       const prompt=document.getElementById('shop-prompt');
       if(prompt) prompt.style.display=reg.isSafeZone?'flex':'none';
       if(!reg.isSafeZone) ShopUI.close();
@@ -1839,18 +2435,23 @@ const Game=(()=>{
     if(p.attackCd>0) p.attackCd-=dt;
     const effectiveAtk=p.atk+(p._atkBonus||0);
     const toRemove=[];
+    // Cleave: every monster touching the player this tick gets hit together,
+    // not just the first one found — so a cluster of enemies all take damage at once.
+    const canAttack=p.attackCd<=0;
+    let attacked=false;
     for(const m of ecs.query('tag','tmpl')){
       if(m.tag!=='monster') continue;
       const dist=V2.dist(p.x,p.y,m.x,m.y);
       const touch=currentEvolution.radius+m.radius;
       if(dist<touch){
-        if(p.attackCd<=0){
+        if(canAttack){
           const isCrit=Math.random()<.12;
           const dmg=Math.floor((effectiveAtk+Math.random()*6)*(isCrit?2.2:1));
           m.hp-=dmg;m.hitFlash=.12;
           damages.emit(m.x,m.y,dmg,false,isCrit);
           particles.emit(m.x,m.y,m.tmpl.color,isCrit?8:4,120);
-          p.attackCd=0.55;
+          SFX.hit(isCrit);
+          attacked=true;
           if(m.hp<=0) toRemove.push(m);
         }
         if(p.invincible<=0&&m.attackCd<=0&&!(m.stunTimer>0)){
@@ -1858,31 +2459,59 @@ const Game=(()=>{
           p.hp=Math.max(0,p.hp-dmg);
           p.invincible=0.75;m.attackCd=0.9;
           damages.emit(p.x,p.y,dmg,true);
+          SFX.playerHit();
           Camera.shake(m.isBoss?10:5,m.isBoss?.2:.12);
           playerSprite.material.color.setHex(0xff4444);
           setTimeout(()=>playerSprite.material.color.setHex(0xffffff),160);
           if(p.hp<=0){
-            p.dead=true;
-            UI.statOverlay.classList.remove('active');
-            UI.showDeath(p);return;
+            handlePlayerDeath(p);return;
           }
         }
       }
     }
+    if(attacked) p.attackCd=0.55;
     for(const m of toRemove){
       gainXP(p,m.xp);p.kills++;
       particles.emit(m.x,m.y,m.tmpl.color,m.isBoss?30:14,m.isBoss?200:120);
+      SFX.monsterDeath(m.isBoss);
       if(m.isBoss){
-        particles.emitRing(m.x,m.y,0xffffff,24);bossEnt=null;
-        spawnGold(m.x,m.y,80+Math.floor(Math.random()*41));
-        spawnSkillDrop(m.x-50,m.y+30,pickSkillByRate());
+        particles.emitRing(m.x,m.y,0xffffff,24);
+        onWorldBossKilled();
+        spawnGold(m.x,m.y,rollBossGold(m.regionId));
+        if(Math.random()<0.1) spawnSkillDrop(m.x-50,m.y+30,pickSkillByRate());
       }else{
-        spawnGold(m.x,m.y,10);
-        if(Math.random()<0.02) spawnSkillDrop(m.x,m.y,pickSkillByRate());
+        spawnGold(m.x,m.y,Math.round(10*regionGoldMult(m.regionId)));
       }
       scene.remove(m.sprite);m.sprite.material.dispose();
       scene.remove(m.hpBar);ecs.destroy(m.id);
     }
+  }
+
+  // ── Death: send the player back to Safe Town instead of a full reset.
+  // Level, gold, skills, kills and stat points all survive.
+  function respawnAtTown(p){
+    const townY=-WORLD_H/2+TOWN_H*0.5;
+    p.x=0;p.y=townY;
+    p.hp=p.maxHp;p.mana=p.maxMana||100;
+    p.invincible=2;
+    p._atkBonus=0;p._atkBonusTimer=0;
+    p._speedBonus=0;p._speedBonusTimer=0;
+    p._regenPerSec=0;p._regenTimer=0;
+    playerSprite.position.set(p.x,p.y,1);
+    cam.position.set(p.x,p.y,10);
+    perspCam.position.set(p.x,p.y-300,500);
+    p.dead=false;
+  }
+  function handlePlayerDeath(p){
+    p.dead=true;
+    SFX.death();
+    UI.statOverlay.classList.remove('active');
+    UI.showDeath(p);
+    setTimeout(()=>{
+      respawnAtTown(p);
+      UI.hideDeath();
+      SFX.respawn();
+    },1600);
   }
 
   // ── SYSTEM: Items ──
@@ -1899,6 +2528,7 @@ const Game=(()=>{
     }
     for(const item of toPickup){
       item.itemType.apply(p);UI.showItemNotify(item.itemType.name);
+      SFX.itemPickup();
       particles.emit(item.x,item.y,item.itemType.color,12,100);
       scene.remove(item.sprite);item.sprite.material.dispose();ecs.destroy(item.id);
     }
@@ -1926,12 +2556,15 @@ const Game=(()=>{
       if(!alreadyHave&&p.skills.length<8){
         p.skills.push({type:sd.skillType,cd:0,level:1});
         UI.showItemNotify(`SKILL: ${sd.skillType.name}`);
+        SFX.skillPickup();
         particles.emit(sd.x,sd.y,sd.skillType.color,16,130);
         particles.emitRing(sd.x,sd.y,sd.skillType.color,10);
       }else if(alreadyHave){
         UI.showItemNotify(`${sd.skillType.name} OWNED`);
+        SFX.errorBuzz();
       }else{
         UI.showItemNotify('SKILL SLOTS FULL!');
+        SFX.errorBuzz();
       }
       scene.remove(sd.sprite);sd.sprite.material.dispose();ecs.destroy(sd.id);
     }
@@ -1955,6 +2588,7 @@ const Game=(()=>{
     for(const g of toPickup){
       p.gold=(p.gold||0)+g.goldAmount;
       UI.showItemNotify(`+${g.goldAmount}G`);
+      SFX.goldPickup();
       particles.emit(g.x,g.y,0xffdd00,8,80);
       scene.remove(g.sprite);g.sprite.material.dispose();ecs.destroy(g.id);
     }
@@ -1971,7 +2605,6 @@ const Game=(()=>{
     const all=ecs.query('tag','tmpl').filter(e=>e.tag==='monster');
     if(spawnTimer<=0&&all.length<24){
       spawnMonster(currentRegion,p);spawnTimer=2.0;
-      trySpawnBoss(currentRegion,p);
     }
   }
 
@@ -1979,6 +2612,7 @@ const Game=(()=>{
   function sysMana(dt){
     const p=getPlayer();if(p.dead) return;
     p.mana=Math.min(p.maxMana||100,(p.mana||0)+5*dt);
+    p.hp=Math.min(p.maxHp,(p.hp||0)+10*dt); // passive natural regen
     if((p._speedBonusTimer||0)>0){
       p._speedBonusTimer-=dt;
       if(p._speedBonusTimer<=0){p._speedBonus=0;p._speedBonusTimer=0;}
@@ -1986,6 +2620,11 @@ const Game=(()=>{
     if((p._atkBonusTimer||0)>0){
       p._atkBonusTimer-=dt;
       if(p._atkBonusTimer<=0){p._atkBonus=0;p._atkBonusTimer=0;}
+    }
+    if((p._regenTimer||0)>0){
+      p._regenTimer-=dt;
+      p.hp=Math.min(p.maxHp,p.hp+(p._regenPerSec||0)*dt);
+      if(p._regenTimer<=0){p._regenTimer=0;p._regenPerSec=0;}
     }
     for(const skill of(p.skills||[])){
       if(skill.cd>0) skill.cd=Math.max(0,skill.cd-dt);
@@ -1998,9 +2637,10 @@ const Game=(()=>{
     if(!p||p.dead) return;
     if(!p.skills||index>=p.skills.length) return;
     const skill=p.skills[index];
-    if(skill.cd>0){UI.showItemNotify('SKILL COOLDOWN!');return;}
-    if((p.mana||0)<skill.type.manaCost){UI.showItemNotify('NOT ENOUGH MANA!');return;}
+    if(skill.cd>0){UI.showItemNotify('SKILL COOLDOWN!');SFX.errorBuzz();return;}
+    if((p.mana||0)<skill.type.manaCost){UI.showItemNotify('NOT ENOUGH MANA!');SFX.errorBuzz();return;}
     p.mana-=skill.type.manaCost;
+    SFX.skillCast();
     skill.type.apply(p,ecs,particles,damages,skill.level||1);
     SkillCinema.play(skill.type,p,particles);
     skill.cd=skill.type.cooldown;
@@ -2036,9 +2676,11 @@ const Game=(()=>{
     if((p.potions||0)<=0) return;
     if(p.hp>=p.maxHp){
       const btn=document.getElementById('potion-use-btn');
-      btn.classList.add('flash');setTimeout(()=>btn.classList.remove('flash'),300);return;
+      btn.classList.add('flash');setTimeout(()=>btn.classList.remove('flash'),300);
+      SFX.errorBuzz();return;
     }
     p.potions--;ITEM_TYPES[0].heal(p);
+    SFX.potionUse();
     particles.emit(p.x,p.y,0xff2255,18,110);
     UI.showItemNotify('HP +30%');
   }
@@ -2048,7 +2690,7 @@ const Game=(()=>{
     while(scene.children.length) scene.remove(scene.children[0]);
     SkillCinema.cancel();
     ecs=new ECS();particles=new ParticleSystem();damages=new DamageNumbers();
-    bossEnt=null;bossSpawnedRegion={};spawnTimer=1;
+    bossEnt=null;worldBossTimer=WORLD_BOSS_INTERVAL;spawnTimer=1;
     currentRegion=REGIONS[0];lastRegionId=-1;
     currentEvolution=EVOLUTIONS[0];lastEvolutionLevel=1;evolutionLocked=false;
     buildWorld();scene.background.set(REGIONS[0].bgColor);
@@ -2068,7 +2710,7 @@ const Game=(()=>{
       itemAtk:0,itemHp:0,potions:0,
       pendingStatPoints:0,
       statBonusHp:0,statBonusAtk:0,statBonusMana:0,
-      skills:[],
+      skills:[{type:SKILL_TYPES.find(s=>s.id==='bolt_nature'),cd:0,level:1}],
       _speedBonus:0,_speedBonusTimer:0,
       _atkBonus:0,_atkBonusTimer:0,
     });
@@ -2095,6 +2737,7 @@ const Game=(()=>{
     sysSkillDrops();
     sysGold();
     sysSpawn(dt);
+    sysWorldBoss(dt);
     sysMana(dt);
     particles.update(dt);damages.update(dt);
     Camera.follow(p.x,p.y,dt);
@@ -2113,7 +2756,7 @@ const Game=(()=>{
     const p=getPlayer();
     if(!p||p.dead||evolutionLocked) return;
     if((p.attackCd||0)>0) return;
-    if(V2.dist(wx,wy,p.x,p.y)>480) return; // out of reach
+    if(V2.dist(wx,wy,p.x,p.y)>150) return; // out of reach
     let best=null,bestD=70;
     for(const m of ecs.query('tag','tmpl')){
       if(m.tag!=='monster') continue;
@@ -2127,17 +2770,19 @@ const Game=(()=>{
     best.hp-=dmg;best.hitFlash=.15;
     damages.emit(best.x,best.y,dmg,false,isCrit);
     particles.emit(best.x,best.y,best.tmpl.color,isCrit?10:5,135);
+    SFX.hit(isCrit);
     p.attackCd=0.45;
     if(best.hp<=0){
       gainXP(p,best.xp);p.kills++;
       particles.emit(best.x,best.y,best.tmpl.color,best.isBoss?30:14,best.isBoss?200:120);
+      SFX.monsterDeath(best.isBoss);
       if(best.isBoss){
-        particles.emitRing(best.x,best.y,0xffffff,24);bossEnt=null;
-        spawnGold(best.x,best.y,80+Math.floor(Math.random()*41));
-        spawnSkillDrop(best.x-50,best.y+30,pickSkillByRate());
+        particles.emitRing(best.x,best.y,0xffffff,24);
+        onWorldBossKilled();
+        spawnGold(best.x,best.y,rollBossGold(best.regionId));
+        if(Math.random()<0.1) spawnSkillDrop(best.x-50,best.y+30,pickSkillByRate());
       }else{
-        spawnGold(best.x,best.y,10);
-        if(Math.random()<.02) spawnSkillDrop(best.x,best.y,pickSkillByRate());
+        spawnGold(best.x,best.y,Math.round(10*regionGoldMult(best.regionId)));
       }
       scene.remove(best.sprite);best.sprite.material.dispose();
       scene.remove(best.hpBar);ecs.destroy(best.id);
@@ -2162,7 +2807,6 @@ const Game=(()=>{
 
   return{
     start(){ShopUI.init(()=>getPlayer());UI.init();UI.hideDeath();init();running=true;lastTime=performance.now();animId=requestAnimationFrame(loop);},
-    restart(){ShopUI.close();running=false;if(animId)cancelAnimationFrame(animId);setTimeout(()=>this.start(),120);},
     usePotion(){usePotionInternal();},
     useSkill(index){useSkillInternal(index);},
     allocStat(type){allocStatInternal(type);},
@@ -2183,6 +2827,7 @@ Game.start();
 const _aimRing=document.getElementById('click-aim');
 let _aimTimer=null;
 canvas3d.addEventListener('click',e=>{
+  SFX.unlock();
   const pos=screenToWorldXY(e.clientX,e.clientY);
   Game.clickAttack(pos.x,pos.y);
   // Aim ring flash at cursor
