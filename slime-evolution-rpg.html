@@ -833,9 +833,11 @@ const JOBS={
 function scaledSkillDamage(p,base,lvl,elementMult=1,ratio=1){
   const atkLevel=p.enhanceLevels?.atk||p.enhanceLevel||0;
   const enhanceMult=ENHANCEMENTS[atkLevel]?.mult||1;
-  const levelMult=1+(Math.max(1,lvl)-1)*.55;
-  const enhancementGrowth=1+(enhanceMult-1)*1.45;
-  return Math.max(1,Math.floor((base*.32+p.atk*.28)*levelMult*enhancementGrowth*elementMult*ratio));
+  // Skills start deliberately weaker than normal attacks. Attack enhancement is
+  // then applied directly, so every enhancement stage has an obvious payoff.
+  const levelMult=1+(Math.max(1,lvl)-1)*.35;
+  const weakBaseDamage=base*.18+p.atk*.16;
+  return Math.max(1,Math.floor(weakBaseDamage*levelMult*enhanceMult*elementMult*ratio));
 }
 const SKILL_ARCHETYPES = [
   { key:'haste', label:'Haste', icon:'⚡', tier:1,
@@ -2332,6 +2334,7 @@ const UI={
 //  MONSTER STAT FACTORY
 // ════════════════════════════════════════════════════════════
 function calcMonsterStats(tmpl,playerLevel,regionId){
+  const atkBalance=0.52;
   const lvScale=1+(playerLevel-1)*0.19;
   const stage=Math.max(0,Number(regionId)||0);
   const hpStageScale=1+stage*0.48;
@@ -2339,7 +2342,7 @@ function calcMonsterStats(tmpl,playerLevel,regionId){
   const spdStageScale=1+Math.min(stage*0.032,0.9);
   return{
     maxHp:Math.floor(38*tmpl.hpMult*lvScale*hpStageScale),
-    atk:Math.floor(9*tmpl.atkMult*lvScale*atkStageScale),
+    atk:Math.floor(9*atkBalance*tmpl.atkMult*lvScale*atkStageScale),
     spd:Math.floor(52*tmpl.spdMult*(1+(playerLevel-1)*.03)*spdStageScale),
     xp:Math.floor(tmpl.xpReward*(1+(playerLevel-1)*.08)),
   };
@@ -2554,7 +2557,11 @@ const SaveSystem=(()=>{
     document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
     window.addEventListener('pagehide',save);
   }
-  return{save,restore,start};
+  function reset(){
+    clearInterval(timer);timer=null;
+    localStorage.removeItem(KEY);
+  }
+  return{save,restore,start,reset};
 })();
 
 // ════════════════════════════════════════════════════════════
@@ -2687,7 +2694,7 @@ const Game=(()=>{
       hp:stats.maxHp,maxHp:stats.maxHp,
       atk:stats.atk,spd:stats.spd,xp:stats.xp,
       radius:tmpl.radius,sprite,hpBar,
-      attackCd:0,hitFlash:0,stunTimer:0,regionId:reg.id,isBoss:bossFlag,
+      attackCd:0,contactHitCd:0,hitFlash:0,stunTimer:0,regionId:reg.id,isBoss:bossFlag,
     });
     if(bossFlag) bossEnt=id;
     return id;
@@ -2869,6 +2876,7 @@ const Game=(()=>{
       m.hpBar.position.set(m.x,m.y+m.radius+(m.isBoss?22:14),2);
       updateHpBar(m.hpBar,m.hp/m.maxHp);
       if(m.attackCd>0) m.attackCd-=dt;
+      if(m.contactHitCd>0) m.contactHitCd-=dt;
     }
   }
 
@@ -2882,10 +2890,19 @@ const Game=(()=>{
       if(m.tag!=='monster') continue;
       if(m.hp<=0){toRemove.push(m);continue;}
       const dist=V2.dist(p.x,p.y,m.x,m.y);
-      const touch=currentEvolution.radius+m.radius;
-      if(dist<touch){
+      // Sprite glow extends past the base radius, so use a small contact margin.
+      const touch=(currentEvolution.radius+m.radius)*1.15;
+      if(dist<=touch){
+        if(m.contactHitCd<=0){
+          const contactDmg=Math.max(1,Math.floor((p.atk+(p._atkBonus||0))*.35));
+          m.hp=Math.max(0,m.hp-contactDmg);
+          m.hitFlash=.18;
+          m.contactHitCd=.55;
+          damages.emit(m.x,m.y,contactDmg,false,false);
+          particles.emit(m.x,m.y,currentEvolution.particleColor,6,80);
+        }
         if(p.invincible<=0&&m.attackCd<=0&&!(m.stunTimer>0)){
-          const dmg=Math.max(1,Math.floor(m.atk+Math.random()*4));
+          const dmg=Math.max(1,Math.floor(m.atk+Math.random()*2));
           p.hp=Math.max(0,p.hp-dmg);
           p.invincible=0.75;m.attackCd=0.9;
           damages.emit(p.x,p.y,dmg,true);
@@ -3146,7 +3163,7 @@ const Game=(()=>{
       let targets=ecs.query('tag','tmpl').filter(m=>m.tag==='monster'&&V2.dist(p.x,p.y,m.x,m.y)<=range);
       if(index===0)targets.sort((a,b)=>V2.dist(p.x,p.y,a.x,a.y)-V2.dist(p.x,p.y,b.x,b.y)),targets=targets.slice(0,1);
       const atkEnhance=ENHANCEMENTS[p.enhanceLevels?.atk||0].mult;
-      for(const m of targets){const dmg=Math.max(1,Math.floor(p.atk*mult*(.42+(atkEnhance-1)*.38)));m.hp-=dmg;m.hitFlash=.28;damages.emit(m.x,m.y,dmg,false,index===4);particles.emitRing(m.x,m.y,color,12+index*3);particles.emit(m.x,m.y,color,16+index*3,190+index*25);}
+      for(const m of targets){const dmg=Math.max(1,Math.floor(p.atk*mult*.3*atkEnhance));m.hp-=dmg;m.hitFlash=.28;damages.emit(m.x,m.y,dmg,false,index===4);particles.emitRing(m.x,m.y,color,12+index*3);particles.emit(m.x,m.y,color,16+index*3,190+index*25);}
       removeJobDefeated(p,targets);UI.showItemNotify(`${name}!`);
     }
     p.jobCooldowns[index]=cd;refreshJobSkills();
@@ -3344,8 +3361,8 @@ const Game=(()=>{
     start(){ShopUI.init(()=>getPlayer());UI.init();UI.hideDeath();init();SaveSystem.start(()=>getPlayer());running=true;lastTime=performance.now();animId=requestAnimationFrame(loop);},
     usePotion(){usePotionInternal();},
     resetAccount(){
-      if(!confirm('레벨과 골드를 포함한 모든 진행 상황을 초기화할까요? 이 작업은 되돌릴 수 없습니다.'))return;
-      localStorage.removeItem('slime-rpg-ios-save-v1');location.reload();
+      if(!confirm('아이템, 스킬, 강화, 레벨, 골드 등 모든 게임 진행을 처음 상태로 되돌릴까요?'))return;
+      SaveSystem.reset();location.reload();
     },
     allocStat(type){allocStatInternal(type);},
     toggleStats(force){toggleStatsInternal(force);},
