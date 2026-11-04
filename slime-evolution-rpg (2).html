@@ -7,7 +7,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
-#game-canvas{display:block;}
+html,body{width:100%;height:100%;height:100dvh;margin:0;overflow:hidden;}
+#game-canvas{position:fixed;inset:0;display:block;width:100vw;height:100vh;height:100dvh;touch-action:none;}
 #hud{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10;}
 #stats-panel{
   position:absolute;top:16px;left:16px;
@@ -414,11 +415,15 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
 .skill-power{display:block;color:#b0e7fc;font-size:9px;margin-top:4px;white-space:nowrap;}button:focus-visible,select:focus-visible{outline:2px solid #bbdfff;outline-offset:3px;}
 @media(max-width:820px){#fx-tools{right:8px;bottom:224px;flex-direction:column;align-items:flex-end;}#fx-tools button{font-size:10px;padding:6px 8px;}#fx-preview{padding:10px;bottom:24px;}#fx-preview p{font-size:10px;}#fx-preview select{padding:6px;max-width:190px;}.skill-power{font-size:8px;}}
 
+#relic-window[hidden]{display:none!important}#relic-window{position:fixed;inset:4vh 4vw;z-index:180;overflow:auto;padding:24px;border:1px solid #ccb57b;border-radius:16px;background:#101c29;color:#e4e9ed;font:14px/1.6 system-ui;box-shadow:0 0 0 100vmax #000b}#relic-window header{display:flex;justify-content:space-between;align-items:center}#relic-window button{background:#304757;border:1px solid #718b98;color:white;border-radius:6px;padding:8px;margin:3px;cursor:pointer}#relic-window button:disabled{opacity:.35;cursor:default}.relic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.relic-grid article{padding:14px;background:#1b2a39;border:1px solid #425566;border-radius:10px}.relic-grid h3{margin:8px 0}.relic-grid p{font-size:12px}#relic-window h2{color:#f1d699}
+.relic-ability{padding:12px;border:1px solid #5b7f80;border-radius:8px;background:#102f35;color:#c8ffdf}.relic-grid .relic-ability p{font-size:14px;margin:7px 0;line-height:1.7}.relic-ability strong{color:#ffdf91}
+#growth-window[hidden]{display:none!important}#growth-window{position:fixed;inset:3vh 4vw;z-index:190;overflow:auto;padding:24px;border:1px solid #719c91;border-radius:18px;background:radial-gradient(ellipse at top left,#203e47,#101c29 65%);box-shadow:0 0 0 100vmax #020810cc;color:#e2edf0;font:14px/1.65 system-ui}#growth-window header{display:flex;justify-content:space-between;align-items:center}#growth-window header small{letter-spacing:3px;color:#80c9b8}#growth-window h2{margin:3px 0;color:#d0f4de}#growth-window button{padding:10px 14px;margin:3px;border-radius:8px;border:1px solid #517976;background:#254744;color:#e4fff5;font:inherit;cursor:pointer}#growth-window button:disabled{opacity:.4;cursor:default}#growth-window button:focus-visible{outline:2px solid #ffdf8b;outline-offset:3px}#growth-tabs{display:flex;flex-wrap:wrap;gap:5px;margin:18px 0}#growth-tabs button.selected{background:#a5dfbb;color:#152a23;border-color:#c4f2d6;font-weight:700}#growth-bonus{padding:14px;border:1px solid #4e7970;border-radius:10px;background:#12342e;color:#bff0d1}.growth-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px}.growth-grid article,.growth-mastery{padding:20px;background:#172b36;border:1px solid #3d5c64;border-radius:12px}.growth-grid h3{margin:8px 0;color:#f4ddb4}.growth-grid small,.growth-note{color:#adc5ce}.growth-delta{border-left:3px solid #83d7a0;padding:10px;background:#193d36;color:#c9f7da;border-radius:4px}.growth-empty{padding:35px;text-align:center;background:#172b36;border-radius:12px}.growth-track{height:13px;background:#091922;border-radius:10px;overflow:hidden;margin-top:20px}.growth-track i{display:block;height:100%;background:linear-gradient(90deg,#61b8b5,#c2e6a4)}@media(max-width:600px){#growth-window{inset:1vh 2vw;padding:14px}.growth-grid{grid-template-columns:1fr}#growth-tabs button{font-size:12px;padding:8px}}
+#raid-window[hidden],#raid-hud[hidden]{display:none!important}#raid-window{position:fixed;inset:3vh 4vw;z-index:195;overflow:auto;padding:24px;background:linear-gradient(140deg,#2f213e,#101c29 65%);border:1px solid #bb89cb;border-radius:16px;box-shadow:0 0 0 100vmax #020810cc;color:#edf0fa;font:14px/1.7 system-ui}#raid-window header{display:flex;align-items:center;justify-content:space-between}#raid-window h2{color:#e4bdff}#raid-window button,#raid-hud button{background:#503d69;color:white;border:1px solid #a48aba;border-radius:7px;padding:9px 14px;cursor:pointer}#raid-window button:disabled{opacity:.4;cursor:default}#raid-result{padding:14px;background:#443054;border-radius:9px;color:#ffe2a6}#raid-hud{position:fixed;top:110px;left:50%;transform:translateX(-50%);width:min(650px,94vw);z-index:45;background:#251c34ee;border:1px solid #bb89cb;border-radius:10px;padding:10px;text-align:center;color:white;font:13px/1.5 system-ui}#raid-hud button{margin-left:12px;font-size:12px}@media(max-width:600px){#raid-window{inset:1vh 2vw;padding:14px}#raid-hud{top:135px}}
 </style>
 </head>
 <body>
 <style>
-#adventure-panel{position:fixed;left:16px;bottom:160px;z-index:12;background:#102127e8;border:1px solid #a5be89;border-radius:12px;padding:12px 15px;color:#f0e9ce;max-width:290px;font:12px/1.7 system-ui;box-shadow:0 8px 30px #0005}#adventure-panel strong{color:#e5c780;letter-spacing:2px}#adventure-panel button,#adventure-map button{background:#38534a;border:1px solid #759584;color:white;padding:6px 12px;border-radius:6px;cursor:pointer;margin:5px 4px 0 0}#adventure-panel button:disabled{opacity:.4;cursor:default}#adventure-count{color:#a9c5b5}#adventure-map{position:fixed;inset:8% auto auto 50%;transform:translateX(-50%);z-index:100;background:#102127;border:1px solid #a5be89;border-radius:14px;padding:16px;color:white;font:14px system-ui;box-shadow:0 0 0 100vmax #0009}#adventure-map canvas{display:block;width:min(600px,80vw,65vh);height:min(600px,80vw,65vh);margin-top:12px}@media(max-width:700px){#adventure-panel{left:8px;bottom:240px;max-width:200px;font-size:10px;padding:8px}}
+#adventure-panel{position:fixed;left:16px;bottom:160px;z-index:12;background:#102127e8;border:1px solid #a5be89;border-radius:12px;padding:12px 15px;color:#f0e9ce;max-width:290px;font:12px/1.7 system-ui;box-shadow:0 8px 30px #0005}#adventure-panel strong{color:#e5c780;letter-spacing:2px}#adventure-panel button,#adventure-map button{background:#38534a;border:1px solid #759584;color:white;padding:6px 12px;border-radius:6px;cursor:pointer;margin:5px 4px 0 0}#adventure-panel button:disabled{opacity:.4;cursor:default}#adventure-count{color:#a9c5b5}#adventure-map{position:fixed;inset:8% auto auto 50%;transform:translateX(-50%);z-index:100;background:#102127;border:1px solid #a5be89;border-radius:14px;padding:16px;color:white;font:14px system-ui;box-shadow:0 0 0 100vmax #0009}#adventure-map canvas{display:block;width:min(1100px,90vw);height:min(550px,65vh);margin-top:12px}@media(max-width:700px){#adventure-panel{left:8px;bottom:240px;max-width:200px;font-size:10px;padding:8px}}
 </style>
 <style>
 #summon-launch{position:fixed;right:16px;bottom:145px;z-index:25;border:1px solid #e4bf70;border-radius:10px;background:#382d55;color:#ffe5a6;padding:12px 20px;font:bold 14px system-ui;cursor:pointer}
@@ -428,12 +433,20 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
 <style>
 #save-controls{position:fixed;right:16px;bottom:195px;z-index:26;max-width:300px;padding:9px;background:#10202de8;border:1px solid #587766;border-radius:10px;color:#dcebe2;font:11px/1.5 system-ui}#save-controls button{border:1px solid #617e78;background:#28453d;color:white;padding:6px 9px;border-radius:5px;cursor:pointer;margin:0 2px 5px 0}#save-status{display:block;color:#b8dfc8}#save-controls small{font-size:10px;color:#adc0bb}@media(max-width:650px){#save-controls{right:8px;bottom:250px;max-width:190px}#save-controls button{font-size:10px;padding:4px}}
 </style>
-<div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:12;pointer-events:none;color:#e3eadf;background:#10202dcc;padding:5px 12px;border-radius:7px;font:11px system-ui;white-space:nowrap">우클릭 드래그: 시점 회전 · 휠: 확대/축소 · WASD: 이동</div>
-<div id="save-controls"><button onclick="SaveSystem.save(true)">💾 저장</button><button onclick="SaveSystem.exportFile()">백업 받기</button><button onclick="document.getElementById('save-import').click()">불러오기</button><span id="save-status" role="status">자동 저장 준비 중</span><small>3초마다 자동 저장 · 다른 기기로 옮길 때 백업 사용</small><input id="save-import" type="file" accept=".json,application/json" hidden onchange="SaveSystem.importFile(this.files[0])"></div>
+<div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:12;pointer-events:none;color:#e3eadf;background:#10202dcc;padding:5px 12px;border-radius:7px;font:11px system-ui;white-space:nowrap">우클릭: 시점 · 휠: 줌 · WASD: 이동 · Shift: 달리기 · Space: 회피</div>
+<style>
+#skills-panel{display:flex;bottom:118px;max-width:min(650px,90vw);overflow-x:auto;z-index:20}.sk-name{font-size:10px}.sk-cost{color:#a0c8ff}#quest-hud{position:fixed;left:16px;bottom:295px;width:270px;z-index:15;background:linear-gradient(135deg,#172a35ed,#192637ed);border:1px solid #a28d58;border-radius:12px;padding:12px;color:#f1ead4;font:12px/1.6 system-ui;box-shadow:0 7px 24px #0005}#quest-hud strong{color:#ffe0a0}#quest-hud button{border:1px solid #ac965e;background:#4b462d;color:#fff0c8;border-radius:5px;padding:5px 10px;cursor:pointer}#quest-hud button:disabled{opacity:.4;cursor:default}#quest-track{height:4px;margin:8px 0;background:#ffffff16;border-radius:4px;overflow:hidden}#quest-fill{height:100%;width:0;background:linear-gradient(90deg,#94cfaa,#ffda83);transition:width .3s}#boss-clock{position:fixed;top:75px;left:50%;transform:translateX(-50%);z-index:12;background:#211829dd;border:1px solid #a45770;border-radius:9px;padding:8px 14px;color:#ffcfdf;font:12px system-ui;text-align:center;max-width:360px}#boss-clock small{display:block;color:#b9c1db;font-size:10px;margin-top:4px}@media(max-width:700px){#quest-hud{left:8px;bottom:365px;width:195px;padding:8px;font-size:10px}#boss-clock{top:105px;max-width:240px;font-size:10px}}
+</style>
+<aside id="quest-hud"><strong>📜 <span id="quest-title"></span></strong><div id="quest-progress"></div><div id="quest-track"><div id="quest-fill"></div></div><span id="quest-reward"></span> <button id="quest-claim" onclick="Game.claimQuest()" disabled>보상 받기</button></aside>
+<div id="boss-clock"><span id="boss-clock-text">지역 수호자 준비 중</span><small>플레이 중 60초 주기 · 생존 중 중복 등장 없음<br>보스 전용 스킬: 마나 4% / 공격 4% · Z X R 사용</small></div>
+<div id="save-controls"><button onclick="Game.openRaid()">⚔ 레이드 (J)</button><button onclick="Game.openGrowth()">⬆ 성장 (O)</button><button onclick="Game.openRelics()">🎒 가방·유물 (I)</button><button id="fullscreen-toggle" onclick="toggleGameFullscreen()">⛶ 전체화면</button><button onclick="SaveSystem.save(true)">💾 저장</button><button onclick="SaveSystem.exportFile()">백업 받기</button><button onclick="document.getElementById('save-import').click()">불러오기</button><span id="save-status" role="status">자동 저장 준비 중</span><small>1초마다 자동 저장 · 다른 기기로 옮길 때 백업 사용</small><input id="save-import" type="file" accept=".json,application/json" hidden onchange="SaveSystem.importFile(this.files[0])"></div>
 <button id="summon-launch" onclick="Game.openSummons()">✦ 슬라임 소환 · G</button>
+<aside id="raid-hud" hidden><strong id="raid-hud-text">레이드 준비 중</strong><button onclick="Game.leaveRaid()">포기 · 마을 귀환</button></aside><section id="raid-window" hidden role="dialog" aria-modal="true" aria-label="보스 레이드"><header><h2>보스 레이드</h2><button onclick="Raid.close()">닫기 ✕</button></header><p id="raid-result" role="status"></p><p id="raid-wallet"></p><p>혼자 도전 · 입장료 없음 · 입장 시 HP·마나와 스킬 대기시간 회복<br>공격 예고 1.3초 뒤 폭발! 보스 HP 50% 이하에서 분노 · Shift 달리기 / Space 회피<br>성공·실패·포기 시 마을 귀환. 전투 중에는 다른 메뉴를 이용할 수 없습니다.<br>전투 도중 게임을 닫으면 보상 없이 마을에서 다시 시작합니다. 보스 스킬 획득률은 총 2%입니다.</p><div id="raid-tiers" class="growth-grid"></div><h2>증표 교환 · 영구 각인</h2><p>증표로 공격력·HP·마나를 영구 강화합니다. 성공률 100% · 각 항목 최대 20레벨.</p><div id="raid-sigils" class="growth-grid"></div></section>
+<section id="growth-window" hidden role="dialog" aria-modal="true" aria-label="성장 연구소"><header><div><small>SLIME GROWTH LAB</small><h2>성장 연구소</h2></div><button onclick="Growth.close()">닫기 ✕</button></header><p id="growth-summary"></p><div id="growth-bonus"></div><nav id="growth-tabs" aria-label="성장 종류"><button data-tab="awakening" onclick="Growth.select('awakening')">✨ 스킬 각성</button><button data-tab="training" onclick="Growth.select('training')">⚔️ 수련 6종</button><button data-tab="relic" onclick="Growth.select('relic')">🛡️ 유물 강화</button><button data-tab="fusion" onclick="Growth.select('fusion')">⭐ 슬라임 합성</button><button data-tab="mastery" onclick="Growth.select('mastery')">🏹 사냥 숙련도</button><button data-tab="achievements" onclick="Growth.select('achievements')">🏆 업적 12종</button></nav><main id="growth-content"></main><p class="growth-note">O / Esc 닫기 · 창을 열면 전투 일시 정지 · 모든 성장 기록 자동 저장</p></section>
+<section id="relic-window" hidden role="dialog" aria-modal="true" aria-label="가방과 유물 공방"><header><h2>가방 · 유물 공방</h2><button onclick="Relics.close()">닫기 ✕</button></header><p id="relic-summary"></p><p id="relic-equipped"></p><div id="relic-total" class="relic-ability"></div><p>일반 몹: 기본 재료 65% · 지역 재료 30% · 유물 1.5%. 보스: 재료와 핵 확정 · 유물 12%. 지역 요구 레벨을 충족해야 획득합니다.<br>공격·방어·마나 슬롯 각 1개 장착. 제작 성공률 100%. 장착한 마지막 1개는 판매할 수 없습니다. 창을 열면 전투가 일시 정지됩니다.</p><h2>재료 12종</h2><div id="relic-materials" class="relic-grid"></div><h2>유물 18종 · 제작 / 장착 / 판매</h2><div id="relic-list" class="relic-grid"></div></section>
 <section id="summon-window" role="dialog" aria-modal="true" aria-label="슬라임 소환소" hidden><header><div><small>SLIME ATELIER / COLLECTION</small><h2>슬라임 소환소</h2><div id="summon-gold"></div></div><button onclick="SummonUI.close()">닫기 ✕</button></header><p id="summon-equipped"></p><div class="summon-toolbar"><button class="roll" id="summon-1" onclick="Game.summon(1)">1회 소환 · 300 G</button><button class="roll" id="summon-10" onclick="Game.summon(10)">10회 소환 · 3,000 G</button><button id="summon-basic" onclick="Game.equipSlime(null)">기본 슬라임 장착</button></div><div id="summon-rates"></div><small>게임에서 얻은 골드 사용 · 매회 독립 확률 · 중복은 보유 수량으로 저장 · 한 마리 장착 · 표시 수치는 진화 기본 능력치에 더해진 뒤 강화 적용 · 장착 시 HP 비율 유지</small><div id="summon-results" aria-live="polite"></div><div class="summon-toolbar"><button onclick="SummonUI.filter='all';SummonUI.render(SummonUI.player)">전체 도감</button><button onclick="SummonUI.filter='owned';SummonUI.render(SummonUI.player)">보유 슬라임</button></div><div id="summon-cards"></div></section>
 <aside id="adventure-panel"><strong>ADVENTURE JOURNAL</strong><div id="adventure-count"></div><div id="adventure-status">돌길을 따라 모험을 시작하세요.</div><button onclick="Adventure.map()">세계지도 B</button><button id="adventure-open" onclick="Adventure.open()" disabled>보물 열기 F</button></aside>
-<div id="adventure-map" hidden><b>모험 지도 · 노란 점은 내 위치</b><button onclick="Adventure.map()">닫기</button><canvas width="600" height="600"></canvas><p>WASD 이동 · V 시점 전환 · F 보물 · T 순간이동</p></div>
+<div id="adventure-map" hidden><b>순서형 모험 지도 · 숫자는 레벨 구간 · 노란 점은 내 위치</b><button onclick="Adventure.map()">닫기</button><canvas width="600" height="600"></canvas><p>WASD 이동 · V 시점 전환 · F 보물 · T 순간이동</p></div>
 
 <canvas id="game-canvas"></canvas>
 
@@ -579,7 +592,7 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
     <div id="trait-crystal-count"></div>
     <div id="trait-list" class="trait-grid"></div>
   </div></div>
-  <div id="job-skills"></div>
+  <div id="job-skills"></div><div id="skills-panel" aria-label="획득한 스킬"></div>
 
   <!-- Potion Panel -->
   <div id="potion-panel">
@@ -633,7 +646,7 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Courier New',monospace;}
   <div id="death-screen">
     <h2>DEFEATED</h2>
     <p id="death-stats"></p>
-    <p style="letter-spacing:2px;color:#666;">Returning to Safe Town…</p>
+    <p style="letter-spacing:2px;color:#666;">저장한 스폰 포인트로 부활합니다…</p>
   </div>
 </div>
 
@@ -707,9 +720,10 @@ function getEvolution(level){
 // The old world was one extremely long vertical strip.  The new world is a
 // compact 6 x 6 overworld: town sits near the middle and stages spiral out in
 // every direction, so the player can explore it like an open RPG map.
-const REGION_COUNT = 31, MAP_COLS = 6, MAP_ROWS = 6;
+const MAX_NORMAL_MONSTERS = 12;
+const REGION_COUNT = 11, MAP_COLS = 6, MAP_ROWS = 6;
 const ZONE_W = 900, ZONE_H = 900, TOWN_H = ZONE_H;
-const WORLD_W = MAP_COLS * ZONE_W, WORLD_H = MAP_ROWS * ZONE_H;
+let WORLD_W = MAP_COLS * ZONE_W, WORLD_H = MAP_ROWS * ZONE_H;
 
 // zoneTop(i) = top Y edge of the i-th non-town region (0-indexed)
 function zoneTop(i){ return -WORLD_H/2 + TOWN_H + ZONE_H*(i+1); }
@@ -852,7 +866,7 @@ const REGIONS = [
   },
 ];
 
-// 기존 10가지 지형 테마를 변형해 총 30스테이지로 확장한다.
+// Ten distinct hunting regions plus one resource mine.
 // 스테이지 경계와 id는 모두 독립적이므로 보상과 보스 출현도 각각 동작한다.
 const REGION_THEMES=REGIONS.slice(1);
 for(let i=10;i<REGION_COUNT;i++){
@@ -873,7 +887,7 @@ for(let i=10;i<REGION_COUNT;i++){
 }
 // The final zone is a peaceful mine containing four mineable resources.
 Object.assign(REGIONS[REGIONS.length-1],{
-  name:'Ancient Mana Mine',sub:'MINING REGION',dangerLabel:'RESOURCE ZONE',isMine:true,minLevel:0,
+  id:30,name:'Ancient Mana Mine',sub:'MINING REGION',dangerLabel:'RESOURCE ZONE',isMine:true,minLevel:200,
   bgColor:new THREE.Color(0x080d18),ambientColor:0x18284a,borderColor:0x55aaff,mmColor:'rgba(30,70,130,.8)',
   tileCols:['#0b1220','#101a2c','#0c1728','#142039'],accentColor:0x66bbff,monsters:[],
   boss:{name:'Ancient Mana Guardian',color:0xffffff,hpMult:2600,atkMult:280,spdMult:0.45,xpReward:1000000,radius:64,minLevel:300},
@@ -885,6 +899,8 @@ Object.assign(REGIONS[REGIONS.length-1],{
   ],
 });
 
+const NEW_MONSTERS=[['Forest Turtle',0x70a45c],['Cinder Bat',0xe56e52],['Frost Golem',0x95cced],['Desert Sphinx',0xd6b275],['Venom Spider',0x95b954],['Prism Spirit',0xb59be9],['Storm Dragon',0x8da9ee],['Blight Spider',0x9861bd],['Ash Scorpion',0xc86541],['Void Hydra',0x7946bf]];
+REGIONS.filter(r=>!r.isSafeZone&&!r.isMine).forEach((r,i)=>{const [name,color]=NEW_MONSTERS[i];r.monsters.push({name,color,hpMult:1.8+i*.5,atkMult:1.3+i*.3,spdMult:.9,xpReward:40+i*50,radius:22,shape:'round'});});
 // Clockwise spiral coordinates.  This makes progression readable without
 // forcing the player down a single corridor; neighbouring fields can be
 // entered from any side and teleporting still works as before.
@@ -927,12 +943,44 @@ function makeOverworldLayout(){
 }
 makeOverworldLayout();
 
+function remapSavedRegion(id){return REGIONS.find(r=>r.id===id)||(typeof id==='number'&&id>=10?REGIONS.find(r=>r.id===9):REGIONS[0]);}
+const ROUTE_LINKS=[];
+// Preserve old-grid locations only for migrating existing save files.
+const LEGACY_REGIONS=REGIONS.map(r=>({id:r.id,xMin:r.xMin,xMax:r.xMax,yMin:r.yMin,yMax:r.yMax}));
+function makeAdventureRoute(){
+ let x=0,y=0;
+ REGIONS.forEach((r,i)=>{
+ r.radius=760+(i*47%130);
+ const local=Array.from({length:20},(_,j)=>{const a=j*Math.PI*2/20,rad=r.radius*(.91+.045*Math.sin(j*2.1+i)+.035*Math.cos(j*.9-i));return {x:Math.cos(a)*rad,y:Math.sin(a)*rad};});
+ if(i){const previous=REGIONS[i-1];x=Math.max(...previous.outline.map(v=>v.x))+45-Math.min(...local.map(v=>v.x));y+=i===1?-120:Math.sin(i*1.73)*180;}
+ r.centerX=x;r.centerY=y;r.stage=r.isMine?null:i;r.sub=r.isSafeZone?'출발 마을':r.isMine?'자원 광산':i+'스테이지 · 요구 Lv.'+r.minLevel;
+ r.outline=local.map(v=>({x:x+v.x,y:y+v.y}));
+ });
+ const minX=Math.min(...REGIONS.map(r=>r.centerX-r.radius))-300,maxX=Math.max(...REGIONS.map(r=>r.centerX+r.radius))+300,minY=Math.min(...REGIONS.map(r=>r.centerY-r.radius))-300,maxY=Math.max(...REGIONS.map(r=>r.centerY+r.radius))+300;
+ WORLD_W=maxX-minX;WORLD_H=maxY-minY;
+ for(const r of REGIONS){r.centerX-=(minX+maxX)/2;r.centerY-=(minY+maxY)/2;for(const v of r.outline){v.x-=(minX+maxX)/2;v.y-=(minY+maxY)/2;}r.xMin=r.centerX-r.radius;r.xMax=r.centerX+r.radius;r.yMin=r.centerY-r.radius;r.yMax=r.centerY+r.radius;}
+ for(let i=0;i<REGIONS.length-1;i++){
+  const a=REGIONS[i],b=REGIONS[i+1],bend=i===0?-100:(i%2?90:-90);
+  const points=Array.from({length:33},(_,j)=>{const t=j/32;return {x:a.centerX+(b.centerX-a.centerX)*t,y:a.centerY+(b.centerY-a.centerY)*t+Math.sin(t*Math.PI*2)*bend};});
+  ROUTE_LINKS.push({from:a,to:b,width:150,points});
+ }
+
+}
+makeAdventureRoute();
+function pointInRegion(x,y,r){let inside=false;for(let i=0,j=r.outline.length-1;i<r.outline.length;j=i++){const a=r.outline[i],b=r.outline[j];if(((a.y>y)!==(b.y>y))&&(x<(b.x-a.x)*(y-a.y)/(b.y-a.y)+a.x))inside=!inside;}return inside;}
+function segmentDistance(x,y,a,b){const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((x-a.x)*dx+(y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(x-a.x-dx*t,y-a.y-dy*t);}
+function onRoute(x,y){if(REGIONS.some(r=>x>=r.xMin&&x<=r.xMax&&y>=r.yMin&&y<=r.yMax&&pointInRegion(x,y,r)))return true;return ROUTE_LINKS.some(l=>l.points.slice(1).some((b,i)=>segmentDistance(x,y,l.points[i],b)<=l.width/2));}
+function drawRouteMap(ctx,W,H,p,monsters=[],overview=false){
+ ctx.fillStyle='#11232e';ctx.fillRect(0,0,W,H);const sx=overview?(W-24)/WORLD_W:W/3400,sy=overview?(H-40)/WORLD_H:H/2400;
+ const px=x=>overview?12+(x+WORLD_W/2)*sx:W/2+(x-p.x)*sx,py=y=>overview?H-20-(y+WORLD_H/2)*sy:H/2-(y-p.y)*sy;
+ ctx.strokeStyle='#d4bc83';ctx.lineWidth=overview?3:4;for(const l of ROUTE_LINKS){ctx.beginPath();l.points.forEach((v,i)=>i?ctx.lineTo(px(v.x),py(v.y)):ctx.moveTo(px(v.x),py(v.y)));ctx.stroke();}
+ for(const r of REGIONS){ctx.beginPath();r.outline.forEach((v,i)=>i?ctx.lineTo(px(v.x),py(v.y)):ctx.moveTo(px(v.x),py(v.y)));ctx.closePath();ctx.fillStyle=r.mmColor;ctx.fill();ctx.strokeStyle='#8aa99a';ctx.lineWidth=1;ctx.stroke();if(overview){ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText(r.isMine?'광산':r.stage||'마을',px(r.centerX),py(r.centerY)-10);}}
+ ctx.textAlign='left';ctx.fillStyle='#ff7383';for(const m of monsters){if(m.hp<=0)continue;ctx.beginPath();ctx.arc(px(m.x),py(m.y),m.isBoss?3:1.5,0,7);ctx.fill();}if(p){ctx.fillStyle='#ffe280';ctx.beginPath();ctx.arc(px(p.x),py(p.y),overview?5:3,0,7);ctx.fill();}
+}
+
 function getRegion(worldX,worldY){
-  for(const r of REGIONS)
-    if(worldX>=r.xMin&&worldX<r.xMax&&worldY>=r.yMin&&worldY<r.yMax) return r;
-  let nearest=REGIONS[0],best=Infinity;
-  for(const r of REGIONS){const d=V2.dist(worldX,worldY,r.centerX,r.centerY);if(d<best){best=d;nearest=r;}}
-  return nearest;
+ for(const r of REGIONS)if(worldX>=r.xMin&&worldX<=r.xMax&&worldY>=r.yMin&&worldY<=r.yMax&&pointInRegion(worldX,worldY,r))return r;
+ let nearest=REGIONS[0],best=Infinity;for(const r of REGIONS){const d=Math.hypot(worldX-r.centerX,worldY-r.centerY);if(d<best){best=d;nearest=r;}}return nearest;
 }
 function stageGoldReward(regionId){
   const stage=Math.max(0,Math.min(REGION_COUNT-2,Number(regionId)||0));
@@ -1265,6 +1313,69 @@ const SKILL_TYPES=SKILL_CATALOG.map((entry,index)=>{
   };
 });
 
+function bossSkillDamage(p,type,level=1){const base=type.scaling==='mana'?Math.max(0,p.maxMana||100):Math.max(0,p.atk+(p._atkBonus||0));return Math.max(1,Math.round(base*type.ratio*(1+.15*(level-1))));}
+const BOSS_SKILLS=[
+ {id:'boss_mana_storm',name:'마나 폭풍',icon:'🔮',scaling:'mana',ratio:1.6,color:0x78bfff,glowRGB:'120,191,255',manaCost:35,cooldown:14,range:300,desc:'최대 마나 × 1.6 · 광역'},
+ {id:'boss_ruin_slash',name:'파멸 참격',icon:'⚔️',scaling:'atk',ratio:4.5,color:0xffb15c,glowRGB:'255,177,92',manaCost:25,cooldown:11,range:210,desc:'공격력 × 4.5 · 광역'}
+].map(t=>({...t,bossOnly:true,power:t.ratio,buyCost:1000,rarity:'BOSS RARE',vfxIndex:t.scaling==='mana'?18:16,dropRate:0,
+ apply(p,ecs,particles,damages,level=1){const targets=ecs.query('tag','tmpl').filter(m=>m.tag==='monster'&&m.hp>0&&m.regionId===getRegion(p.x,p.y).id&&V2.dist(p.x,p.y,m.x,m.y)<=t.range);if(!targets.length)return false;
+   const damage=bossSkillDamage(p,t,level);AnimeFX.announce(t.name,'#'+t.color.toString(16),2);AnimeFX.add('sigil',{x:p.x,y:p.y,color:'#'+t.color.toString(16),radius:t.range,life:.8});
+   for(const m of targets){m.hp=Math.max(0,m.hp-damage);m.hitFlash=.25;damages.emit(m.x,m.y,damage,false,false);AnimeFX.impact(m.x,m.y,'#'+t.color.toString(16),1.2);particles.emitRing(m.x,m.y,t.color,14);}
+   return true;
+ }
+}));
+SKILL_TYPES.push(...BOSS_SKILLS);
+
+// New skills have stable ids; existing saves and equipped skills remain valid.
+const EXTRA_SKILL_SPECS=[
+ ['바람 베기','atk','single',2.4,18,6,280],['회전 칼날','atk','nova',2.1,24,9,180],['흡혈 송곳니','atk','drain',2.8,28,12,230],['대지 강타','atk','stun',2.6,30,14,240],
+ ['폭군의 처형','atk','execute',5,40,20,260,true],['뇌신의 연격','atk','chain',4.2,38,17,340,true],['용왕의 포효','atk','nova',5.2,48,23,310,true],['심연의 포식','atk','drain',4.6,42,21,280,true],
+ ['비전 화살','mana','single',.65,20,7,330],['서리 파동','mana','stun',.55,30,13,240],['별빛 연쇄','mana','chain',.7,34,14,350],['생명 흡수','mana','drain',.6,32,16,260],
+ ['초신성 폭발','mana','nova',1.8,65,25,330,true],['시간의 감옥','mana','stun',1.2,55,26,290,true],['차원 관통','mana','single',2.4,60,22,460,true],['운명의 심판','mana','execute',1.7,58,24,300,true],
+ ['치유의 샘','support','heal',0,25,16,0],['재생의 축복','support','regen',0,30,22,0],['수호의 결계','support','shield',0,40,28,0],['질풍의 발걸음','support','haste',0,18,15,0],
+ ['전투의 함성','support','rage',0,32,24,0],['마력 집중','support','mana',0,0,30,0],['정령의 도약','support','dash',0,20,10,0],['불굴의 의지','support','resolve',0,45,32,0]
+];
+function extraSkillDamage(p,t,lvl=1){const base=t.scaling==='mana'?Math.max(0,p.maxMana||100):effectiveSkillAttack(p);return Math.max(1,Math.round(base*t.ratio*(1+.15*(Math.min(5,Math.max(1,lvl))-1))));}
+function skillDetails(p,t,lvl=1){const owned=(p?.skills||[]).find(s=>s.type.id===t.id);return Awakening.describe(p||{atk:10,maxMana:100},owned||{type:t,level:lvl,awakening:0});}
+const EXTRA_SKILLS=EXTRA_SKILL_SPECS.map((a,i)=>{
+ const [name,scaling,mode,ratio,manaCost,cooldown,range,bossOnly=false]=a,color=scaling==='atk'?0xffb36b:scaling==='mana'?0x9eb7ff:0x80f5bb;
+ const effects={single:'가까운 적 1명',nova:'범위 내 모든 적',drain:'최대 5명 · 실제 피해의 15% 흡혈 (최대 HP 20% 한도)',stun:'최대 5명 · 1.5초 기절 (보스 0.5초)',chain:'가까운 적 최대 4명',execute:'최대 3명 · 적 HP 30% 이하이면 피해 1.6배',heal:'최대 HP 25% 회복',regen:'8초간 초당 최대 HP 4% 회복',shield:'2초 무적',haste:'6초간 이동속도 +50%',rage:'8초간 공격력 +35%',mana:'최대 마나 30% 회복',dash:'바라보는 방향으로 130 거리 회피 · 0.6초 무적',resolve:'최대 HP 15% 회복 · 1.2초 무적'};
+ return {id:'extra_'+(i+1),name,scaling,mode,ratio,manaCost,cooldown,range,bossOnly,extra:true,color,glowRGB:scaling==='atk'?'255,179,107':scaling==='mana'?'158,183,255':'128,245,187',icon:scaling==='atk'?'⚔️':scaling==='mana'?'🔮':'✨',power:ratio,buyCost:800+Math.floor(i/4)*1200,rarity:bossOnly?'BOSS RARE':scaling==='support'?'SUPPORT':'RARE',dropRate:bossOnly?0:2,vfxIndex:i%25,desc:(scaling==='support'?'':(scaling==='atk'?'공격력':'최대 마나')+' ×'+ratio+' · ')+effects[mode]+' · 강화마다 '+(scaling==='support'?'효과 +10%':'기본 피해 +15%'),
+ apply(p,ecs,particles,damages,lvl=1){const mult=1+.1*(Math.min(5,Math.max(1,lvl))-1);let targets=[];
+ if(scaling!=='support'){targets=ecs.query('tag','tmpl').filter(m=>m.tag==='monster'&&m.hp>0&&m.regionId===getRegion(p.x,p.y).id&&V2.dist(p.x,p.y,m.x,m.y)<=range).sort((a,b)=>V2.dist(p.x,p.y,a.x,a.y)-V2.dist(p.x,p.y,b.x,b.y));const cap={single:1,chain:4,drain:5,stun:5,execute:3}[mode]||Infinity;targets=targets.slice(0,cap);if(!targets.length)return false;
+ let drained=0;for(const m of targets){const dmg=Math.round(extraSkillDamage(p,this,lvl)*(mode==='execute'&&m.hp/m.maxHp<=.3?1.6:1));drained+=Math.min(m.hp,dmg);m.hp=Math.max(0,m.hp-dmg);m.hitFlash=.25;if(mode==='stun')m.stunTimer=Math.max(m.stunTimer||0,(m.isBoss?.5:1.5)*mult);damages.emit(m.x,m.y,dmg,false,false);particles.emitRing(m.x,m.y,color,12);AnimeFX.impact(m.x,m.y,'#'+color.toString(16),1.1);}
+ if(mode==='drain')p.hp=Math.min(p.maxHp,p.hp+Math.min(p.maxHp*.2,drained*.15));
+ }else{
+ if(mode==='heal')p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.25*mult);
+ if(mode==='regen'){p._regenPerSec=p.maxHp*.04*mult;p._regenTimer=8;}
+ if(mode==='shield')p.invincible=Math.max(p.invincible||0,2*mult);
+ if(mode==='haste'){p._speedBonus=p.spd*.5*mult;p._speedBonusTimer=6;}
+ if(mode==='rage'){p._atkBonus=p.atk*.35*mult;p._atkBonusTimer=8;}
+ if(mode==='mana')p.mana=Math.min(p.maxMana,p.mana+p.maxMana*.3*mult);
+ if(mode==='dash'){const [dx,dy]=Camera.movement(0,1);Adventure.move(p,dx*130*mult,dy*130*mult);p.invincible=Math.max(p.invincible||0,.6*mult);}
+ if(mode==='resolve'){p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.15*mult);p.invincible=Math.max(p.invincible||0,1.2*mult);}
+ }
+ particles.emitRing(p.x,p.y,color,18);AnimeFX.add('sigil',{x:p.x,y:p.y,color:'#'+color.toString(16),radius:range||110,life:.7});return true;
+ }};
+});
+SKILL_TYPES.push(...EXTRA_SKILLS);
+BOSS_SKILLS.push(...EXTRA_SKILLS.filter(s=>s.bossOnly));
+
+function rollBossSkill(value=Math.random()){if(!Number.isFinite(value)||value<0||value>=.02)return null;const pool=BOSS_SKILLS.filter(s=>s.scaling===(value<.01?'mana':'atk'));const local=value<.01?value:value-.01;return pool[Math.min(pool.length-1,Math.floor(local/.01*pool.length))];}
+const QUESTS=[
+ {name:'첫 사냥 의뢰',text:'일반 몬스터 8마리 처치',event:'kill',goal:8,gold:400,xp:120},
+ {name:'새로운 발자국',text:'서로 다른 사냥 지역 3곳 방문',event:'visit',goal:3,gold:650,xp:220},
+ {name:'수호자의 도전',text:'지역 보스 1마리 처치',event:'boss',goal:1,gold:1200,xp:500},
+ {name:'유적의 보물',text:'탐험 보물상자 2개 열기',event:'chest',goal:2,gold:1000,xp:350},
+ {name:'보스 토벌대',text:'지역 보스 3마리 처치',event:'boss',goal:3,gold:2500,xp:1200},
+ {name:'반복 사냥 의뢰',text:'일반 몬스터 30마리 처치',event:'kill',goal:30,gold:1200,xp:600}
+];
+function questState(p){return p.questState||(p.questState={index:0,progress:0,seen:[],cycles:0});}
+function questEvent(p,event,id){if(!regionRewardAllowed(p,id))return;const state=questState(p),quest=QUESTS[state.index];if(!quest||quest.event!==event||state.progress>=quest.goal)return;
+ if(event==='visit'){if(id==='town'||state.seen.includes(id))return;state.seen.push(id);}state.progress=Math.min(quest.goal,state.progress+1);
+ if(state.progress===quest.goal){UI.showItemNotify('퀘스트 완료! 의뢰창에서 보상을 받으세요.');SFX.buySuccess();} }
+function renderQuest(p){const state=questState(p),quest=QUESTS[state.index];document.getElementById('quest-title').textContent=quest.name;document.getElementById('quest-progress').textContent=quest.text+' · '+state.progress+'/'+quest.goal;document.getElementById('quest-fill').style.width=(state.progress/quest.goal*100)+'%';document.getElementById('quest-reward').textContent=quest.gold+' G · '+quest.xp+' XP';document.getElementById('quest-claim').disabled=state.progress<quest.goal||p.dead;}
+
 // ════════════════════════════════════════════════════════════
 //  ECS
 // ════════════════════════════════════════════════════════════
@@ -1283,13 +1394,20 @@ class ECS{
 // ════════════════════════════════════════════════════════════
 //  THREE.JS SETUP
 // ════════════════════════════════════════════════════════════
+async function toggleGameFullscreen(){
+ try{if(document.fullscreenElement){await document.exitFullscreen();}
+ else if(document.documentElement.requestFullscreen){await document.documentElement.requestFullscreen();}
+ else{UI.showItemNotify('이 브라우저는 전체화면을 지원하지 않습니다. 게임 파일을 새 창에서 열어주세요.');}}
+ catch(error){UI.showItemNotify('전체화면이 제한되어 있습니다. 게임 파일을 새 창에서 열어주세요.');}
+}
+document.addEventListener('fullscreenchange',()=>{const button=document.getElementById('fullscreen-toggle');if(button)button.textContent=document.fullscreenElement?'⛶ 창 모드':'⛶ 전체화면';window.dispatchEvent(new Event('resize'));});
 const canvas3d=document.getElementById('game-canvas');
 const renderer=new THREE.WebGLRenderer({canvas:canvas3d,antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
 renderer.setSize(window.innerWidth,window.innerHeight);
 const cam=new THREE.OrthographicCamera(-window.innerWidth/2,window.innerWidth/2,window.innerHeight/2,-window.innerHeight/2,.1,12000);
 cam.position.z=1000;
-const perspCam=new THREE.PerspectiveCamera(62,window.innerWidth/window.innerHeight,1,12000);
+const perspCam=new THREE.PerspectiveCamera(55,window.innerWidth/window.innerHeight,1,12000);
 perspCam.position.set(0,-300,500);
 let camMode=1; // 0=overhead  1=chase
 const scene=new THREE.Scene();
@@ -1476,7 +1594,55 @@ function decorateCreature(root,kind,tier=0){
   else if(kind==='slime'&&tier>0){for(let i=0;i<=tier;i++){const a=i/(tier+1)*Math.PI*2;add(new THREE.OctahedronGeometry(.045),Math.cos(a)*.2,Math.sin(a)*.2,.52,light,.35);}}
   if(tier>=4){const halo=add(new THREE.TorusGeometry(.27,.023,6,30),0,0,.85,0xffd57a,.5);halo.rotation.x=.2;}
 }
-function monsterKind(name){if(/Rabbit/i.test(name))return 'rabbit';if(/Mushroom/i.test(name))return 'mushroom';if(/Wolf|Beast|Stalker/i.test(name))return 'wolf';if(/Lizard|Leech/i.test(name))return 'lizard';if(/Scorpion/i.test(name))return 'scorpion';if(/Tree|Treant/i.test(name))return 'tree';if(/Golem|Titan|Troll|Colossus|Guardian|Horror|Behemoth/i.test(name))return 'golem';if(/Dragon|Wyvern|Hydra|Devourer/i.test(name))return 'dragon';if(/Hawk/i.test(name))return 'hawk';return 'spirit';}
+function monsterKind(name){if(/Hydra/i.test(name))return 'hydra';if(/Sphinx/i.test(name))return 'sphinx';if(/Turtle/i.test(name))return 'turtle';if(/Spider/i.test(name))return 'spider';if(/Bat/i.test(name))return 'bat';if(/수호자/.test(name))return 'tree';if(/군주/.test(name))return 'golem';if(/지배자/.test(name))return 'hydra';if(/Rabbit/i.test(name))return 'rabbit';if(/Mushroom/i.test(name))return 'mushroom';if(/Wolf|Beast|Stalker/i.test(name))return 'wolf';if(/Lizard|Leech/i.test(name))return 'lizard';if(/Scorpion/i.test(name))return 'scorpion';if(/Tree|Treant/i.test(name))return 'tree';if(/Golem|Titan|Troll|Colossus|Guardian|Horror|Behemoth/i.test(name))return 'golem';if(/Dragon|Wyvern|Hydra|Devourer/i.test(name))return 'dragon';if(/Hawk/i.test(name))return 'hawk';return 'spirit';}
+
+function makeMonsterModel(tmpl,boss=false){
+ const root=makeCreature3D(tmpl.color,1,boss),kind=monsterKind(tmpl.name),parts=new THREE.Group();
+ root.children.forEach(o=>{if(o.geometry?.type!=='CircleGeometry')o.visible=false;});root.add(parts);
+ const base=new THREE.Color(tmpl.color),dark=base.clone().multiplyScalar(.45),light=base.clone().lerp(new THREE.Color(0xffffff),.42),mats=new Map(),joints=[];
+ const mat=(color,glow=0)=>{const c=new THREE.Color(color),key=c.getHex()+':'+glow;if(!mats.has(key)){const m=new THREE.MeshStandardMaterial({color:c,roughness:.65,metalness:kind==='golem'?.3:.05,emissive:c,emissiveIntensity:glow});m.userData.baseColor=c.clone();mats.set(key,m);}return mats.get(key);};
+ const mesh=(g,x,y,z,color=base,parent=parts,glow=0)=>{const m=new THREE.Mesh(g,mat(color,glow));m.position.set(x,y,z);parent.add(m);return m;};
+ const ball=(x,y,z,sx,sy,sz,c=base,parent=parts)=>{const m=mesh(new THREE.SphereGeometry(1,16,12),x,y,z,c,parent);m.scale.set(sx,sy,sz);return m;};
+ const box=(x,y,z,w,d,h,c=base,parent=parts)=>mesh(new THREE.BoxGeometry(w,d,h),x,y,z,c,parent);
+ const spike=(x,y,z,r,h,c=light,parent=parts)=>{const m=mesh(new THREE.ConeGeometry(r,h,7),x,y,z,c,parent);m.rotation.x=Math.PI/2;return m;};
+ const joint=(x,y,z,axis='z',amp=.15)=>{const g=new THREE.Group();g.position.set(x,y,z);parts.add(g);joints.push({g,axis,amp,phase:joints.length*Math.PI});return g;};
+ const eyes=(x,y,z,gap=.10,size=.035,parent=parts)=>{for(const side of [-1,1]){ball(x+side*gap,y,z,size*1.6,size*.7,size*1.3,0xfff7cf,parent);mesh(new THREE.SphereGeometry(size*.65,10,8),x+side*gap,y-size*.65,z,0x131826,parent,boss?.4:0);}};
+ const feet=(count=4,w=.21,len=.2)=>{for(const side of [-1,1])for(let i=0;i<count/2;i++){const g=joint(side*w,(i/(count/2-1||1)-.5)*len*2,.11,'z',.18);box(0,0,0,.09,.12,.18,dark,g);ball(0,-.04,-.035,.08,.12,.065,light,g);}};
+ const wings=(color=dark)=>{for(const side of [-1,1]){const g=joint(side*.18,.02,.67,'y',.25);const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([0,0,0,side*.58,.25,-.12,side*.45,-.32,.02],3));geo.computeVertexNormals();const membrane=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,roughness:.7}));g.add(membrane);const bone=box(side*.25,-.025,0,.52,.025,.025,light,g);bone.rotation.z=side*-.15;}};
+ if(kind==='rabbit'){
+  ball(0,.05,.31,.25,.29,.28);ball(0,-.22,.52,.21,.19,.20,light);eyes(0,-.397,.57,.085,.03);ball(0,-.418,.49,.035,.025,.025,0xe98c9d);
+  for(const side of [-1,1]){ball(side*.11,-.18,.84,.065,.06,.25,light);ball(side*.11,-.235,.85,.03,.014,.18,0xffaabd);ball(side*.20,-.13,.085,.11,.17,.085,light);}ball(0,.32,.32,.11,.10,.10,0xfff4df);
+ }else if(kind==='mushroom'){
+  box(0,0,.24,.23,.21,.44,0xead5ac);ball(0,0,.54,.42,.39,.21);eyes(0,-.12,.30,.06,.026);for(let i=0;i<8;i++){const a=i*2.4;ball(Math.cos(a)*.27,Math.sin(a)*.25,.68,.05,.05,.035,0xffedd1);}feet(2,.12,.1);
+ }else if(kind==='wolf'||kind==='lizard'||kind==='sphinx'){
+  ball(0,.06,.33,.22,.39,.23);feet(4,.21,.23);ball(0,-.33,.49,.21,.23,.20,light);ball(0,-.52,.43,.13,.16,.10,light);ball(0,-.65,.46,.065,.035,.035,0x152129);eyes(0,-.50,.57,.105,.03);
+  const tail=joint(0,.37,.34,'z',.3);for(let i=0;i<5;i++)ball(0,i*.085,-i*.018,.09-i*.013,.105-i*.012,.09-i*.012,base,tail);
+  for(const side of [-1,1])spike(side*.14,-.30,.73,.085,.22,dark);
+  if(kind==='lizard')for(let i=0;i<5;i++)spike(0,-.08+i*.12,.57,.06,.15,0xffcf73);
+  if(kind==='sphinx'){wings(0xd0b361);for(let i=-2;i<=2;i++)box(i*.08,-.25,.70,.045,.22,.24,i%2?0x3285b2:0xf2d183);}
+ }else if(kind==='golem'||kind==='tree'){
+  feet(2,.15,.1);box(0,0,.47,.43,.30,.43);box(0,-.03,.83,.32,.28,.25,light);eyes(0,-.18,.86,.08,.032);for(const side of [-1,1]){const g=joint(side*.31,0,.49,'z',.12);box(0,0,0,.19,.22,.39,dark,g);ball(0,-.01,-.18,.13,.13,.12,light,g);}
+  mesh(new THREE.OctahedronGeometry(.115),0,-.18,.5,0x86ffff,parts,.8);
+  if(kind==='tree'){for(let i=0;i<5;i++){const a=i*1.26;ball(Math.cos(a)*.22,Math.sin(a)*.18,1.02,.25,.22,.20,i%2?0x376b42:0x5c9450);}for(const side of [-1,1])spike(side*.33,0,.92,.075,.35,0x755030);}
+  else for(const side of [-1,1])spike(side*.30,0,.83,.12,.25,light);
+ }else if(kind==='scorpion'||kind==='spider'){
+  ball(0,.1,.26,.27,.32,.20);ball(0,-.23,.23,.18,.19,.15,light);eyes(0,-.395,.28,.065,.025);
+  for(const side of [-1,1])for(let i=0;i<4;i++){const g=joint(side*.18,-.18+i*.13,.15,'z',.12);const leg=box(side*.17,0,0,.38,.045,.06,dark,g);leg.rotation.z=side*(i-1.5)*.35;ball(side*.34,(i-1.5)*.06,-.09,.04,.06,.05,light,g);}
+  if(kind==='scorpion'){for(const side of [-1,1]){ball(side*.30,-.40,.25,.13,.18,.11);spike(side*.30,-.47,.31,.055,.12,light);}for(let i=0;i<6;i++)ball(0,.34+Math.sin(i*.4)*.17,.26+i*.075,.065,.07,.065,dark);spike(0,.47,.75,.065,.19,0xffd16d);}else for(let i=0;i<4;i++)ball((i-1.5)*.07,-.19,.38,.026,.03,.026,0xff5b83);
+ }else if(kind==='hawk'||kind==='bat'||kind==='dragon'||kind==='hydra'){
+  ball(0,.03,.44,.23,.29,.26);wings(kind==='bat'?0x75486c:dark);feet(2,.15,.1);
+  const heads=kind==='hydra'?3:1;for(let i=0;i<heads;i++){const x=(i-(heads-1)/2)*.26;ball(x,-.22,.68,.13,.16,.22,light);ball(x,-.34,.82,.16,.19,.14);eyes(x,-.51,.86,.07,.025);if(kind==='hawk')spike(x,-.52,.76,.07,.17,0xffd17a);else for(const side of [-1,1])spike(x+side*.105,-.30,1.01,.045,.18,light);}
+  const tail=joint(0,.25,.38,'z',.2);for(let i=0;i<6;i++)ball(0,.08*i,0,.085-i*.011,.10,.075-i*.009,base,tail);
+ }else if(kind==='turtle'){
+  feet(4,.24,.24);ball(0,.02,.30,.36,.39,.29,dark);for(let i=0;i<6;i++){const a=i*Math.PI/3;mesh(new THREE.DodecahedronGeometry(.12),Math.cos(a)*.21,Math.sin(a)*.24,.46,light);}ball(0,-.38,.22,.14,.2,.13);eyes(0,-.53,.28,.065,.025);
+ }else{
+  const crystal=mesh(new THREE.OctahedronGeometry(.27),0,0,.48,base,parts,.5);crystal.scale.z=1.45;eyes(0,-.21,.53,.085,.028);const ring=mesh(new THREE.TorusGeometry(.34,.023,8,36),0,0,.43,light,parts,.5);ring.rotation.x=.4;for(let i=0;i<4;i++){const a=i*Math.PI/2;mesh(new THREE.OctahedronGeometry(.065),Math.cos(a)*.35,Math.sin(a)*.35,.64,light,parts,.6);}
+ }
+ if(boss){const crown=mesh(new THREE.TorusGeometry(.18,.025,8,32),0,0,1.23,0xffd170,parts,.5);for(let i=0;i<5;i++){const a=i*Math.PI*2/5;spike(Math.cos(a)*.18,Math.sin(a)*.18,1.33,.035,.16,0xffdf8d);}root.userData.bossCrown=crown;}
+ parts.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(parts);parts.position.z+=.025-bounds.min.z;const baseZ=parts.position.z;root.userData.modelHeight=bounds.max.z-bounds.min.z+.08;
+ root.userData.animate=(time,flash)=>{for(const j of joints)j.g.rotation[j.axis]=Math.sin(time*5+j.phase)*j.amp;parts.position.z=baseZ+((kind==='spirit'||kind==='hawk'||kind==='bat')?.035*(1+Math.sin(time*3)):0);for(const m of mats.values())m.color.copy(flash?new THREE.Color(0xffffff):m.userData.baseColor);};
+ root.scale.setScalar(tmpl.radius*(boss?3.8:3.2));return root;
+}
 
 function faceHpBar(bar,x,y,height){bar.position.set(x,y,height);bar.quaternion.copy((camMode===0?cam:perspCam).quaternion);}
 
@@ -1718,7 +1884,7 @@ const SLIME_TIERS=[
 ];
 const SLIME_NAMES=[['이끼 방울','바람 방울'],['호박 기사','푸른 돌풍'],['루비 사냥꾼','서리 수호자'],['뇌전 군주','달빛 파수꾼'],['태양 용왕','성운 여왕'],['태초의 용신','영원의 정령']];
 const SLIME_BOOK=SLIME_TIERS.flatMap((t,tier)=>SLIME_NAMES[tier].map((name,v)=>({id:'summon_'+tier+'_'+v,name,tier,color:t.color,weight:Math.round(t.rate*50),atk:Math.round(t.atk*(v?1:1.3)),hp:Math.round(t.hp*(v?1.3:1)),spd:t.spd+(v?4:0),style:v?'spirit':'dragon'})));
-function summonedSlime(p){return SLIME_BOOK.find(s=>s.id===p?.equippedSlime)||null;}
+function summonedSlime(p){return Growth.slimeStats(p,SLIME_BOOK.find(s=>s.id===p?.equippedSlime)||null);}
 function rollSlime(unit=Math.random()){let ticket=Math.min(9999,Math.max(0,Math.floor(unit*10000)));for(const s of SLIME_BOOK){ticket-=s.weight;if(ticket<0)return s;}return SLIME_BOOK[SLIME_BOOK.length-1];}
 const SummonUI={
   player:null,filter:'all',last:[],
@@ -1726,35 +1892,41 @@ const SummonUI={
   close(){document.getElementById('summon-window').hidden=true;},
   render(p){this.player=p;const eq=summonedSlime(p),safe=getRegion(p.x,p.y).isSafeZone;
     document.getElementById('summon-gold').textContent=`보유 ${Math.floor(p.gold||0).toLocaleString()} G · ${safe?'마을 소환소':'뽑기·장착은 마을에서 가능'}`;
-    document.getElementById('summon-equipped').textContent=eq?`장착: ${eq.name} · 공격 +${eq.atk} / HP +${eq.hp} / 속도 +${eq.spd}`:'장착: 기본 슬라임';
+    document.getElementById('summon-equipped').textContent=eq?`장착: ${eq.name} · ${eq.stars}성 · 공격 +${eq.atk} / HP +${eq.hp} / 속도 +${eq.spd}`:'장착: 기본 슬라임';
     for(const n of [1,10])document.getElementById('summon-'+n).disabled=!safe||p.dead||p.gold<n*300;
     document.getElementById('summon-basic').disabled=!safe||p.dead;
-    document.getElementById('summon-cards').innerHTML=SLIME_BOOK.filter(q=>this.filter==='all'||this.filter==='owned'&&(p.slimeCollection?.[q.id]||0)>0).map(q=>{const count=p.slimeCollection?.[q.id]||0,active=p.equippedSlime===q.id;return `<article class="slime-card ${count?'':'locked'}" style="--slime:${q.color}"><div class="slime-portrait tier-${q.tier}"><i></i><b>${q.tier>=4?'♛':q.tier>=2?'✦':'✧'}</b></div><small>${SLIME_TIERS[q.tier].name} · 개별 ${q.weight/100}%</small><h3>${q.name}</h3><p>공격 <b>+${q.atk}</b> · HP <b>+${q.hp}</b><br>이동속도 <b>+${q.spd}</b></p><button onclick="Game.equipSlime('${q.id}')" ${!count||!safe||p.dead||active?'disabled':''}>${active?'장착 중':count?'장착 · 보유 '+count+'마리':'미획득'}</button></article>`;}).join('');
+    document.getElementById('summon-cards').innerHTML=SLIME_BOOK.filter(q=>this.filter==='all'||this.filter==='owned'&&(p.slimeCollection?.[q.id]||0)>0).map(base=>{const q=Growth.slimeStats(p,base);const count=p.slimeCollection?.[q.id]||0,active=p.equippedSlime===q.id;return `<article class="slime-card ${count?'':'locked'}" style="--slime:${q.color}"><div class="slime-portrait tier-${q.tier}"><i></i><b>${q.tier>=4?'♛':q.tier>=2?'✦':'✧'}</b></div><small>${SLIME_TIERS[q.tier].name} · 개별 ${q.weight/100}%</small><h3>${q.name} · ${q.stars}성</h3><p>공격 <b>+${q.atk}</b> · HP <b>+${q.hp}</b><br>이동속도 <b>+${q.spd}</b></p><button onclick="Game.equipSlime('${q.id}')" ${!count||!safe||p.dead||active?'disabled':''}>${active?'장착 중':count?'장착 · 보유 '+count+'마리':'미획득'}</button></article>`;}).join('');
     document.getElementById('summon-rates').innerHTML=SLIME_TIERS.map(t=>`<span style="color:${t.color}">${t.name} ${t.rate}%</span>`).join(' · ');
     document.getElementById('summon-results').innerHTML=this.last.map(q=>`<span style="border-color:${q.color};color:${q.color}">${q.name} <small>${SLIME_TIERS[q.tier].name}</small></span>`).join('');
   }
 };
 
 // Adventure overworld: solid landmarks, roads, rivers and discovery.
+function rewardLevel(id,boss=false){const r=REGIONS.find(r=>r.id===id);return r?Math.max(1,r.minLevel||1,boss?r.boss?.minLevel||1:1):Infinity;}
+function regionRewardAllowed(p,id,notify=false,boss=false){
+ const r=REGIONS.find(r=>r.id===id),required=rewardLevel(id,boss);const allowed=!!r&&p.level>=required;
+ if(!allowed&&notify)UI.showItemNotify(`보상 잠김 · ${boss?'보스 ':''}${r?.name||'지역'} 요구 Lv.${required}`);
+ return allowed;
+}
 const Adventure={
   obstacles:[],chests:[],visited:new Set(),opened:new Set(),player:null,
   load(){try{const d=JSON.parse(localStorage.getItem('slime-adventure-v1')||'{}');this.visited=new Set(d.visited||[]);this.opened=new Set(d.opened||[]);}catch(e){}},
   save(){try{localStorage.setItem('slime-adventure-v1',JSON.stringify({visited:[...this.visited],opened:[...this.opened]}));}catch(e){}},
-  blocked(x,y,r=18){return this.obstacles.some(o=>Math.abs(x-o.x)<o.w/2+r&&Math.abs(y-o.y)<o.h/2+r);},
-  move(p,dx,dy,r=18){const distance=Math.hypot(dx,dy),steps=Math.max(1,Math.ceil(distance/12));if(!Number.isFinite(distance))return;for(let i=0;i<steps;i++){if(!this.blocked(p.x+dx/steps,p.y,r))p.x+=dx/steps;if(!this.blocked(p.x,p.y+dy/steps,r))p.y+=dy/steps;}},
-  tick(p,reg){this.player=p;if(!this.visited.has(reg.id)){this.visited.add(reg.id);this.save();}
+  blocked(x,y,r=18){if(Raid.active)return Math.hypot(x-Raid.active.cx,y-Raid.active.cy)>Raid.active.radius-r;if(!onRoute(x,y))return true;return this.obstacles.some(o=>{const dx=Math.max(0,Math.abs(x-o.x)-o.w/2),dy=Math.max(0,Math.abs(y-o.y)-o.h/2);return dx*dx+dy*dy<r*r;});},
+  move(p,dx,dy,r=18){const distance=Math.hypot(dx,dy),steps=Math.max(1,Math.ceil(distance/12));if(!Number.isFinite(distance))return;for(let i=0;i<steps;i++){const nx=Math.max(-WORLD_W/2+r,Math.min(WORLD_W/2-r,p.x+dx/steps)),ny=Math.max(-WORLD_H/2+r,Math.min(WORLD_H/2-r,p.y+dy/steps));if(!this.blocked(nx,p.y,r))p.x=nx;if(!this.blocked(p.x,ny,r))p.y=ny;}},
+  tick(p,reg){this.player=p;
+    if(!p.dead&&Math.hypot(p.x-reg.centerX,p.y-reg.centerY)<65&&p.spawnRegionId!==reg.id){p.spawnRegionId=reg.id;SaveSystem.save();UI.showItemNotify('스폰 포인트 저장 · '+reg.name);}
+    for(const point of this.spawnPoints||[])point.ring.material.color.setHex(point.id===p.spawnRegionId?0x66ffbb:0x72baff);
+    if(!this.visited.has(reg.id)){this.visited.add(reg.id);this.save();}
     const chest=this.chests.find(c=>!this.opened.has(c.id)&&Math.hypot(c.x-p.x,c.y-p.y)<100);this.near=chest;
     const next=REGIONS[Math.min(REGIONS.indexOf(reg)+1,REGIONS.length-1)];
-    document.getElementById('adventure-status').textContent=chest?'보물 발견! F 또는 아래 버튼으로 열기':reg.isSafeZone?'돌길을 따라 동쪽 초원으로 출발하세요':`다음 목적지: ${next.name} · 권장 Lv.${next.minLevel}`;
-    document.getElementById('adventure-count').textContent=`탐험 ${this.visited.size}/${REGIONS.length} · 보물 ${this.opened.size}/${this.chests.length}`;
+    document.getElementById('adventure-status').textContent=chest?'보물 발견! F 또는 아래 버튼으로 열기':reg.isSafeZone?'어느 방향으로든 탐험! Shift 달리기 · Space 회피':`다음 목적지: ${next.name} · 요구 Lv.${next.minLevel}`;
+    document.getElementById('adventure-count').textContent=`보상 ${regionRewardAllowed(p,reg.id)?'가능':'잠김'} (Lv.${Math.max(1,reg.minLevel||1)}) · 스폰: ${(REGIONS.find(r=>r.id===p.spawnRegionId)||REGIONS[0]).name} · 탐험 ${this.visited.size}/${REGIONS.length} · 보물 ${this.opened.size}/${this.chests.length}`;
     document.getElementById('adventure-open').disabled=!chest;
   },
-  open(){const c=this.near,p=this.player;if(!c||!p||p.dead||this.opened.has(c.id))return;this.opened.add(c.id);c.mesh.material.color.setHex(0x524635);c.lid.rotation.x=.8;p.gold+=c.reward;UI.showItemNotify(`탐험 보물 +${c.reward} 골드!`);this.near=null;this.save();SaveSystem.save();},
-  map(){const el=document.getElementById('adventure-map');el.hidden=!el.hidden;if(el.hidden)return;const cv=el.querySelector('canvas'),cx=cv.getContext('2d'),scale=600/WORLD_W;
-    cx.fillStyle='#12252c';cx.fillRect(0,0,600,600);
-    for(const r of REGIONS){const x=(r.xMin+WORLD_W/2)*scale,y=600-(r.yMax+WORLD_H/2)*scale;cx.fillStyle=this.visited.has(r.id)?r.mmColor:'#263238';cx.fillRect(x+2,y+2,96,96);cx.fillStyle='#fff';cx.font='11px sans-serif';cx.fillText(this.visited.has(r.id)?r.name.slice(0,15):'미탐험 지역',x+7,y+40);cx.fillStyle='#b8c9cc';cx.fillText('Lv.'+r.minLevel,x+7,y+58);}
-    if(this.player){cx.fillStyle='#fff36a';cx.beginPath();cx.arc((this.player.x+WORLD_W/2)*scale,600-(this.player.y+WORLD_H/2)*scale,5,0,7);cx.fill();}
-  }
+  open(){if(Raid.active)return;const c=this.near,p=this.player;if(!c||!p||p.dead||this.opened.has(c.id))return;if(!regionRewardAllowed(p,c.id,true))return;this.opened.add(c.id);c.mesh.material.color.setHex(0x524635);c.lid.rotation.x=.8;p.gold+=c.reward;questEvent(p,'chest',c.id);UI.showItemNotify(`탐험 보물 +${c.reward} 골드!`);this.near=null;this.save();SaveSystem.save();},
+  map(){const el=document.getElementById('adventure-map');el.hidden=!el.hidden;if(el.hidden)return;const cv=el.querySelector('canvas');cv.width=1200;cv.height=600;drawRouteMap(cv.getContext('2d'),1200,600,this.player,[],true);}
+
 };
 Adventure.load();
 let worldGroup=null;
@@ -1766,12 +1938,80 @@ const BIOMES=[
  [0x463532,0x543833,0x745248,0xffa24c], [0x26263d,0x483a6e,0x5d527d,0xb18aff]
 ];
 function groundTexture(color,seed){const c=document.createElement('canvas');c.width=c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#'+color.toString(16).padStart(6,'0');ctx.fillRect(0,0,128,128);let v=seed+11;for(let i=0;i<900;i++){v=(v*1664525+1013904223)>>>0;const x=v%128,y=(v>>>8)%128;ctx.fillStyle=i%2?'#ffffff0a':'#0000000e';ctx.fillRect(x,y,2+i%3,2);}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(5,5);return t;}
+function sceneryBatch(parent,geometry,color,placements,emissive=0){
+ if(!placements.length){geometry.dispose();return;}
+ const material=new THREE.MeshStandardMaterial({color,roughness:.9,metalness:.02,emissive:color,emissiveIntensity:emissive});
+ const batch=new THREE.InstancedMesh(geometry,material,placements.length),dummy=new THREE.Object3D();
+ placements.forEach((v,i)=>{dummy.position.set(v.x,v.y,v.z||0);dummy.rotation.set(0,0,v.rot||0);dummy.scale.set(v.sx||v.s||1,v.sy||v.s||1,v.sz||v.s||1);dummy.updateMatrix();batch.setMatrixAt(i,dummy.matrix);});
+ batch.instanceMatrix.needsUpdate=true;batch.frustumCulled=false;parent.add(batch);
+}
+function fillRegionScenery(layer,r,biome,palette){
+ const [ground,tree,rock,accent]=palette;let seed=9811+r.stage*7933;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+ const localLinks=ROUTE_LINKS.filter(l=>l.from===r||l.to===r);
+ const clear=(x,y)=>Math.hypot(x-r.centerX,y-r.centerY)<145||localLinks.some(l=>l.points.slice(1).some((b,i)=>segmentDistance(x,y,l.points[i],b)<125))||segmentDistance(x,y,{x:r.centerX,y:r.centerY},{x:r.centerX+230,y:r.centerY-210})<85||Math.hypot(x-r.centerX+285,y-r.centerY+320)<165||(r.isSafeZone&&Math.abs(x-r.centerX)<390&&Math.abs(y-r.centerY)<330)||(r.isMine&&Math.abs(x-r.centerX)<360&&Math.abs(y-r.centerY)<250);
+ const grass=[],flowers=[],stones=[],trunks=[],leaves=[],crystals=[],patches=[];
+ for(let n=0;n<900;n++){
+  const a=random()*Math.PI*2,rad=Math.sqrt(random())*(r.radius-65),x=r.centerX+Math.cos(a)*rad,y=r.centerY+Math.sin(a)*rad;
+  if(!pointInRegion(x,y,r)||clear(x,y))continue;
+  if(n%3===0)patches.push({x,y,z:-9,s:12+random()*22,sx:22+random()*22,sy:12+random()*15});
+  if(n%14===0&&!Adventure.blocked(x,y,55)){
+    const scale=.65+random()*.55;
+    if([0,2,4,7].includes(biome)||r.isSafeZone){trunks.push({x,y,z:22,s:scale});leaves.push({x,y,z:65,s:scale});}
+    else if([5,9].includes(biome)){crystals.push({x,y,z:30,sx:13+random()*12,sy:13+random()*12,sz:45+random()*40});}
+    else stones.push({x,y,z:20,sx:18+random()*20,sy:16+random()*18,sz:20+random()*24});
+    Adventure.obstacles.push({x,y,w:20,h:20,zTop:95});
+  }else{
+    grass.push({x,y,z:5,sx:3+random()*5,sy:3+random()*5,sz:7+random()*11,rot:a});
+    if(n%5===0)flowers.push({x,y,z:15,s:3+random()*3});
+    if(n%11===0)stones.push({x,y,z:2,sx:4+random()*6,sy:4+random()*5,sz:3+random()*4});
+  }
+ }
+ const cone=new THREE.ConeGeometry(1,2,5);cone.rotateX(Math.PI/2);
+ sceneryBatch(layer,cone,tree,grass);sceneryBatch(layer,new THREE.IcosahedronGeometry(1,0),accent,flowers,[1,5,8,9].includes(biome)?.3:0);
+ sceneryBatch(layer,new THREE.DodecahedronGeometry(1,0),rock,stones);
+ sceneryBatch(layer,new THREE.CylinderGeometry(6,9,44,5).rotateX(Math.PI/2),0x66503d,trunks);
+ const canopy=new THREE.ConeGeometry(38,90,7);canopy.rotateX(Math.PI/2);sceneryBatch(layer,canopy,biome===2?0xcce3e9:tree,leaves);
+ sceneryBatch(layer,new THREE.OctahedronGeometry(1),accent,crystals,.25);
+ sceneryBatch(layer,new THREE.CircleGeometry(1,8),new THREE.Color(ground).multiplyScalar(.86),patches);
+ // Natural cliff silhouettes fill the horizon without blocking playable routes.
+ const hills=[];for(let j=0;j<24;j++){const a=j*Math.PI*2/24,rad=r.radius+90+random()*130,x=r.centerX+Math.cos(a)*rad,y=r.centerY+Math.sin(a)*rad;if(onRoute(x,y)||localLinks.some(l=>l.points.slice(1).some((b,i)=>segmentDistance(x,y,l.points[i],b)<200)))continue;hills.push({x,y,z:20,sx:65+random()*65,sy:55+random()*50,sz:70+random()*80,rot:a});}
+ sceneryBatch(layer,new THREE.DodecahedronGeometry(1,0),new THREE.Color(rock).multiplyScalar(.7),hills);
+}
+
+// Surrounding scenery stays loaded beyond the playable route and camera view.
+function buildSurroundingLandscape(group){
+ for(let i=0;i<REGIONS.length;i++){
+  const r=REGIONS[i],left=i?(REGIONS[i-1].centerX+r.centerX)/2:r.centerX-5000,right=i<REGIONS.length-1?(REGIONS[i+1].centerX+r.centerX)/2:r.centerX+5000;
+  const backdrop=new THREE.Group();backdrop.userData.region={centerX:r.centerX,centerY:r.centerY};backdrop.userData.backdrop=true;group.add(backdrop);
+  let seed=12781+i*4621;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+  const hills=[],groves=[],rocks=[];
+  for(let n=0;n<220;n++){
+   const x=left+rand()*(right-left),side=n%2?1:-1,y=r.centerY+side*(1050+rand()*4300);
+   // Keep the short connections and all playable regions completely unobstructed.
+   if(onRoute(x,y)||REGIONS.some(q=>Math.hypot(x-q.centerX,y-q.centerY)<q.radius+210))continue;
+   const size=90+rand()*160;
+   if(n%4===0)hills.push({x,y,z:-20,sx:size*2.3,sy:size*1.6,sz:110+rand()*240,rot:rand()*6.28});
+   else if(n%3===0)rocks.push({x,y,z:5,sx:35+rand()*50,sy:35+rand()*45,sz:35+rand()*70});
+   else groves.push({x,y,z:45,sx:35+rand()*35,sy:35+rand()*35,sz:80+rand()*65});
+  }
+  sceneryBatch(backdrop,new THREE.DodecahedronGeometry(1,1),0x536c54,hills);
+  sceneryBatch(backdrop,new THREE.ConeGeometry(1,2,6).rotateX(Math.PI/2),0x345c48,groves);
+  sceneryBatch(backdrop,new THREE.DodecahedronGeometry(1,0),0x66766d,rocks);
+ }
+}
+function updateLoadedLandscape(p){
+ if(!worldGroup)return;
+ const range=Math.max(4000,Camera.distance*5.5);
+ for(const layer of worldGroup.children){const r=layer.userData.region;if(!r)continue;const margin=layer.userData.backdrop?2500:1000;layer.visible=Math.abs(r.centerX-p.x)<range+margin&&Math.abs(r.centerY-p.y)<range+margin;}
+}
+
 function buildWorld(){
   if(worldGroup){scene.remove(worldGroup);worldGroup.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)o.material.map.dispose();o.material.dispose();}});}
-  Adventure.obstacles=[];Adventure.chests=[];
+  Adventure.obstacles=[];Adventure.chests=[];Adventure.spawnPoints=[];
   const group=new THREE.Group();
   const hemi=new THREE.HemisphereLight(0xcbe8ff,0x536642,.9);hemi.up.set(0,0,1);hemi.position.set(0,0,500);group.add(hemi);
   const sun=new THREE.DirectionalLight(0xffecd1,.85);sun.position.set(-600,-700,1200);group.add(sun);
+  const wilderness=new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W+24000,WORLD_H+24000),new THREE.MeshLambertMaterial({color:0x526b50}));wilderness.position.z=-11;group.add(wilderness);
   let layer=group;
   const box=(x,y,w,h,z,color,base=0,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,z),new THREE.MeshLambertMaterial({color}));m.position.set(x,y,base+z/2);layer.add(m);if(solid)Adventure.obstacles.push({x,y,w,h,zTop:base+z});return m;};
   const plane=(x,y,w,h,color,z=-2)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color}));m.position.set(x,y,z);layer.add(m);return m;};
@@ -1781,7 +2021,11 @@ function buildWorld(){
     layer=new THREE.Group();layer.userData.region=r;group.add(layer);
     const biome=r.isSafeZone?0:r.isMine?5:Number(r.id)%10;
     const [ground,tree,rock,accent]=BIOMES[biome];const x=r.centerX,y=r.centerY;
-    const floor=plane(x,y,900,900,r.isSafeZone?0x648e55:ground,-10);floor.material.map=groundTexture(r.isSafeZone?0x648e55:ground,i);floor.material.color.setHex(0xffffff);
+    const spawnRing=new THREE.Mesh(new THREE.RingGeometry(44,61,48),new THREE.MeshBasicMaterial({color:0x72baff,side:THREE.DoubleSide,transparent:true,opacity:.85,depthWrite:false}));spawnRing.position.set(x,y,1.5);layer.add(spawnRing);
+    Adventure.spawnPoints.push({id:r.id,ring:spawnRing});
+    sign(x,y-85,`스폰 저장 · 밟기 / 보상 Lv.${Math.max(1,r.minLevel||1)}`,'#9dffe0');
+    const outline=new THREE.Shape();r.outline.forEach((v,j)=>j?outline.lineTo(v.x,v.y):outline.moveTo(v.x,v.y));outline.closePath();
+    const floor=new THREE.Mesh(new THREE.ShapeGeometry(outline),new THREE.MeshBasicMaterial({color:0xffffff}));floor.position.z=-10;const uv=floor.geometry.attributes.uv,vertices=floor.geometry.attributes.position;for(let k=0;k<uv.count;k++)uv.setXY(k,(vertices.getX(k)-r.xMin)/(2*r.radius),(vertices.getY(k)-r.yMin)/(2*r.radius));uv.needsUpdate=true;layer.add(floor);floor.material.map=groundTexture(r.isSafeZone?0x648e55:ground,i);floor.material.color.setHex(0xffffff);
     const mesh=(geo,px,py,pz,color,emissive=0)=>{const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,roughness:.78,metalness:.08,emissive:color,emissiveIntensity:emissive}));m.position.set(px,py,pz);layer.add(m);return m;};
     const cone=(px,py,pz,rad,h,color)=>{const m=mesh(new THREE.ConeGeometry(rad,h,7),px,py,pz,color);m.rotation.x=Math.PI/2;return m;};
     const crystal=(px,py,pz,rad,h)=>{const m=mesh(new THREE.OctahedronGeometry(rad),px,py,pz,accent,.3);m.scale.z=h/rad;return m;};
@@ -1795,19 +2039,14 @@ function buildWorld(){
       else if([4,7].includes(biome)){mesh(new THREE.CircleGeometry(80,20),lx,ly,-4,biome===4?0x527e69:0x5e4282,.15);for(let k=0;k<5;k++){const px=lx+Math.cos(k*1.3)*90,py=ly+Math.sin(k*1.3)*80;box(px,py,10,10,28,0xa39879);const cap=mesh(new THREE.SphereGeometry(23,12,8),px,py,31,accent,.1);cap.scale.z=.4;}}
       else{treeAt(lx,ly);treeAt(lx+80,ly+25);for(let k=0;k<5;k++)box(lx-65+k*28,ly-60,18,18,16,rock);}
     }
-    // Wide cross roads guarantee clear routes between neighboring regions.
-    plane(x,y,900,90,0xb9a880,-8);plane(x,y,90,900,0xb9a880,-8);
-    plane(x,y,180,180,0xc8b995,-7);
-    // River beside the north trail, with a wooden bridge over the central road.
-    if(i%3===1){plane(x,y+235,900,72,([1,8].includes(biome)?accent:biome===2?0x90bfd1:0x347c93),-6);plane(x,y+242,900,7,0x80b6be,-5);
-      Adventure.obstacles.push({x:x-270,y:y+235,w:360,h:72},{x:x+270,y:y+235,w:360,h:72});
-      plane(x,y+235,180,112,0x806344,-4);for(let t=-48;t<=48;t+=16)plane(x,y+235+t,180,3,0xc4a479,-3);
-      box(x-88,y+235,6,120,20,0x584630);box(x+88,y+235,6,120,20,0x584630);
-    }
+    fillRegionScenery(layer,r,biome,BIOMES[biome]);
+    // Small natural clearing, without a square tile or cross-shaped border.
+    const clearing=mesh(new THREE.CircleGeometry(100,24),x,y,-7,0xb2a27c);clearing.scale.y=.75;
     let seed=i*9847+81;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
-    for(let n=0;n<30;n++){
+    for(let n=0;n<18;n++){
       const px=x+(rand()-.5)*810,py=y+(rand()-.5)*810;
-      if(Math.abs(px-x)<120||Math.abs(py-y)<110||Math.abs(py-y-235)<110||Math.hypot(px-x-230,py-y+210)<110)continue;
+      if(ROUTE_LINKS.filter(l=>l.from===r||l.to===r).some(l=>l.points.slice(1).some((b,j)=>segmentDistance(px,py,l.points[j],b)<125)))continue;
+      if(Math.abs(px-x)<135||Math.abs(py-y)<125||Math.abs(Math.abs(px-x)-Math.abs(py-y))<80||Math.abs(py-y-235)<110||Math.hypot(px-x-230,py-y+210)<110)continue;
       if(r.isSafeZone&&Math.abs(px-x)<360&&Math.abs(py-y)<300)continue;
       if(Math.hypot(px-x+285,py-y+320)<125)continue;
       if(n%3&&[0,2,4,7].includes(biome))treeAt(px,py);
@@ -1826,7 +2065,7 @@ function buildWorld(){
       for(let k=0;k<8;k++){const a=k/8*Math.PI*2;box(x+Math.cos(a)*68,y-210+Math.sin(a)*68,18,18,17,0xa7aba1);}
       box(x,y-210,80,80,16,0x8a9c9d,0,true);box(x,y-210,58,58,4,0x57b6c7,16);box(x,y-210,16,16,65,0xbdc9c2,20);
     }else{
-      sign(x+220,y+75,`${r.name} · Lv.${r.minLevel}`);
+      sign(x+220,y+75,`${r.isMine?'광산':r.stage+'스테이지'} · Lv.${r.minLevel}`);
       // Ruined arch is an exploration landmark off the main road.
       box(x-235,y-200,30,30,115,rock,0,true);box(x-125,y-200,30,30,115,rock,0,true);box(x-180,y-200,160,40,24,rock,115);
       const cx=x+230,cy=y-210,opened=Adventure.opened.has(r.id);
@@ -1835,7 +2074,19 @@ function buildWorld(){
       sign(cx,cy-48,'탐험 보물 · F','#ffdd78');
     }
   });
+  // Rounded, walkable connectors; their x coordinates increase, so links cannot cross.
+  for(const link of ROUTE_LINKS){const routeGroup=new THREE.Group();routeGroup.userData.region={centerX:(link.from.centerX+link.to.centerX)/2,centerY:(link.from.centerY+link.to.centerY)/2};group.add(routeGroup);for(let i=1;i<link.points.length;i++){const a=link.points[i-1],b=link.points[i],length=Math.hypot(b.x-a.x,b.y-a.y);const m=new THREE.Mesh(new THREE.PlaneGeometry(length,link.width),new THREE.MeshLambertMaterial({color:0xbba77a}));m.rotation.z=Math.atan2(b.y-a.y,b.x-a.x);m.position.set((a.x+b.x)/2,(a.y+b.y)/2,-8);routeGroup.add(m);}
+   for(const v of link.points){const disk=new THREE.Mesh(new THREE.CircleGeometry(link.width/2,18),new THREE.MeshLambertMaterial({color:0xbba77a}));disk.position.set(v.x,v.y,-8);routeGroup.add(disk);}
+  }
+  for(const l of ROUTE_LINKS){
+    const a=l.points[14],b=l.points[18],dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy),sideX=-dy/len,sideY=dx/len;
+    const flank=new THREE.Group();flank.userData.region={centerX:(a.x+b.x)/2,centerY:(a.y+b.y)/2};group.add(flank);
+    const boulders=[],posts=[],lamps=[];for(let j=0;j<=Math.floor(len/100);j++){const t=j/Math.max(1,Math.floor(len/100));for(const side of [-1,1]){const x=a.x+dx*t+sideX*side*130,y=a.y+dy*t+sideY*side*130;if(REGIONS.some(r=>pointInRegion(x,y,r)))continue;boulders.push({x,y,z:5,sx:22+(j%3)*8,sy:20,sz:25+(j%4)*10});if(j%3===0){posts.push({x:x-sideX*side*25,y:y-sideY*side*25,z:24});lamps.push({x:x-sideX*side*25,y:y-sideY*side*25,z:51});}}}
+    sceneryBatch(flank,new THREE.DodecahedronGeometry(1),0x60736b,boulders);sceneryBatch(flank,new THREE.BoxGeometry(5,5,48),0x615240,posts);sceneryBatch(flank,new THREE.SphereGeometry(8,8,6),0xffd991,lamps,.7);
+  }
+  buildSurroundingLandscape(group);
   scene.add(group);worldGroup=group;
+  scene.fog=new THREE.Fog(0x6c8580,3200,7200);scene.background.setHex(0x6c8580);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1865,11 +2116,23 @@ const Input=(()=>{
   const keys=new Set();
   window.addEventListener('keydown',e=>{
     SFX.unlock();
+    if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
     if(SkillShowcase.active){if(e.code==='Escape')SkillShowcase.close();e.preventDefault();return;}
+    if(!document.getElementById('raid-window').hidden){if(e.code==='Escape'||(e.code==='KeyJ'&&!e.repeat))Raid.close();return;}
+    if(Raid.active&&['KeyO','KeyI','KeyG','KeyE','KeyT','KeyC','KeyB','KeyF','KeyJ'].includes(e.code))return;
+    if(e.code==='KeyJ'&&!e.repeat){Game.openRaid();return;}
+    if(!document.getElementById('growth-window').hidden){e.preventDefault();if(e.code==='Escape'||(e.code==='KeyO'&&!e.repeat))Growth.close();return;}
+    if(e.code==='KeyO'&&!e.repeat){keys.clear();Game.openGrowth();return;}
+    if(!document.getElementById('relic-window').hidden){if(e.code==='Escape'||e.code==='KeyI')Relics.close();return;}
+    if(e.code==='KeyI'&&!e.repeat){keys.clear();Game.openRelics();return;}
     if(e.repeat&&/^Digit[1-5]$/.test(e.code))return;
-    if(!document.getElementById('summon-window').hidden){if(e.code==='Escape')SummonUI.close();return;}
+    if((!document.getElementById('summon-window').hidden||!document.getElementById('relic-window').hidden||!document.getElementById('growth-window').hidden||!document.getElementById('raid-window').hidden)){if(e.code==='Escape')SummonUI.close();return;}
     if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
     keys.add(e.code);
+    if(e.code==='Space'&&!e.repeat)Game.dash();
+    if(e.code==='KeyZ') Game.useSkill(0);
+    if(e.code==='KeyX') Game.useSkill(1);
+    if(e.code==='KeyR') Game.useSkill(2);
     if(e.code==='KeyH') Game.usePotion();
     if(e.code==='KeyV') Game.toggleCam();
     if(e.code==='KeyE') Game.toggleShop();
@@ -1878,7 +2141,7 @@ const Input=(()=>{
     if(e.code==='KeyM') Game.mine();
     if(e.code==='KeyG'&&!e.repeat)Game.openSummons();
     if(e.code==='Escape')SummonUI.close();
-    if(!document.getElementById('summon-window').hidden)return;
+    if((!document.getElementById('summon-window').hidden||!document.getElementById('relic-window').hidden||!document.getElementById('growth-window').hidden||!document.getElementById('raid-window').hidden))return;
     if(e.code==='KeyF'&&!e.repeat)Adventure.open();
     if(e.code==='KeyB'&&!e.repeat)Adventure.map();
     if(/^Digit[1-5]$/.test(e.code)) Game.useJobSkill(Number(e.code.slice(-1))-1);
@@ -1896,6 +2159,8 @@ const Input=(()=>{
     btn.addEventListener('lostpointercapture',release);
   });
   return{
+    clear(){keys.clear();},
+    get sprint(){return keys.has('ShiftLeft')||keys.has('ShiftRight');},
     get dx(){let x=0;if(keys.has('ArrowLeft')||keys.has('KeyA'))x-=1;if(keys.has('ArrowRight')||keys.has('KeyD'))x+=1;return x;},
     get dy(){let y=0;if(keys.has('ArrowUp')||keys.has('KeyW'))y+=1;if(keys.has('ArrowDown')||keys.has('KeyS'))y-=1;return y;},
   };
@@ -2092,7 +2357,7 @@ class DamageNumbers{
 //  CAMERA
 // ════════════════════════════════════════════════════════════
 const Camera={
-  shakeAmt:0,shakeDur:0,yaw:0,pitch:.62,distance:550,dragging:false,
+  shakeAmt:0,shakeDur:0,yaw:0,pitch:.78,distance:400,dragging:false,
   rotate(dx,dy){this.yaw-=dx*.006;this.yaw=Math.atan2(Math.sin(this.yaw),Math.cos(this.yaw));this.pitch=Math.max(.3,Math.min(1.25,this.pitch+dy*.004));},
   movement(dx,dy){if(camMode===0)return [dx,dy];return [dx*Math.cos(this.yaw)-dy*Math.sin(this.yaw),dx*Math.sin(this.yaw)+dy*Math.cos(this.yaw)];},
   follow(px,py,dt,snap=false){
@@ -2537,7 +2802,7 @@ const UI={
     this.mpEl=this._el('ui-mp');
     this.statOverlay=this._el('stat-overlay');
     this.statPtsEl=this._el('stat-points-left');
-    this.goldEl=this._el('ui-gold');
+    this.goldEl=this._el('ui-gold');this.skillsPanel=this._el('skills-panel');
   },
   update(player,boss){
     this.lvEl.textContent=player.level;
@@ -2661,42 +2926,24 @@ const UI={
     if(equipped.length===0) return;
     equipped.forEach((skill,i)=>{
       const slot=document.createElement('div');
-      slot.className='skill-slot';
-      const hasMana=(player.mana||0)>=skill.type.manaCost;
+      slot.className='skill-slot';slot.tabIndex=0;slot.setAttribute('role','button');slot.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();Game.useSkill(i);}};
+      const hasMana=(player.mana||0)>=Awakening.profile(player,skill).mana;
       if(!hasMana) slot.classList.add('skill-no-mana');
       const cdEl=skill.cd>0?`<div class="sk-cd-overlay">${skill.cd.toFixed(1)}</div>`:'';
       const lvlEl=skill.level>1?`<span class="sk-lv">Lv${skill.level}</span>`:'';
       slot.innerHTML=`
-        <span class="sk-key">[${i+1}]</span>
+        <span class="sk-key">[${['Z','X','R'][i]}]</span>
         <span class="sk-icon">${skill.type.icon}</span>
-        <span class="sk-name">${skill.type.name}</span>
-        <span class="sk-cost">💙${skill.type.manaCost}</span>
+        <span class="sk-name">${Awakening.name(skill)}</span>
+        <span class="sk-cost">💙${Awakening.profile(player,skill).mana}</span>
         ${lvlEl}${cdEl}
       `;
       slot.onclick=()=>Game.useSkill(i);
       panel.appendChild(slot);
     });
   },
-  drawMinimap(player,monsters,regions){
-    const ctx=this.mmCtx;const W=120,H=80;
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='rgba(0,0,0,0.9)';ctx.fillRect(0,0,W,H);
-    regions.forEach(r=>{
-      const x1=(r.xMin+WORLD_W/2)/WORLD_W*W,x2=(r.xMax+WORLD_W/2)/WORLD_W*W;
-      const y1=H-(r.yMax+WORLD_H/2)/WORLD_H*H,y2=H-(r.yMin+WORLD_H/2)/WORLD_H*H;
-      ctx.fillStyle=r.mmColor;
-      ctx.fillRect(x1,y1,x2-x1,y2-y1);
-      ctx.strokeStyle='rgba(255,255,255,.12)';ctx.strokeRect(x1,y1,x2-x1,y2-y1);
-    });
-    ctx.fillStyle='#ff4444';
-    for(const m of monsters){
-      const mx=(m.x+WORLD_W/2)/WORLD_W*W,my=H-(m.y+WORLD_H/2)/WORLD_H*H;
-      ctx.beginPath();ctx.arc(mx,my,m.isBoss?3:1.5,0,Math.PI*2);ctx.fill();
-    }
-    const px=(player.x+WORLD_W/2)/WORLD_W*W,py=H-(player.y+WORLD_H/2)/WORLD_H*H;
-    ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;ctx.strokeRect(.5,.5,W-1,H-1);
-  },
+  drawMinimap(player,monsters,regions){drawRouteMap(this.mmCtx,120,80,player,monsters,false);},
+
 };
 
 // ════════════════════════════════════════════════════════════
@@ -2710,9 +2957,9 @@ function calcMonsterStats(tmpl,playerLevel,regionId,isBoss=false){
   const roleHp=isBoss?1:Math.max(.75,Math.min(1.65,Math.sqrt(tmpl.hpMult||1)));
   const roleAtk=isBoss?1:Math.max(.7,Math.min(1.45,Math.sqrt(tmpl.atkMult||1)));
   return{
-    maxHp:Math.round(hpBase*roleHp*(isBoss?10+Math.min(stage*.15,4):1)),
-    atk:Math.max(1,Math.round(atkBase*roleAtk*(isBoss?2.2:1))),
-    spd:Math.round(Math.min(isBoss?95:145,(isBoss?42:52)*Math.max(.5,Math.min(1.7,tmpl.spdMult||1))*(1+stage*.018))),
+    maxHp:Math.round(hpBase*roleHp*(isBoss?(10+Math.min(stage*.15,4))*4:3.96)),
+    atk:Math.max(1,Math.round(atkBase*roleAtk*(isBoss?6.534:3.08)*1.5)),
+    spd:Math.round(Math.min(isBoss?115:170,(isBoss?48:60)*Math.max(.5,Math.min(1.7,tmpl.spdMult||1))*(1+stage*.018))),
     xp:Math.round((18*Math.pow(1.17,stage)+stage*8)*(isBoss?16:roleHp)),
   };
 }
@@ -2759,24 +3006,24 @@ const ShopUI=(()=>{
         return `<div class="shop-item">
           <span class="si-icon">${skill.type.icon}</span>
           <div class="si-info">
-            <div class="si-name">${skill.type.name} <span class="skill-lv">${skill.type.rarity} · Lv.${lvl}</span></div>
-            <div class="si-desc">${nextCost?`DMG:${skill.type.power} · → Lv.${lvl+1} costs ${nextCost.toLocaleString()}💰 | MP:${skill.type.manaCost} CD:${skill.type.cooldown}s`:`DMG:${skill.type.power} · MAX LEVEL`}</div>
+            <div class="si-name">${Awakening.name(skill)} <span class="skill-lv">${skill.type.rarity} · Lv.${lvl}</span></div>
+            <div class="si-desc">${nextCost?`${skillDetails(p,skill.type,lvl)} · → Lv.${lvl+1} costs ${nextCost.toLocaleString()}💰`:`${skillDetails(p,skill.type,lvl)} · MAX LEVEL`}</div>
           </div>
           <button class="si-buy" onclick="ShopUI.toggleEquip(${i})">${skill.equipped?'해제':'장착'}</button>
           ${nextCost?`<button class="si-buy${gold<nextCost?' cant-afford':''}" onclick="ShopUI.upgradeSkill(${i})">UPGRADE</button>`:'<span class="si-max">MAX</span>'}
         </div>`;
       }).join('');
-      const skillsAvail=SKILL_TYPES.filter(sk=>!owned.includes(sk.id)).map(sk=>`
+      const skillsAvail=SKILL_TYPES.filter(sk=>!sk.bossOnly&&!owned.includes(sk.id)).map(sk=>`
         <div class="shop-item">
           <span class="si-icon">${sk.icon}</span>
           <div class="si-info">
             <div class="si-name">${sk.name}</div>
-            <div class="si-desc">${sk.rarity} · DMG:${sk.power.toLocaleString()} · MP:${sk.manaCost} CD:${sk.cooldown}s</div>
+            <div class="si-desc">${sk.rarity} · ${skillDetails(p,sk,1)}</div>
           </div>
           <button class="si-buy${gold<sk.buyCost?' cant-afford':''}" onclick="ShopUI.buySkill('${sk.id}')">${sk.buyCost.toLocaleString()}💰</button>
         </div>`).join('');
       content.innerHTML=`
-        <div class="shop-section-title">보유 스킬 — 최대 3개 장착</div>
+        <p>✨ 각성: O키 → 스킬 각성. 처음에는 약하고 2차·3차에서 강화됩니다.</p><div class="shop-section-title">스킬 ${SKILL_TYPES.length}종 · 최대 3개 장착 · Z / X / R</div><p style="font-size:12px;color:#b5c9df">보스 전용 ${BOSS_SKILLS.length}종: 마나형 총 1% / 공격형 총 1% (각 0.2%). 보스 요구 레벨 미만이면 획득 불가. 중복 획득 시 강화됩니다.</p><details><summary>보스 전용 스킬 도감</summary>${BOSS_SKILLS.map(t=>`<p>${t.icon} ${t.name} — ${skillDetails(p,t)}</p>`).join('')}</details>
         ${skillsOwned||'<div class="shop-empty">No skills yet — defeat monsters to find them!</div>'}
         <div class="shop-section-title" style="margin-top:10px;">BUY NEW SKILLS</div>
         ${skillsAvail||'<div class="shop-empty">All skills acquired!</div>'}`;
@@ -2826,9 +3073,9 @@ const ShopUI=(()=>{
   }
   function buySkill(skillId){
     const p=_getPlayer&&_getPlayer();if(!p) return;
-    const sk=SKILL_TYPES.find(s=>s.id===skillId);if(!sk) return;
+    const sk=SKILL_TYPES.find(s=>s.id===skillId);if(!sk||sk.bossOnly) return;
     if((p.gold||0)<sk.buyCost){UI.showItemNotify('NOT ENOUGH GOLD!');SFX.errorBuzz();return;}
-    if((p.skills||[]).length>=25){UI.showItemNotify('모든 스킬을 보유 중입니다!');SFX.errorBuzz();return;}
+    if((p.skills||[]).filter(s=>!s.type.bossOnly).length>=SKILL_TYPES.filter(s=>!s.bossOnly).length){UI.showItemNotify('모든 스킬을 보유 중입니다!');SFX.errorBuzz();return;}
     p.gold-=sk.buyCost;
     if(!p.skills) p.skills=[];
     const autoEquip=p.skills.filter(s=>s.equipped).length<3;
@@ -2882,6 +3129,180 @@ const ShopUI=(()=>{
 // ════════════════════════════════════════════════════════════
 //  SAVE SYSTEM — WKWebView localStorage persists between launches
 // ════════════════════════════════════════════════════════════
+
+const LOOT_MATERIALS=['슬라임 젤','튼튼한 가죽','철 조각','마나 가루','숲의 씨앗','불꽃 파편','얼음 결정','황금 모래','독의 정수','번개 조각','공허 파편','보스의 핵'].map((name,i)=>({id:'mat'+i,name,price:[8,12,18,22,30,40,50,65,80,100,140,300][i]}));
+const RELIC_RANKS=['낡은','정제된','희귀한','영웅의','전설의','신화의'];
+const RELICS=RELIC_RANKS.flatMap((rank,t)=>['atk','def','mana'].map((slot,j)=>({id:'relic'+t+'_'+slot,slot,tier:t,name:rank+' '+['전사의 인장','수호자의 방패','현자의 보주'][j],level:[1,12,30,60,120,240][t],price:[100,300,900,2500,7000,20000][t],cost:[200,600,1800,5000,14000,40000][t],stats:{atk:slot==='atk'?[8,25,70,180,450,1100][t]:0,def:slot==='def'?[8,20,40,75,130,220][t]:0,mana:slot==='mana'?[30,90,240,600,1500,3600][t]:0,hp:slot==='def'?[25,80,220,600,1500,4000][t]:0,spd:slot==='atk'?t*3:0},recipe:{['mat'+j]:4+t*3,['mat'+(4+Math.min(6,t))]:2+t*2,...(t>1?{mat11:t-1}:{})}})));
+const Relics={
+ player:null,
+ init(p){p.lootBag=p.lootBag||{};p.relicSlots=p.relicSlots||{};},
+ restore(p,d){p.lootBag={};for(const it of [...LOOT_MATERIALS,...RELICS]){const n=d.lootBag?.[it.id];if(Number.isSafeInteger(n)&&n>0)p.lootBag[it.id]=Math.min(n,1000000);}p.relicSlots={};for(const slot of ['atk','def','mana']){const r=RELICS.find(r=>r.id===d.relicSlots?.[slot]&&r.slot===slot);if(r&&p.lootBag[r.id]&&p.level>=r.level)p.relicSlots[slot]=r.id;}},
+ bonuses(p){const b={atk:0,def:0,mana:0,hp:0,spd:0};if(!p)return b;for(const slot of ['atk','def','mana']){const r=RELICS.find(r=>r.id===p.relicSlots?.[slot]&&r.slot===slot);if(r&&p.lootBag?.[r.id]>0&&p.level>=r.level)for(const [k,v]of Object.entries(Growth.relicStats(p,r)))b[k]+=v||0;}return b;},
+ damage(p,raw){return Awakening.absorb(p,Math.max(1,Math.floor(raw*100/(100+Growth.totalDefense(p)))));},
+ add(p,id,n=1){this.init(p);p.lootBag[id]=(p.lootBag[id]||0)+n;},
+ drop(p,m){if(!regionRewardAllowed(p,m.regionId))return;const r=REGIONS.find(r=>r.id===m.regionId),tier=Math.min(5,Math.floor((r?.minLevel||0)/45));const names=[];
+ const give=(id,n)=>{this.add(p,id,n);names.push(([...LOOT_MATERIALS,...RELICS].find(i=>i.id===id)).name+' ×'+n);};
+ if(m.isBoss||Math.random()<.65)give('mat'+Math.floor(Math.random()*4),m.isBoss?3:1);
+ if(m.isBoss||Math.random()<.3)give('mat'+(4+Math.min(6,Math.floor((r?.minLevel||0)/35))),m.isBoss?2:1);
+ if(m.isBoss)give('mat11',1);
+ if(Math.random()<(m.isBoss?.12:.015)){const candidates=RELICS.filter(r=>r.tier===tier);give(candidates[Math.floor(Math.random()*3)].id,1);}
+ if(names.length)UI.showItemNotify('획득 · '+names.join(' / '));},
+ open(p){if(!p||p.dead)return;this.init(p);this.player=p;ShopUI.close();SummonUI.close();document.getElementById('relic-window').hidden=false;this.render();},
+ close(){document.getElementById('relic-window').hidden=true;},
+ canTrade(p){if(!p||p.dead)return false;if(!getRegion(p.x,p.y).isSafeZone){UI.showItemNotify('판매와 제작은 안전 마을에서 가능합니다.');return false;}return true;},
+ commit(){Game.applyEnhancement();SaveSystem.save();this.render();},
+ sell(id){const p=this.player,it=[...LOOT_MATERIALS,...RELICS].find(x=>x.id===id);if(!it||!this.canTrade(p))return;const reserved=Object.values(p.relicSlots).includes(id)?1:0;if((p.lootBag[id]||0)<=reserved)return;p.lootBag[id]--;p.gold+=it.price;this.commit();},
+ craft(id){const p=this.player,r=RELICS.find(x=>x.id===id);if(!r||!this.canTrade(p))return;if(p.level<r.level||p.gold<r.cost||Object.entries(r.recipe).some(([id,n])=>(p.lootBag[id]||0)<n)){UI.showItemNotify('요구 레벨, 골드 또는 재료가 부족합니다.');return;}p.gold-=r.cost;for(const [id,n]of Object.entries(r.recipe))p.lootBag[id]-=n;this.add(p,r.id);this.commit();UI.showItemNotify('제작 성공 · '+r.name);},
+ equip(id){const p=this.player,r=RELICS.find(x=>x.id===id);if(!p||p.dead||!r||!p.lootBag[id]||p.level<r.level)return;p.relicSlots[r.slot]=p.relicSlots[r.slot]===id?null:id;this.commit();},
+ stats(r){return Object.entries(r.stats).filter(([k,v])=>v).map(([k,v])=>({atk:'⚔️ 공격력',def:'🛡️ 방어력',mana:'🔮 최대 마나',hp:'❤️ 최대 HP',spd:'💨 이동속도'}[k])+' +'+v).join(' · ');},
+ ability(r){const reduction=(r.stats.def/(100+r.stats.def)*100).toFixed(1);return r.slot==='def'?`몬스터에게 받는 피해 ${reduction}% 감소 · 최대 HP 증가`:r.slot==='mana'?'최대 마나 증가 · 최대 마나 비례 스킬의 피해량 증가':'기본 공격과 공격력 비례 스킬 강화'+(r.stats.spd?' · 이동속도 증가':'');},
+ render(){const p=this.player;if(!p)return;const town=getRegion(p.x,p.y).isSafeZone,b=this.bonuses(p);document.getElementById('relic-summary').textContent=`${p.gold.toLocaleString()} G · ${town?'마을: 판매·제작 가능':'마을에서 판매·제작 가능'} · 전체 방어 피해 감소 ${(Growth.totalDefense(p)/(100+Growth.totalDefense(p))*100).toFixed(1)}%`;
+ document.getElementById('relic-total').textContent='현재 장착 유물 합계 · '+(this.stats({stats:b})||'장착한 유물 없음');
+ document.getElementById('relic-equipped').textContent='장착: '+['atk','def','mana'].map(slot=>RELICS.find(r=>r.id===p.relicSlots[slot])?.name||'빈 슬롯').join(' / ');
+ document.getElementById('relic-materials').innerHTML=LOOT_MATERIALS.map(i=>`<article><b>${i.name}</b><p>보유 ${p.lootBag[i.id]||0}개</p><button onclick="Relics.sell('${i.id}')" ${!town||!p.lootBag[i.id]?'disabled':''}>1개 판매 · ${i.price} G</button></article>`).join('');
+ document.getElementById('relic-list').innerHTML=RELICS.map(base=>{const r={...base,stats:Growth.relicStats(p,base)},rank=p.growth?.relicRanks?.[base.id]||0;const count=p.lootBag[r.id]||0,on=p.relicSlots[r.slot]===r.id,ready=town&&p.level>=r.level&&p.gold>=r.cost&&Object.entries(r.recipe).every(([id,n])=>(p.lootBag[id]||0)>=n);return `<article style="border-color:${['#88999a','#71bf8e','#6abfff','#bf90ee','#edbe64','#ff819e'][r.tier]}"><small>Lv.${r.level} · 보유 ${count}개 ${on?'· 장착 중':''}</small><h3>${r.name} +${rank}</h3><div class="relic-ability"><strong>장착 능력</strong><p>${this.stats(r)}</p><p>${this.ability(r)}</p></div><p>${Object.entries(r.recipe).map(([id,n])=>LOOT_MATERIALS.find(m=>m.id===id).name+' '+(p.lootBag[id]||0)+'/'+n).join(' · ')}</p><button onclick="Relics.craft('${r.id}')" ${ready?'':'disabled'}>제작 · ${r.cost} G</button><button onclick="Relics.equip('${r.id}')" ${count&&p.level>=r.level?'':'disabled'}>${on?'해제':'장착'}</button><button onclick="Relics.sell('${r.id}')" ${town&&count>(on?1:0)?'':'disabled'}>1개 판매 · ${r.price} G</button></article>`;}).join('');}
+};
+
+const GROWTH_TRAINING={
+ atk:{name:'⚔️ 공격 수련',stat:'atk',gain:8,cap:50,cost:120},
+ hp:{name:'❤️ 체력 수련',stat:'hp',gain:40,cap:50,cost:100},
+ mana:{name:'🔮 마나 수련',stat:'mana',gain:25,cap:50,cost:120},
+ def:{name:'🛡️ 방어 수련',stat:'def',gain:4,cap:50,cost:160},
+ spd:{name:'💨 민첩 수련',stat:'spd',gain:1,cap:30,cost:200},
+ regen:{name:'💧 마나 순환',stat:'regen',gain:.4,cap:30,cost:180}
+};
+const GROWTH_ACHIEVEMENTS=[
+ {id:'hunt20',name:'첫 사냥꾼',kind:'kills',goal:20,gold:200,bonus:{atk:8}},
+ {id:'hunt100',name:'백전의 슬라임',kind:'kills',goal:100,gold:600,bonus:{atk:25,hp:100}},
+ {id:'hunt500',name:'몬스터 사냥꾼',kind:'kills',goal:500,gold:2000,bonus:{atk:70,def:15}},
+ {id:'hunt2000',name:'전장의 전설',kind:'kills',goal:2000,gold:8000,bonus:{atk:200,hp:700}},
+ {id:'boss1',name:'첫 보스 토벌',kind:'bosses',goal:1,gold:400,bonus:{mana:40}},
+ {id:'boss10',name:'보스 추적자',kind:'bosses',goal:10,gold:1800,bonus:{atk:40,def:15}},
+ {id:'boss50',name:'보스 정복자',kind:'bosses',goal:50,gold:6000,bonus:{hp:500,mana:300}},
+ {id:'level10',name:'성장의 시작',kind:'level',goal:10,gold:300,bonus:{hp:80,mana:30}},
+ {id:'level50',name:'숙련된 모험가',kind:'level',goal:50,gold:1500,bonus:{atk:50,mana:100}},
+ {id:'level150',name:'영웅의 길',kind:'level',goal:150,gold:5000,bonus:{atk:120,hp:500}},
+ {id:'chest3',name:'보물 탐험가',kind:'chests',goal:3,gold:800,bonus:{def:10,spd:3}},
+ {id:'chest10',name:'유적의 주인',kind:'chests',goal:10,gold:3000,bonus:{mana:180,hp:250}}
+];
+const Growth={
+ player:null,tab:'training',
+ fresh(){return {version:1,training:{},relicRanks:{},slimeStars:{},masteryXP:0,bosses:0,claimed:[]};},
+ init(p){if(!p.growth)p.growth=this.fresh();return p.growth;},
+ integer(n,max){return Number.isFinite(n)?Math.max(0,Math.min(max,Math.floor(n))):0;},
+ restore(p,d){const raw=d.growth||{},g=this.fresh();
+ for(const [id,t]of Object.entries(GROWTH_TRAINING))g.training[id]=this.integer(raw.training?.[id],t.cap);
+ for(const r of RELICS)g.relicRanks[r.id]=this.integer(raw.relicRanks?.[r.id],10);
+ for(const q of SLIME_BOOK)g.slimeStars[q.id]=this.integer(raw.slimeStars?.[q.id],5);
+ g.masteryXP=this.integer(raw.masteryXP,11625);g.bosses=this.integer(raw.bosses,1000000);
+ g.claimed=Array.isArray(raw.claimed)?[...new Set(raw.claimed.filter(id=>GROWTH_ACHIEVEMENTS.some(a=>a.id===id)))]:[];p.growth=g;
+ },
+ masteryLevel(p){const xp=p?.growth?.masteryXP||0;let lv=0;while(lv<30&&xp>=25*(lv+1)*(lv+2)/2)lv++;return lv;},
+ bonuses(p){const b={atk:0,hp:0,mana:0,def:0,spd:0,regen:0};if(!p)return b;const g=p.growth||this.fresh();
+ for(const [id,t]of Object.entries(GROWTH_TRAINING))b[t.stat]+=(g.training[id]||0)*t.gain;
+ const lv=this.masteryLevel(p);b.atk+=lv*5;b.hp+=lv*30;b.mana+=lv*15;
+ for(const a of GROWTH_ACHIEVEMENTS)if(g.claimed.includes(a.id))for(const [k,v]of Object.entries(a.bonus))b[k]+=v;
+ return b;
+ },
+ cooldownFactor(p){return 1-this.masteryLevel(p)*.005;},
+ relicStats(p,r){const factor=1+(p?.growth?.relicRanks?.[r.id]||0)*.15;return Object.fromEntries(Object.entries(r.stats).map(([k,v])=>[k,Math.round(v*factor)]));},
+ slimeStats(p,q){if(!q)return null;const stars=p?.growth?.slimeStars?.[q.id]||0;return {...q,stars,atk:Math.round(q.atk*(1+stars*.2)),hp:Math.round(q.hp*(1+stars*.2)),spd:Math.round(q.spd*(1+stars*.1))};},
+ totalDefense(p){return Relics.bonuses(p).def+this.bonuses(p).def;},
+ onKill(p,m){const g=this.init(p),before=this.masteryLevel(p);g.masteryXP=Math.min(11625,g.masteryXP+(m.isBoss?10:1));if(m.isBoss)g.bosses++;if(this.masteryLevel(p)>before){Game.applyEnhancement();UI.showItemNotify('사냥 숙련도 Lv.'+this.masteryLevel(p)+' · 영구 능력치 상승!');}},
+ progress(p,a){return a.kind==='kills'?p.kills||0:a.kind==='bosses'?p.growth?.bosses||0:a.kind==='level'?p.level:Adventure.opened.size;},
+ format(b){const labels={atk:'공격력',hp:'최대 HP',mana:'최대 마나',def:'방어력',spd:'이동속도',regen:'초당 마나 회복'};return Object.entries(b).filter(([k,v])=>v).map(([k,v])=>labels[k]+' +'+Number(v.toFixed(1)).toLocaleString()).join(' · ')||'추가 능력치 없음';},
+ trainCost(p,id){const t=GROWTH_TRAINING[id],lv=p.growth.training[id]||0;return Math.round(t.cost*(lv+1)*(1+lv*.12));},
+ relicCost(p,r){const rank=p.growth.relicRanks[r.id]||0;return {gold:Math.round(r.cost*.6*(rank+1)),dust:2+rank*2,core:rank>=5?1+Math.floor((rank-5)/2):0};},
+ fusionCost(p,q){const star=p.growth.slimeStars[q.id]||0;return {copies:star+1,gold:300*(q.tier+1)*(star+1)};},
+ valid(town=false){const p=this.player;if(!p||p.dead||document.getElementById('growth-window').hidden)return null;if(town&&!getRegion(p.x,p.y).isSafeZone){UI.showItemNotify('수련·강화·합성은 안전 마을에서 가능합니다.');return null;}return p;},
+ finish(message){Game.applyEnhancement();SaveSystem.save();this.render();UI.showItemNotify(message);SFX.buySuccess();},
+ train(id){const p=this.valid(true),t=GROWTH_TRAINING[id];if(!p||!t)return;const g=this.init(p),lv=g.training[id]||0,cost=this.trainCost(p,id);if(lv>=t.cap||p.gold<cost)return;p.gold-=cost;g.training[id]=lv+1;this.finish(t.name+' Lv.'+(lv+1));},
+ enhance(id){const p=this.valid(true),r=RELICS.find(r=>r.id===id);if(!p||!r)return;const g=this.init(p),rank=g.relicRanks[id]||0,c=this.relicCost(p,r);if(rank>=10||p.level<r.level||!(p.lootBag?.[id]>0)||p.gold<c.gold||(p.lootBag.mat3||0)<c.dust||(p.lootBag.mat11||0)<c.core)return;
+ p.gold-=c.gold;p.lootBag.mat3-=c.dust;if(c.core)p.lootBag.mat11-=c.core;g.relicRanks[id]=rank+1;this.finish(r.name+' +'+(rank+1)+' 강화 성공');},
+ fuse(id){const p=this.valid(true),q=SLIME_BOOK.find(q=>q.id===id);if(!p||!q)return;const g=this.init(p),star=g.slimeStars[id]||0,c=this.fusionCost(p,q);if(star>=5||(p.slimeCollection?.[id]||0)<c.copies+1||p.gold<c.gold)return;p.gold-=c.gold;p.slimeCollection[id]-=c.copies;g.slimeStars[id]=star+1;this.finish(q.name+' '+(star+1)+'성 합성 성공');},
+ claim(id){const p=this.valid(),a=GROWTH_ACHIEVEMENTS.find(a=>a.id===id);if(!p||!a)return;const g=this.init(p);if(g.claimed.includes(id)||this.progress(p,a)<a.goal)return;g.claimed.push(id);p.gold+=a.gold;this.finish(a.name+' 달성 · 영구 보너스 획득');},
+ open(p){this.player=p;this.init(p);Input.clear();ShopUI.close();SummonUI.close();Relics.close();document.getElementById('growth-window').hidden=false;this.render();},
+ close(){document.getElementById('growth-window').hidden=true;Input.clear();},
+ select(tab){if(!['awakening','training','relic','fusion','mastery','achievements'].includes(tab))return;this.tab=tab;this.render();},
+ render(){const p=this.player;if(!p)return;const g=this.init(p),safe=getRegion(p.x,p.y).isSafeZone,lv=this.masteryLevel(p),def=this.totalDefense(p);
+ document.getElementById('growth-summary').textContent=`Lv.${p.level} · ${Math.floor(p.gold).toLocaleString()} G · ${safe?'마을: 성장 작업 가능':'마을에서 수련·강화·합성 가능'}`;
+ document.getElementById('growth-bonus').textContent='수련·숙련·업적 합계: '+this.format(this.bonuses(p))+` | 전체 방어 ${def} · 피해 감소 ${(100*def/(100+def)).toFixed(1)}%`;
+ document.querySelectorAll('#growth-tabs button').forEach(b=>{const active=b.dataset.tab===this.tab;b.classList.toggle('selected',active);b.setAttribute('aria-selected',String(active));});
+ let html='';
+ if(this.tab==='awakening')html=Awakening.render(p);
+ if(this.tab==='training')html='<p class="growth-note">영구 수련 · 100% 성공 · 사망해도 유지됩니다. 유물과 슬라임 능력치에 더해 적용됩니다.</p><div class="growth-grid">'+Object.entries(GROWTH_TRAINING).map(([id,t])=>{const n=g.training[id]||0,max=n>=t.cap,cost=this.trainCost(p,id);return `<article><small>영구 능력치 · Lv.${n}/${t.cap}</small><h3>${t.name}</h3><p>${this.format({[t.stat]:n*t.gain})}</p><div class="growth-delta">${max?'최대 수련 완료':'다음: '+this.format({[t.stat]:(n+1)*t.gain})}</div><button onclick="Growth.train('${id}')" ${!safe||max||p.gold<cost?'disabled':''}>${max?'MAX':cost.toLocaleString()+' G · 수련'}</button></article>`;}).join('')+'</div>';
+ if(this.tab==='relic'){const owned=RELICS.filter(r=>p.lootBag?.[r.id]>0);html='<p class="growth-note">보유 유물의 각 능력치가 강화당 기본값의 15% 증가합니다. 최대 +10, 성공률 100%. 같은 종류의 모든 유물에 적용되며 마지막 유물을 팔아도 강화 기록은 남습니다. +6부터 보스의 핵이 필요합니다.</p><div class="growth-grid">'+owned.map(r=>{const n=g.relicRanks[r.id]||0,c=this.relicCost(p,r),max=n>=10,ready=safe&&!max&&p.level>=r.level&&p.gold>=c.gold&&(p.lootBag.mat3||0)>=c.dust&&(p.lootBag.mat11||0)>=c.core,next={...p,growth:{...g,relicRanks:{...g.relicRanks,[r.id]:n+1}}};return `<article><small>요구 Lv.${r.level} · 보유 ${p.lootBag[r.id]}개</small><h3>${r.name} +${n}</h3><p>${this.format(this.relicStats(p,r))}</p><div class="growth-delta">${max?'최대 강화 완료':'다음: '+this.format(this.relicStats(next,r))}</div><p>마나 가루 ${p.lootBag.mat3||0}/${c.dust}${c.core?' · 보스의 핵 '+(p.lootBag.mat11||0)+'/'+c.core:''}</p><button onclick="Growth.enhance('${r.id}')" ${ready?'':'disabled'}>${max?'MAX':c.gold.toLocaleString()+' G · 강화'}</button></article>`;}).join('')+'</div>'+(!owned.length?'<p class="growth-empty">보유한 유물이 없습니다. I키 → 가방·유물에서 제작하거나 몬스터를 사냥해 얻으세요.</p>':'');}
+ if(this.tab==='fusion'){const owned=SLIME_BOOK.filter(q=>p.slimeCollection?.[q.id]>0);html='<p class="growth-note">같은 슬라임의 여분과 골드로 합성합니다. 본체 1마리는 항상 남습니다. 별 1개당 기본 공격·HP +20%, 기본 속도 +10%. 최대 5성, 성공률 100%. 장착한 슬라임에만 능력치가 적용됩니다.</p><div class="growth-grid">'+owned.map(q=>{const n=g.slimeStars[q.id]||0,c=this.fusionCost(p,q),max=n>=5,count=p.slimeCollection[q.id],ready=safe&&!max&&count>=c.copies+1&&p.gold>=c.gold,now=this.slimeStats(p,q),next=this.slimeStats({...p,growth:{...g,slimeStars:{...g.slimeStars,[q.id]:n+1}}},q);return `<article><small>${SLIME_TIERS[q.tier].name} · 보유 ${count}마리 ${p.equippedSlime===q.id?'· 장착 중':''}</small><h3>${q.name} · ${n}성</h3><p>${this.format({atk:now.atk,hp:now.hp,spd:now.spd})}</p><div class="growth-delta">${max?'최대 합성 완료':'다음: '+this.format({atk:next.atk,hp:next.hp,spd:next.spd})}</div><p>여분 ${count-1}/${c.copies}마리 소모 · 본체 유지</p><button onclick="Growth.fuse('${q.id}')" ${ready?'':'disabled'}>${max?'MAX':c.gold.toLocaleString()+' G · 합성'}</button></article>`;}).join('')+'</div>'+(!owned.length?'<p class="growth-empty">보유 슬라임이 없습니다. 마을에서 G키를 눌러 소환하세요.</p>':'');}
+ if(this.tab==='mastery'){const floor=25*lv*(lv+1)/2,next=25*(lv+1)*(lv+2)/2,progress=lv===30?100:(g.masteryXP-floor)/(next-floor)*100;html=`<article class="growth-mastery"><small>사냥할수록 강해지는 영구 능력</small><h2>사냥 숙련도 Lv.${lv} / 30</h2><div class="growth-track"><i style="width:${progress}%"></i></div><p>${lv===30?'최대 숙련도 달성':g.masteryXP.toLocaleString()+' / '+next.toLocaleString()+' 숙련 경험치'}</p><div class="growth-delta">공격력 +${lv*5} · HP +${lv*30} · 최대 마나 +${lv*15}<br>Z·X·R 스킬 재사용 시간 ${(lv*.5).toFixed(1)}% 감소</div><p>일반 몬스터 +1 / 보스 +10 숙련 경험치<br>지역 요구 레벨을 충족한 처치만 인정됩니다.<br>매 레벨 공격 +5 · HP +30 · 마나 +15 · 재사용 시간 0.5% 감소<br>새 기능 적용 후 사냥부터 누적됩니다.</p></article>`;}
+ if(this.tab==='achievements')html='<p class="growth-note">보상은 업적당 한 번 받을 수 있습니다. 골드와 영구 능력치가 함께 지급됩니다. 기존 처치 수·레벨·보물 기록도 인정하며, 보스 수는 이번 업데이트부터 집계합니다.</p><div class="growth-grid">'+GROWTH_ACHIEVEMENTS.map(a=>{const n=this.progress(p,a),done=g.claimed.includes(a.id),ready=!done&&n>=a.goal;return `<article><small>${{kills:'누적 처치',bosses:'보스 처치',level:'캐릭터 레벨',chests:'보물상자'}[a.kind]} · ${Math.min(n,a.goal)}/${a.goal}</small><h3>${a.name}</h3><div class="growth-delta">${this.format(a.bonus)}</div><p>${a.gold.toLocaleString()} G</p><button onclick="Growth.claim('${a.id}')" ${ready?'':'disabled'}>${done?'수령 완료':ready?'영구 보상 받기':'도전 중'}</button></article>`;}).join('')+'</div>';
+ document.getElementById('growth-content').innerHTML=html;
+ }
+};
+
+const RAID_TIERS=[
+ {id:'guardian',name:'고대 숲의 수호자',level:10,hp:6000,atk:35,seconds:180,gold:1200,tokens:2,cores:1,color:0x77ddaa},
+ {id:'inferno',name:'용암 군주',level:50,hp:45000,atk:160,seconds:210,gold:6000,tokens:5,cores:3,color:0xff8855},
+ {id:'void',name:'공허의 지배자',level:120,hp:200000,atk:650,seconds:240,gold:24000,tokens:10,cores:6,color:0xbd99ff}
+];
+const RAID_SIGILS={atk:{name:'전쟁의 각인',label:'공격력',gain:20},hp:{name:'생명의 각인',label:'최대 HP',gain:100},mana:{name:'비전의 각인',label:'최대 마나',gain:60}};
+const Raid={active:null,player:null,lastResult:'',
+ init(p){return p.raidData||(p.raidData={tokens:0,clears:{},best:{},sigils:{}});},
+ restore(p,d){const r=d.raidData||{},n=(v,max)=>Number.isFinite(v)?Math.max(0,Math.min(max,Math.floor(v))):0;const data={tokens:n(r.tokens,10000000),clears:{},best:{},sigils:{}};for(const t of RAID_TIERS){data.clears[t.id]=n(r.clears?.[t.id],1000000);const best=r.best?.[t.id];if(Number.isFinite(best)&&best>0&&best<=t.seconds)data.best[t.id]=best;}for(const k in RAID_SIGILS)data.sigils[k]=n(r.sigils?.[k],20);p.raidData=data;},
+ bonuses(p){const b={atk:0,hp:0,mana:0};for(const k in RAID_SIGILS)b[k]=(p?.raidData?.sigils?.[k]||0)*RAID_SIGILS[k].gain;return b;},
+ reward(p,t,seconds){const d=this.init(p),first=!(d.clears[t.id]>0),tokens=t.tokens*(first?2:1);d.clears[t.id]=(d.clears[t.id]||0)+1;d.tokens+=tokens;d.best[t.id]=Math.min(d.best[t.id]||Infinity,Math.max(.1,seconds));p.gold+=t.gold;Relics.add(p,'mat11',t.cores);return `${t.name} 클리어! +${t.gold.toLocaleString()} G · 보스의 핵 ${t.cores}개 · 증표 ${tokens}개${first?' (첫 클리어 2배)':''}`;},
+ upgrade(k){const p=this.player,s=RAID_SIGILS[k];if(!p||p.dead||!s||this.active||document.getElementById('raid-window').hidden||!getRegion(p.x,p.y).isSafeZone)return;const d=this.init(p),rank=d.sigils[k]||0,cost=2*(rank+1);if(rank>=20||d.tokens<cost)return;d.tokens-=cost;d.sigils[k]=rank+1;Game.applyEnhancement();SaveSystem.save();this.render();UI.showItemNotify(s.name+' Lv.'+(rank+1));},
+ open(p){if(this.active)return;this.player=p;this.init(p);Input.clear();Growth.close();Relics.close();SummonUI.close();ShopUI.close();document.getElementById('raid-window').hidden=false;this.render();},
+ close(){document.getElementById('raid-window').hidden=true;Input.clear();},
+ render(){const p=this.player;if(!p)return;const d=this.init(p),safe=getRegion(p.x,p.y).isSafeZone;document.getElementById('raid-result').textContent=this.lastResult||'붉은 공격 예고를 피하고 제한시간 안에 보스를 처치하세요.';document.getElementById('raid-wallet').textContent=`레이드 증표 ${d.tokens}개 · ${safe?'마을에서 입장 가능':'입장은 안전 마을에서 가능합니다'}`;
+ document.getElementById('raid-tiers').innerHTML=RAID_TIERS.map(t=>`<article><small>입장 Lv.${t.level} · ${t.seconds}초 · 솔로</small><h3>${t.name}</h3><p>HP ${t.hp.toLocaleString()} / 공격력 ${t.atk}<br>클리어 ${d.clears[t.id]||0}회 · 최고 기록 ${d.best[t.id]?d.best[t.id].toFixed(1)+'초':'없음'}</p><div class="growth-delta">${t.gold.toLocaleString()} G · 핵 ${t.cores}개 · 증표 ${t.tokens}개<br>첫 클리어 증표 2배</div><button onclick="Game.startRaid('${t.id}')" ${safe&&!p.dead&&p.level>=t.level?'':'disabled'}>레이드 입장</button></article>`).join('');
+ document.getElementById('raid-sigils').innerHTML=Object.entries(RAID_SIGILS).map(([k,s])=>{const n=d.sigils[k]||0,cost=2*(n+1);return `<article><small>영구 강화 · Lv.${n}/20</small><h3>${s.name}</h3><p>${s.label} +${n*s.gain}${n<20?' → +'+((n+1)*s.gain):''}</p><button onclick="Raid.upgrade('${k}')" ${safe&&!p.dead&&n<20&&d.tokens>=cost?'':'disabled'}>${n>=20?'MAX':'증표 '+cost+'개 · 강화'}</button></article>`;}).join('');}
+};
+
+const AWAKENING_COSTS=[null,{level:25,skill:2,gold:2000,dust:10,core:1,tokens:0},{level:75,skill:4,gold:8000,dust:30,core:3,tokens:3}];
+const Awakening={
+ stage(s){return Math.max(0,Math.min(2,Math.floor(Number(s.awakening)||0)));},
+ mode(t){return t.mode||({bolt:'single',berserk:'rage'}[t.archKey]||t.archKey)||(t.bossOnly?'nova':'single');},
+ support(t){return ['heal','regen','shield','haste','rage','mana','dash','resolve'].includes(this.mode(t));},
+ branchName(t,path){return this.support(t)?(path==='power'?'효과형':'순환형'):(path==='power'?'위력형':'확산형');},
+ name(s){const n=this.stage(s);return s.type.name+(n?' · '+(n+1)+'차 '+this.branchName(s.type,s.awakenPath):' · 기본');},
+ profile(p,s){const t=s.type,n=this.stage(s),mode=this.mode(t),support=this.support(t),power=n>0&&s.awakenPath==='power',flow=n>0&&s.awakenPath==='flow';
+ const el=SKILL_ELEMENTS.find(e=>e.key===t.elementKey),level=Math.max(1,Math.min(5,s.level||1));
+ const raw=support?0:t.extra?extraSkillDamage(p,t,level):t.bossOnly?bossSkillDamage(p,t,level):scaledSkillDamage(p,t.power,level,el?.dmgMult||1);
+ const capBase=mode==='single'?1:mode==='chain'?2:mode==='execute'?1:mode==='meteor'?3:4;
+ return {n,mode,support,power,flow,damage:support?0:Math.max(1,Math.round(raw*[.4,1,1.8][n]*(power?1.2:1))),range:Math.round((t.range||({single:260,chain:270,meteor:340}[mode]||210))*[.75,1,1.25][n]*(flow&&!support?1.25:1)),cap:capBase+n*(mode==='single'?0:2)+(flow&&!support?2:0),effect:[.5,1,1.5][n]*(1+.1*(level-1))*(power&&support?1.25:1),mana:Math.ceil(t.manaCost*[.6,.85,1][n]),cd:t.cooldown*[1,.95,.85][n]*(flow&&support?.8:1)*Growth.cooldownFactor(p)};
+ },
+ describe(p,s){const a=this.profile(p,s),round=x=>Number(x.toFixed(2));let detail='';
+ if(!a.support){detail=`피해 ${a.damage.toLocaleString()} · 범위 ${a.range} · 최대 ${a.cap}명`;if(a.mode==='drain')detail+=` · 실제 피해 ${[5,12,20][a.n]}% 흡혈 (HP 20% 한도)`;if(a.mode==='stun'||a.mode==='chain')detail+=` · 기절 ${[.3,.8,1.5][a.n]}초 (보스 1/3)`;if(a.mode==='execute')detail+=` · HP 30% 이하 적에게 ×${[1.1,1.4,1.8][a.n]}`;if(a.n===2&&a.power)detail+=' · 최대 HP 5% 보호막';}
+ else{const e=a.effect;detail={heal:`HP ${round(Math.min(.65,.25*e)*100)}% 즉시 회복`,regen:`8초간 초당 HP ${round(Math.min(.08,.04*e)*100)}% 회복`,shield:`${round(Math.min(4,2*e))}초 무적`,haste:`6초간 이동속도 +${round(Math.min(1.2,.5*e)*100)}%`,rage:`8초간 공격력 +${round(Math.min(1,.35*e)*100)}%`,mana:`최대 마나 ${round(Math.min(.8,.3*e)*100)}% 회복`,dash:`${Math.round(130*e)} 거리 돌진 · ${round(Math.min(1.5,.6*e))}초 무적`,resolve:`HP ${round(Math.min(.5,.15*e)*100)}% 회복 · ${round(Math.min(3,1.2*e))}초 무적`}[a.mode];if(a.n===2)detail+=' · 최대 HP 10% 보호막';}
+ return detail+` · MP ${a.mana} · 재사용 ${round(a.cd)}초`;
+ },
+ shield(p,ratio){p._awakenShield=Math.max(p._awakenShield||0,p.maxHp*ratio);p._awakenShieldTimer=6;},
+ absorb(p,damage){const shield=(p._awakenShieldTimer||0)>0?Math.max(0,p._awakenShield||0):0,used=Math.min(shield,damage);p._awakenShield=Math.max(0,shield-used);return Math.max(0,damage-used);},
+ cast(p,s,ecs,particles,damages){const a=this.profile(p,s),t=s.type;let targets=[];
+ if(!a.support){targets=ecs.query('tag','tmpl').filter(m=>m.tag==='monster'&&m.hp>0&&m.regionId===getRegion(p.x,p.y).id&&V2.dist(p.x,p.y,m.x,m.y)<=a.range).sort((x,y)=>V2.dist(p.x,p.y,x.x,x.y)-V2.dist(p.x,p.y,y.x,y.y)).slice(0,a.cap);if(!targets.length)return false;
+ let total=0;for(const m of targets){const dmg=Math.round(a.damage*(a.mode==='execute'&&m.hp/m.maxHp<=.3?[1.1,1.4,1.8][a.n]:1));total+=Math.min(m.hp,dmg);m.hp=Math.max(0,m.hp-dmg);m.hitFlash=.25;if(a.mode==='stun'||a.mode==='chain')m.stunTimer=Math.max(m.stunTimer||0,[.3,.8,1.5][a.n]*(m.isBoss?1/3:1));damages.emit(m.x,m.y,dmg,false,a.n===2);particles.emit(m.x,m.y,t.color,5+a.n*4,100+a.n*40);AnimeFX.impact(m.x,m.y,'#'+t.color.toString(16),.6+a.n*.4);}
+ if(a.mode==='drain')p.hp=Math.min(p.maxHp,p.hp+Math.min(p.maxHp*.2,total*[.05,.12,.2][a.n]));if(a.n===2&&a.power)this.shield(p,.05);
+ }else{const e=a.effect;
+ if(a.mode==='heal')p.hp=Math.min(p.maxHp,p.hp+p.maxHp*Math.min(.65,.25*e));
+ if(a.mode==='regen'){p._regenPerSec=p.maxHp*Math.min(.08,.04*e);p._regenTimer=8;}
+ if(a.mode==='shield')p.invincible=Math.max(p.invincible||0,Math.min(4,2*e));
+ if(a.mode==='haste'){p._speedBonus=p.spd*Math.min(1.2,.5*e);p._speedBonusTimer=6;}
+ if(a.mode==='rage'){p._atkBonus=p.atk*Math.min(1,.35*e);p._atkBonusTimer=8;}
+ if(a.mode==='mana')p.mana=Math.min(p.maxMana,p.mana+p.maxMana*Math.min(.8,.3*e));
+ if(a.mode==='dash'){const [dx,dy]=Camera.movement(0,1);Adventure.move(p,dx*130*e,dy*130*e);p.invincible=Math.max(p.invincible||0,Math.min(1.5,.6*e));}
+ if(a.mode==='resolve'){p.hp=Math.min(p.maxHp,p.hp+p.maxHp*Math.min(.5,.15*e));p.invincible=Math.max(p.invincible||0,Math.min(3,1.2*e));}
+ if(a.n===2)this.shield(p,.1);
+ }
+ const point=targets[0]||p,color='#'+t.color.toString(16);AnimeFX.add('sigil',{x:p.x,y:p.y,color,radius:70+a.n*45,life:.5+a.n*.2});particles.emitRing(point.x,point.y,t.color,8+a.n*12);
+ if(a.n>0){const mapped={single:'bolt',stun:'nova',execute:'meteor'}[a.mode]||a.mode;playSkillSequence(t.vfxIndex,mapped,p,point,ecs,particles,t.color,t.glowRGB,.25,()=>{});}
+ if(a.n===2){AnimeFX.add('pillar',{x:point.x,y:point.y,color,radius:55,height:180,life:.65});Camera.shake(5,.12);}return true;
+ },
+ advance(id,path,targetStage){const p=Growth.valid(true);if(!p||Raid.active)return;const s=(p.skills||[]).find(s=>s.type.id===id);if(!s)return;const stage=this.stage(s),cost=AWAKENING_COSTS[stage+1];if(!cost||(targetStage!==undefined&&targetStage!==stage+1))return;if(stage===0&&!['power','flow'].includes(path))return;if(p.level<cost.level||(s.level||1)<cost.skill||p.gold<cost.gold||(p.lootBag?.mat3||0)<cost.dust||(p.lootBag?.mat11||0)<cost.core||(p.raidData?.tokens||0)<cost.tokens){UI.showItemNotify('각성 조건 또는 재료가 부족합니다.');return;}
+ p.gold-=cost.gold;p.lootBag.mat3-=cost.dust;p.lootBag.mat11-=cost.core;if(cost.tokens)p.raidData.tokens-=cost.tokens;s.awakening=stage+1;if(stage===0)s.awakenPath=path;SaveSystem.save();Growth.render();UI.updateSkillsPanel(p);UI.showItemNotify(this.name(s)+' 각성 완료!');SFX.buySuccess();
+ },
+ render(p){const owned=p.skills||[],safe=getRegion(p.x,p.y).isSafeZone;return '<p class="growth-note">51종 스킬 각각 기본 → 2차 → 3차 각성. 기본 피해는 기존 기준의 40%, 2차 100%, 3차 180%입니다. 일반 스킬 강화(Lv.1~5)와 각성은 별개입니다. 강화는 E키 → 스킬에서 진행하세요.<br>2차: 캐릭터 Lv.25 / 스킬 Lv.2 · 3차: 캐릭터 Lv.75 / 스킬 Lv.4. 각성 성공률 100%. 2차에서 고른 계열은 3차까지 유지하며 변경할 수 없습니다. 스킬 범위와 대상 수는 각성 화면의 표시가 기준입니다.</p><div class="growth-grid">'+owned.map(s=>{const stage=this.stage(s),cost=AWAKENING_COSTS[stage+1],ready=cost&&safe&&p.level>=cost.level&&(s.level||1)>=cost.skill&&p.gold>=cost.gold&&(p.lootBag?.mat3||0)>=cost.dust&&(p.lootBag?.mat11||0)>=cost.core&&(p.raidData?.tokens||0)>=cost.tokens;const paths=stage===0?['power','flow']:[s.awakenPath||'power'];return `<article><small>스킬 Lv.${s.level||1} · ${s.equipped?'장착 중':'보유'}</small><h3>${s.type.icon} ${this.name(s)}</h3><p>${this.describe(p,s)}</p>${cost?`<p>요구 Lv.${cost.level} / 스킬 Lv.${cost.skill}<br>${cost.gold.toLocaleString()} G · 마나 가루 ${p.lootBag?.mat3||0}/${cost.dust} · 보스의 핵 ${p.lootBag?.mat11||0}/${cost.core}${cost.tokens?' · 증표 '+(p.raidData?.tokens||0)+'/'+cost.tokens:''}</p>`:'<p>최종 각성 완료 · 보호막은 6초 지속, 중첩 불가</p>'}${cost?paths.map(path=>{const next={...s,awakening:stage+1,awakenPath:path};return `<div class="growth-delta"><b>${this.branchName(s.type,path)} → ${stage+2}차</b><p>${this.describe(p,next)}</p><button onclick="Awakening.advance('${s.type.id}','${path}',${stage+1})" ${ready?'':'disabled'}>${this.branchName(s.type,path)} 각성</button></div>`;}).join(''):''}</article>`;}).join('')+'</div>'+(!owned.length?'<p class="growth-empty">보유 스킬이 없습니다. 마을 상점(E)에서 구매하거나 보스 스킬을 획득하세요.</p>':'');}
+};
+
 const SaveSystem=(()=>{
   const KEY='slime-rpg-ios-save-v1';
   const FIELDS=['x','y','level','xp','kills','hp','maxHp','mana','maxMana','atk','spd','gold',
@@ -2891,13 +3312,14 @@ const SaveSystem=(()=>{
   let getPlayer=null,timer=null,suspended=false;
   function status(message,failed=false){const el=document.getElementById('save-status');if(el){el.textContent=message;el.style.color=failed?'#ff9d9d':'#b8dfc8';}}
   function snapshot(){const p=getPlayer&&getPlayer();if(!p)return null;
-    const data={version:1,savedAt:Date.now()};FIELDS.forEach(key=>data[key]=p[key]);
-    data.job=p.job||null;data.slimeCollection=p.slimeCollection||{};data.equippedSlime=p.equippedSlime||null;
-    data.skills=(p.skills||[]).map(s=>({id:s.type.id,level:s.level||1,equipped:!!s.equipped}));
+    const data={version:1,layoutVersion:5,regionId:getRegion(p.x,p.y).id,savedAt:Date.now()};FIELDS.forEach(key=>data[key]=p[key]);
+    data.raidData=Raid.init(p);if(Raid.active){data.x=REGIONS[0].centerX;data.y=REGIONS[0].centerY;data.regionId=REGIONS[0].id;data.hp=p.maxHp;data.mana=p.maxMana;}data.growth=Growth.init(p);data.lootBag=p.lootBag||{};data.relicSlots=p.relicSlots||{};data.spawnRegionId=p.spawnRegionId??REGIONS[0].id;data.job=p.job||null;data.slimeCollection=p.slimeCollection||{};data.equippedSlime=p.equippedSlime||null;
+    data.skills=(p.skills||[]).map(s=>({id:s.type.id,level:s.level||1,equipped:!!s.equipped,awakening:Awakening.stage(s),awakenPath:s.awakenPath||null}));
+    data.questState=questState(p);data.regionBossStates=p.regionBossStates||{};
     data.adventure={visited:[...Adventure.visited],opened:[...Adventure.opened]};return data;
   }
   function save(manual=false){if(suspended)return false;const data=snapshot();if(!data)return false;
-    try{localStorage.setItem(KEY,JSON.stringify(data));status('저장됨 · '+new Date(data.savedAt).toLocaleTimeString('ko-KR'));if(manual===true)UI.showItemNotify('게임 진행을 저장했습니다.');return true;}
+    try{const encoded=JSON.stringify(data);localStorage.setItem(KEY,encoded);try{localStorage.setItem(KEY+'-backup',encoded);}catch(e){}status('저장됨 · '+new Date(data.savedAt).toLocaleTimeString('ko-KR'));if(manual===true)UI.showItemNotify('게임 진행을 저장했습니다.');return true;}
     catch(err){status('브라우저 저장 실패 · 백업 파일을 받아주세요',true);if(manual===true)UI.showItemNotify('저장 실패: 백업 다운로드를 이용하세요.');return false;}
   }
   function exportFile(){const data=snapshot();if(!data)return;const payload={game:'slime-evolution-rpg',format:1,data};
@@ -2921,8 +3343,8 @@ const SaveSystem=(()=>{
   }
   function restore(p){
     let data;
-    try{data=JSON.parse(localStorage.getItem(KEY)||'null');}catch(err){return false;}
-    if(!data||data.version!==1)return false;
+    for(const key of [KEY,KEY+'-backup']){try{const candidate=JSON.parse(localStorage.getItem(key)||'null');if(candidate?.version===1&&Number.isFinite(candidate.level)&&candidate.level>=1&&Number.isFinite(candidate.gold)){data=candidate;break;}}catch(err){}}
+    if(!data)return false;
     FIELDS.forEach(key=>{
       if(typeof data[key]==='number'&&Number.isFinite(data[key]))p[key]=data[key];
       else if(key==='slimeColor'&&/^#[0-9a-f]{6}$/i.test(data[key]||''))p[key]=data[key];
@@ -2930,8 +3352,12 @@ const SaveSystem=(()=>{
       else if(key==='weaponName'&&typeof data[key]==='string')p[key]=data[key];
       else if((key==='enhanceLevels'||key==='enhancePity'||key==='enhanceProtection')&&data[key]&&typeof data[key]==='object')p[key]={...data[key]};
     });
+    p.spawnRegionId=remapSavedRegion(data.spawnRegionId).id;
+    Relics.restore(p,data);Growth.restore(p,data);Raid.restore(p,data);
+    const qs=data.questState||{};p.questState={index:Math.max(0,Math.min(QUESTS.length-1,Math.floor(Number(qs.index)||0))),progress:Math.max(0,Math.min(30,Math.floor(Number(qs.progress)||0))),seen:Array.isArray(qs.seen)?qs.seen.filter(id=>REGIONS.some(r=>r.id===id)):[],cycles:Math.max(0,Math.floor(Number(qs.cycles)||0))};
+    p.regionBossStates={};for(const reg of REGIONS.filter(r=>r.boss)){const b=data.regionBossStates?.[reg.id];if(b)p.regionBossStates[reg.id]={remaining:Math.max(0,Math.min(60,Number(b.remaining)||0)),alive:!!b.alive,hp:Number.isFinite(b.hp)?Math.max(0,b.hp):null};}
     p.skills=[];const seen=new Set();let equipped=0;
-    for(const item of Array.isArray(data.skills)?data.skills:[]){const type=SKILL_TYPES.find(s=>s.id===item?.id);if(!type||seen.has(type.id))continue;seen.add(type.id);const on=!!item.equipped&&equipped<3;if(on)equipped++;p.skills.push({type,level:Math.max(1,Math.min(MAX_SKILL_LEVEL,Math.floor(Number(item.level)||1))),cd:0,equipped:on});}
+    for(const item of Array.isArray(data.skills)?data.skills:[]){const type=SKILL_TYPES.find(s=>s.id===item?.id);if(!type||seen.has(type.id))continue;seen.add(type.id);const on=!!item.equipped&&equipped<3;if(on)equipped++;p.skills.push({type,level:Math.max(1,Math.min(MAX_SKILL_LEVEL,Math.floor(Number(item.level)||1))),cd:0,equipped:on,awakening:Number.isInteger(item.awakening)&&['power','flow'].includes(item.awakenPath)?Math.max(0,Math.min(2,item.awakening)):0,awakenPath:['power','flow'].includes(item.awakenPath)?item.awakenPath:null});}
     if(data.adventure&&Array.isArray(data.adventure.visited)&&Array.isArray(data.adventure.opened)){
       Adventure.visited=new Set(data.adventure.visited.filter(id=>REGIONS.some(r=>r.id===id)));
       Adventure.opened=new Set(data.adventure.opened.filter(id=>REGIONS.some(r=>!r.isSafeZone&&r.id===id)));Adventure.save();
@@ -2952,19 +3378,19 @@ const SaveSystem=(()=>{
       p.enhancePity[stat]=Math.max(0,Math.floor(p.enhancePity[stat]||0));
       p.enhanceProtection[stat]=!!p.enhanceProtection[stat];
     });
-    p.x=Math.max(-WORLD_W/2+20,Math.min(WORLD_W/2-20,p.x));
-    p.y=Math.max(-WORLD_H/2+20,Math.min(WORLD_H/2-20,p.y));
+    if(data.layoutVersion!==5||!onRoute(p.x,p.y)){const dest=remapSavedRegion(data.regionId);p.x=dest.centerX;p.y=dest.centerY;}
     p.hp=Math.max(1,Math.min(p.maxHp,p.hp));p.mana=Math.max(0,Math.min(p.maxMana,p.mana));
     return true;
   }
   function start(fn){
-    getPlayer=fn;clearInterval(timer);timer=setInterval(save,3000);save();
+    getPlayer=fn;clearInterval(timer);timer=setInterval(save,1000);save();
     document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
     window.addEventListener('pagehide',save);
+    window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.code==='KeyS'){e.preventDefault();save(true);}});
   }
   function reset(){
     suspended=true;clearInterval(timer);timer=null;
-    localStorage.removeItem(KEY);
+    localStorage.removeItem(KEY);localStorage.removeItem(KEY+'-backup');
   }
   return{save,restore,start,reset,exportFile,importFile};
 })();
@@ -2978,13 +3404,48 @@ const Game=(()=>{
   let currentRegion=REGIONS[0],lastRegionId=-1;
   let currentEvolution=EVOLUTIONS[0],lastEvolutionLevel=1,evolutionLocked=false;
   let bossEnt=null;
-  const WORLD_BOSS_INTERVAL=180; // 3 minutes
+  const WORLD_BOSS_INTERVAL=60; // active gameplay seconds per region
   let worldBossTimer=WORLD_BOSS_INTERVAL;
   let spawnTimer=0,running=false,animId=null,lastTime=0,lastMineAt=0;
   const mineState=MINE_RESOURCES.map(()=>1000);
 
   function getPlayer(){return ecs.get(playerEnt);}
-  function getBoss(){return bossEnt?ecs.get(bossEnt):null;}
+  function clearRaidActors(){
+    for(const m of ecs.query('tag','tmpl')){if(m.tag!=='monster')continue;scene.remove(m.sprite);m.sprite.traverse?.(o=>{o.geometry?.dispose();if(Array.isArray(o.material))o.material.forEach(v=>v.dispose());else o.material?.dispose();});scene.remove(m.hpBar);m.hpBar.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});if(m.aura){scene.remove(m.aura);m.aura.geometry?.dispose();m.aura.material?.dispose();}ecs.destroy(m.id);}bossEnt=null;
+  }
+  function raidReady(p){return p&&!p.dead&&!evolutionLocked&&!SkillShowcase.active&&!Raid.active;}
+  function openRaidInternal(){const p=getPlayer();if(!raidReady(p))return;toggleStatsInternal(false);toggleTeleportInternal(false);closeTraitsInternal();Raid.open(p);}
+  function startRaidInternal(id){const p=getPlayer(),tier=RAID_TIERS.find(t=>t.id===id);if(!raidReady(p)||!tier||p.level<tier.level||!getRegion(p.x,p.y).isSafeZone)return;
+    Raid.init(p);const region=REGIONS.find(r=>!r.isSafeZone&&!r.isMine);if(!region)return;
+    Raid.close();ShopUI.close();Growth.close();Relics.close();SummonUI.close();toggleStatsInternal(false);toggleTeleportInternal(false);closeTraitsInternal();AnimeFX.clear();Input.clear();
+    clearRaidActors();const group=new THREE.Group(),cx=region.centerX,cy=region.centerY;
+    group.add(new THREE.AmbientLight(0xffffff,1.2));const floor=new THREE.Mesh(new THREE.CircleGeometry(430,80),new THREE.MeshBasicMaterial({color:0x253745}));floor.position.set(cx,cy,-.5);group.add(floor);
+    const edge=new THREE.Mesh(new THREE.RingGeometry(405,430,80),new THREE.MeshBasicMaterial({color:tier.color,side:THREE.DoubleSide}));edge.position.set(cx,cy,.2);group.add(edge);
+    for(let i=0;i<12;i++){const a=i*Math.PI/6;const pillar=new THREE.Mesh(new THREE.BoxGeometry(22,22,100),new THREE.MeshBasicMaterial({color:tier.color}));pillar.position.set(cx+Math.cos(a)*420,cy+Math.sin(a)*420,50);group.add(pillar);}scene.add(group);worldGroup.visible=false;
+    const hidden=[];for(const e of ecs.query('tag'))if(e.sprite){hidden.push([e.sprite,e.sprite.visible]);e.sprite.visible=false;if(e.hpBar){hidden.push([e.hpBar,e.hpBar.visible]);e.hpBar.visible=false;}}
+    Raid.active={tier,region,group,cx,cy,radius:390,elapsed:0,attackTimer:3,warnings:[],hidden,resolved:false};
+    p.x=cx;p.y=cy-220;p.hp=p.maxHp;p.mana=p.maxMana;p.dead=false;p.invincible=2;p._awakenShield=p._awakenShieldTimer=0;p._atkBonus=p._speedBonus=p._regenPerSec=0;p._atkBonusTimer=p._speedBonusTimer=p._regenTimer=0;
+    for(const s of p.skills||[])s.cd=0;p.jobCooldowns=(p.jobCooldowns||[]).map(()=>0);p.dashCooldown=0;
+    currentRegion=region;lastRegionId=region.id;playerSprite.visible=true;playerSprite.position.set(p.x,p.y,1);Camera.follow(p.x,p.y,0,true);
+    const tmpl={name:tier.name,color:tier.color,radius:42,hpMult:1,atkMult:1,spdMult:1,xpReward:0};const eid=spawnMonster(region,p,tmpl,true),m=ecs.get(eid);m.isRaid=true;m.x=cx;m.y=cy+130;m.hp=m.maxHp=tier.hp;m.atk=tier.atk;m.spd=70;m.xp=0;m.sprite.position.set(m.x,m.y,1);Raid.active.bossId=eid;
+    document.getElementById('raid-hud').hidden=false;document.getElementById('boss-clock-text').textContent='⚔ 솔로 레이드 도전 중';document.getElementById('adventure-status').textContent='붉은 공격 예고를 피하세요 · Shift 달리기 / Space 회피';document.getElementById('shop-prompt').style.display='none';SaveSystem.save();UI.showItemNotify('레이드 시작! 붉은 바닥을 피하세요.');
+  }
+  function finishRaidInternal(won,reason='레이드 포기'){const state=Raid.active;if(!state||state.resolved)return;state.resolved=true;const p=getPlayer();Raid.active=null;AnimeFX.clear();Input.clear();
+    let message=reason;if(won){message=Raid.reward(p,state.tier,state.elapsed);p.kills++;Growth.onKill(p,{isBoss:true});awardBossSkill(p,{isBoss:true});}
+    clearRaidActors();scene.remove(state.group);state.group.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});for(const [obj,visible]of state.hidden)obj.visible=visible;worldGroup.visible=true;
+    const town=REGIONS[0];p.x=town.centerX;p.y=town.centerY;p.hp=p.maxHp;p.mana=p.maxMana;p.dead=false;p.invincible=3;p._awakenShield=p._awakenShieldTimer=0;p._atkBonus=p._speedBonus=p._regenPerSec=0;p._atkBonusTimer=p._speedBonusTimer=p._regenTimer=0;playerSprite.visible=true;playerSprite.position.set(p.x,p.y,1);lastRegionId=-1;sysRegion();Camera.follow(p.x,p.y,0,true);
+    document.getElementById('raid-hud').hidden=true;Raid.lastResult=message;SaveSystem.save();Raid.open(p);
+  }
+  function sysRaid(dt){const r=Raid.active;if(!r)return;const p=getPlayer(),boss=ecs.get(r.bossId);if(!boss){finishRaidInternal(false,'보스 정보가 없어 마을로 돌아왔습니다.');return;}if(boss.hp<=0){finishRaidInternal(true);return;}if(p.hp<=0){finishRaidInternal(false,'도전 실패 · 다시 준비해 도전하세요.');return;}
+    r.elapsed+=dt;if(r.elapsed>=r.tier.seconds){finishRaidInternal(false,'시간 초과 · 제한시간 안에 보스를 처치하세요.');return;}
+    const rage=boss.hp<=boss.maxHp*.5;boss.spd=rage?95:70;r.attackTimer-=dt;
+    if(r.attackTimer<=0){r.attackTimer=rage?2.7:4.5;const spots=[{x:p.x,y:p.y,radius:100}];if(rage)spots.push({x:boss.x,y:boss.y,radius:155});for(const spot of spots){const mesh=new THREE.Mesh(new THREE.CircleGeometry(spot.radius,48),new THREE.MeshBasicMaterial({color:0xff5544,transparent:true,opacity:.3,side:THREE.DoubleSide,depthWrite:false}));mesh.position.set(spot.x,spot.y,.8);r.group.add(mesh);r.warnings.push({...spot,left:1.3,mesh});}}
+    for(let i=r.warnings.length-1;i>=0;i--){const w=r.warnings[i];w.left-=dt;w.mesh.material.opacity=.25+.35*(1-w.left/1.3);if(w.left>0)continue;r.group.remove(w.mesh);w.mesh.geometry.dispose();w.mesh.material.dispose();r.warnings.splice(i,1);particles.emitRing(w.x,w.y,0xff6655,24);if(Math.hypot(p.x-w.x,p.y-w.y)<=w.radius+18&&p.invincible<=0){const dmg=Relics.damage(p,r.tier.atk*(rage?2:1.5));p.hp=Math.max(0,p.hp-dmg);p.invincible=.75;damages.emit(p.x,p.y,dmg,true);Camera.shake(8,.2);}}
+    if(p.hp<=0){finishRaidInternal(false,'도전 실패 · 붉은 공격 예고 밖으로 회피하세요.');return;}
+    document.getElementById('raid-hud-text').textContent=`${r.tier.name} · ${Math.ceil(r.tier.seconds-r.elapsed)}초 · ${rage?'분노 단계!':'1단계'} · HP ${Math.ceil(boss.hp).toLocaleString()} / ${boss.maxHp.toLocaleString()}`;
+  }
+
+  function getBoss(){const boss=ecs.query('tag','tmpl').find(m=>m.isBoss&&m.regionId===currentRegion.id&&m.hp>0);bossEnt=boss?boss.id:null;return boss||null;}
 
   // Leveling itself no longer buffs stats — only evolution milestones,
   // manually-allocated stat points, and items/shop purchases do.
@@ -2992,12 +3453,12 @@ const Game=(()=>{
     const p=playerEnt&&ecs?getPlayer():null;
     const levels=p&&p.enhanceLevels?p.enhanceLevels:{atk:p?(p.enhanceLevel||0):0,hp:p?(p.enhanceLevel||0):0,spd:p?(p.enhanceLevel||0):0,mana:p?(p.enhanceLevel||0):0};
     const trait=p?UNIQUE_TRAITS.find(t=>t.id===p.uniqueTrait):null;
-    const pet=summonedSlime(p);
+    const pet=summonedSlime(p),relic=Relics.bonuses(p),growth=Growth.bonuses(p),raid=Raid.bonuses(p);
     return{
-      maxHp:Math.round((100+ev.hpBonus+(pet?.hp||0))*ENHANCEMENTS[levels.hp||0].mult*(trait?.hp||1)),
-      maxMana:Math.round(100*ENHANCEMENTS[levels.mana||0].mult*(trait?.mana||1)),
-      atk:Math.round((10+ev.atkBonus+(pet?.atk||0))*ENHANCEMENTS[levels.atk||0].mult*(trait?.atk||1)),
-      spd:Math.round((180+ev.spdBonus+(pet?.spd||0))*ENHANCEMENTS[levels.spd||0].mult*(trait?.spd||1)),
+      maxHp:Math.round((100+ev.hpBonus+(pet?.hp||0))*ENHANCEMENTS[levels.hp||0].mult*(trait?.hp||1))+relic.hp+growth.hp+raid.hp,
+      maxMana:Math.round(100*ENHANCEMENTS[levels.mana||0].mult*(trait?.mana||1))+relic.mana+growth.mana+raid.mana,
+      atk:Math.round((10+ev.atkBonus+(pet?.atk||0))*ENHANCEMENTS[levels.atk||0].mult*(trait?.atk||1))+relic.atk+growth.atk+raid.atk,
+      spd:Math.round((180+ev.spdBonus+(pet?.spd||0))*ENHANCEMENTS[levels.spd||0].mult*(trait?.spd||1))+relic.spd+growth.spd,
     };
   }
 
@@ -3091,6 +3552,9 @@ const Game=(()=>{
   }
 
   function spawnMonster(reg,player,forceTmpl,isBoss){
+    const present=ecs.query('tag','tmpl').filter(m=>m.tag==='monster'&&m.regionId===reg.id);
+    if(isBoss){const existing=present.find(m=>m.isBoss);if(existing)return existing.id;}
+    else if(present.filter(m=>!m.isBoss).length>=MAX_NORMAL_MONSTERS||Raid.active)return null;
     const tmpl=forceTmpl||reg.monsters[Math.floor(Math.random()*reg.monsters.length)];
     const stats=calcMonsterStats(tmpl,player.level,reg.id,!!isBoss);
 
@@ -3099,7 +3563,7 @@ const Game=(()=>{
       x=reg.xMin+40+Math.random()*(reg.xMax-reg.xMin-80);
       y=reg.yMin+40+Math.random()*(reg.yMax-reg.yMin-80);
       att++;
-    }while((V2.dist(x,y,player.x,player.y)<220||Adventure.blocked(x,y,28))&&att<80);
+    }while((V2.dist(x,y,player.x,player.y)<220||!pointInRegion(x,y,reg)||Adventure.blocked(x,y,28))&&att<80);
     if(Adventure.blocked(x,y,28)){x=reg.centerX;y=reg.centerY;}
     const bossFlag=isBoss||false;
     const tex=makeCircleTex(tmpl.color,tmpl.radius,
@@ -3107,11 +3571,10 @@ const Game=(()=>{
       bossFlag
     );
     const sprSize=tmpl.radius*(bossFlag?3.8:3.2);
-    const sprite=makeCreature3D(tmpl.color,sprSize,bossFlag);
-    decorateCreature(sprite,monsterKind(tmpl.name),bossFlag?4:0);
+    const sprite=makeMonsterModel(tmpl,bossFlag);
     sprite.position.set(x,y,1);scene.add(sprite);
     const barWide=bossFlag?60:34;
-    const hpBar=makeHpBar(barWide);faceHpBar(hpBar,x,y,1+sprSize*1.15);scene.add(hpBar);
+    const hpBar=makeHpBar(barWide);faceHpBar(hpBar,x,y,1+sprSize*(sprite.userData.modelHeight||1.15));scene.add(hpBar);
     const id=ecs.create({
       tag:'monster',tmpl,x,y,
       hp:stats.maxHp,maxHp:stats.maxHp,
@@ -3139,6 +3602,7 @@ const Game=(()=>{
 
   function damageOre(ore,damage){
     const p=getPlayer(),resource=MINE_RESOURCES[ore.oreIndex];
+    if(!regionRewardAllowed(p,getRegion(ore.x,ore.y).id,true))return;
     ore.hp=Math.max(0,ore.hp-damage);mineState[ore.oreIndex]=ore.hp;ore.hitFlash=.15;
     damages.emit(ore.x,ore.y,damage,false,false);
     particles.emit(ore.x,ore.y,resource.color,8,120);SFX.hit(false);
@@ -3163,25 +3627,25 @@ const Game=(()=>{
     }
   }
 
-  function spawnItem(x,y,type){
+  function spawnItem(x,y,type,requiredLevel=rewardLevel(getRegion(x,y).id)){
     const tex=makeItemTex(type.color,type.glowRGB);
     const sprite=makeSprite(tex,52);sprite.position.set(x,y,32);scene.add(sprite);
-    ecs.create({tag:'item',itemType:type,x,y,pickRadius:type.radius+20,sprite,spawnTime:performance.now()});
+    ecs.create({tag:'item',itemType:type,x,y,requiredLevel,pickRadius:type.radius+20,sprite,spawnTime:performance.now()});
   }
 
   function rollTraitCrystalDrop(monster){
     const stage=Math.max(1,(Number(monster.regionId)||0)+1);
     const chance=.001*stage; // Stage 1: 0.1%, Stage 2: 0.2% ... Stage 31: 3.1%
-    if(Math.random()<chance) spawnItem(monster.x+34,monster.y,ITEM_TYPES[1]);
+    if(Math.random()<chance) spawnItem(monster.x+34,monster.y,ITEM_TYPES[1],rewardLevel(monster.regionId,monster.isBoss));
   }
 
-  function spawnSkillDrop(x,y,skillType){
+  function spawnSkillDrop(x,y,skillType,requiredLevel=rewardLevel(getRegion(x,y).id)){
     const tex=makeSkillDropTex(skillType);
     const sprite=makeSprite(tex,60);sprite.position.set(x,y,32);scene.add(sprite);
-    ecs.create({tag:'skilldrop',skillType,x,y,pickRadius:32,sprite,spawnTime:performance.now()});
+    ecs.create({tag:'skilldrop',skillType,x,y,requiredLevel,pickRadius:32,sprite,spawnTime:performance.now()});
   }
 
-  function spawnGold(x,y,amount){
+  function spawnGold(x,y,amount,requiredLevel=rewardLevel(getRegion(x,y).id)){
     if(!_texCache['gold']){
       const SZ=80,cv=document.createElement('canvas');cv.width=cv.height=SZ;
       const cx=cv.getContext('2d'),mx=SZ/2,my=SZ/2;
@@ -3194,42 +3658,63 @@ const Game=(()=>{
       const t=new THREE.CanvasTexture(cv);t.needsUpdate=true;_texCache['gold']=t;
     }
     const sprite=makeSprite(_texCache['gold'],44);sprite.position.set(x,y,32);scene.add(sprite);
-    ecs.create({tag:'gold',goldAmount:amount,x,y,pickRadius:26,sprite,spawnTime:performance.now()});
+    ecs.create({tag:'gold',goldAmount:amount,x,y,requiredLevel,pickRadius:26,sprite,spawnTime:performance.now()});
   }
 
   function pickSkillByRate(){
-    const total=SKILL_TYPES.reduce((s,sk)=>s+(sk.dropRate||1),0);
+    const pool=SKILL_TYPES.filter(sk=>!sk.bossOnly);const total=pool.reduce((s,sk)=>s+(sk.dropRate||1),0);
     let r=Math.random()*total;
-    for(const sk of SKILL_TYPES){r-=(sk.dropRate||1);if(r<=0)return sk;}
+    for(const sk of pool){r-=(sk.dropRate||1);if(r<=0)return sk;}
     return SKILL_TYPES[0];
   }
 
   // ── World Boss: one roams the world at a time. It spawns in a
-  // random region every WORLD_BOSS_INTERVAL (3 min); killing it
-  // restarts that same 3-minute countdown for the next spawn.
-  function spawnWorldBoss(player){
-    const allBossRegions=REGIONS.filter(r=>r.boss);
-    if(!allBossRegions.length){ worldBossTimer=5; return; } // nothing to spawn, retry soon
-    // Random region, but weighted toward ones the player has a shot at —
-    // a level-3 player shouldn't have their very first world boss be an
-    // unreachable end-game one nine times out of ten.
-    const reachable=allBossRegions.filter(r=>player.level>=r.boss.minLevel-15);
-    const pool=reachable.length?reachable:[allBossRegions[0]];
-    const reg=pool[Math.floor(Math.random()*pool.length)];
-    spawnMonster(reg,player,reg.boss,true); // sets bossEnt internally
-    UI.showBossAlert(reg.boss,reg);
-    SFX.bossAlert();
+  // Independent regional bosses: timers advance during active gameplay.
+  function bossState(p,reg){p.regionBossStates=p.regionBossStates||{};return p.regionBossStates[reg.id]||(p.regionBossStates[reg.id]={remaining:60,alive:false,hp:null});}
+  function spawnWorldBoss(player,reg=currentRegion){
+    if(!reg.boss||ecs.query('tag','tmpl').some(m=>m.isBoss&&m.regionId===reg.id))return;
+    const state=bossState(player,reg),id=spawnMonster(reg,player,reg.boss,true),m=ecs.get(id);state.alive=true;
+    if(state.hp>0)m.hp=Math.min(m.maxHp,state.hp);state.hp=m.hp;
+    const aura=new THREE.Mesh(new THREE.RingGeometry(m.radius*1.2,m.radius*1.45,48),new THREE.MeshBasicMaterial({color:0xffbb66,transparent:true,opacity:.6,side:THREE.DoubleSide,depthWrite:false}));aura.position.set(m.x,m.y,.3);scene.add(aura);m.aura=aura;
+    UI.showBossAlert(reg.boss,reg);SFX.bossAlert();AnimeFX.announce(reg.boss.name,'#ffba76',3);AnimeFX.add('pillar',{x:m.x,y:m.y,color:'#ffb776',radius:100,height:260,life:1.3});
   }
-  function onWorldBossKilled(){
-    bossEnt=null;
-    worldBossTimer=WORLD_BOSS_INTERVAL;
-  }
+  function onWorldBossKilled(monster){const p=getPlayer(),reg=REGIONS.find(r=>r.id===monster.regionId);if(reg){const b=bossState(p,reg);b.alive=false;b.remaining=60;b.hp=null;}if(bossEnt===monster.id)bossEnt=null;}
   function sysWorldBoss(dt){
-    const p=getPlayer();if(p.dead) return;
-    if(bossEnt&&!ecs.get(bossEnt)) bossEnt=null; // defensive: boss entity vanished unexpectedly
-    if(bossEnt) return; // a world boss is already alive somewhere
-    worldBossTimer-=dt;
-    if(worldBossTimer<=0) spawnWorldBoss(p);
+    const p=getPlayer();if(p.dead)return;
+    for(const reg of REGIONS.filter(r=>r.boss)){const state=bossState(p,reg);if(!state.alive){state.remaining=Math.max(0,state.remaining-dt);if(state.remaining===0){state.alive=true;state.hp=null;}}}
+    const bosses=ecs.query('tag','tmpl').filter(m=>m.isBoss);
+    for(const m of bosses){bossState(p,REGIONS.find(r=>r.id===m.regionId)).hp=Math.max(0,m.hp);if(m.aura){m.aura.visible=m.regionId===currentRegion.id;m.aura.position.set(m.x,m.y,.3);m.aura.rotation.z+=dt;m.aura.material.opacity=.4+Math.sin(performance.now()*.004)*.15;}}
+    if(currentRegion.boss&&bossState(p,currentRegion).alive)spawnWorldBoss(p,currentRegion);
+    const state=currentRegion.boss?bossState(p,currentRegion):null;
+    document.getElementById('boss-clock-text').textContent=state?(state.alive?'⚔ 보스 출현 · 보상 Lv.'+rewardLevel(currentRegion.id,true)+(regionRewardAllowed(p,currentRegion.id,false,true)?'':' 🔒'):'⏳ 지역 보스까지 '+Math.ceil(state.remaining)+'초'):'🏠 안전 마을 · 사냥터에서 보스에 도전하세요';
+  }
+  function awardBossSkill(p,m){const type=rollBossSkill();if(!type)return;p.skills=p.skills||[];const owned=p.skills.find(s=>s.type.id===type.id);let message;
+    if(owned){if(owned.level<MAX_SKILL_LEVEL){owned.level++;message=type.name+' 강화 → Lv.'+owned.level;}else{p.gold+=500;message=type.name+' 최대 강화 · 중복 보상 500G';}}
+    else{p.skills.push({type,level:1,cd:0,equipped:p.skills.filter(s=>s.equipped).length<3});message='희귀 보스 스킬 획득: '+type.name;}
+    UI.showItemNotify(message);AnimeFX.announce(message,'#'+type.color.toString(16),3);AnimeFX.add('sigil',{x:p.x,y:p.y,color:'#'+type.color.toString(16),radius:150,life:1.3});SFX.skillPickup();UI.updateSkillsPanel(p);
+  }
+  function defeatMonster(p,m){
+    if(!m||m._rewarded||!ecs.get(m.id))return;m._rewarded=true;if(m.isRaid){finishRaidInternal(!!Raid.active&&p.level>=Raid.active.tier.level,'레벨 부족 · 보상 없이 귀환');return;}
+    const eligible=regionRewardAllowed(p,m.regionId,true,m.isBoss);
+    if(eligible){gainXP(p,m.xp);p.kills++;Growth.onKill(p,m);questEvent(p,m.isBoss?'boss':'kill',m.regionId);
+    }
+    particles.emit(m.x,m.y,m.tmpl.color,m.isBoss?36:14,m.isBoss?200:120);SFX.monsterDeath(m.isBoss);
+    if(m.isBoss){onWorldBossKilled(m);if(eligible){awardBossWeapon(p,m);awardBossSkill(p,m);}}
+    if(eligible){
+    Relics.drop(p,m);
+    spawnGold(m.x,m.y,m.isBoss?rollBossGold(m.regionId):stageGoldReward(m.regionId),rewardLevel(m.regionId,m.isBoss));
+    if(Math.random()<(m.isBoss?1:.18))spawnItem(m.x+18,m.y,ITEM_TYPES[0],rewardLevel(m.regionId,m.isBoss));rollTraitCrystalDrop(m);}
+    scene.remove(m.sprite);m.sprite.material.dispose();scene.remove(m.hpBar);m.hpBar.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});
+    if(m.aura){scene.remove(m.aura);m.aura.geometry.dispose();m.aura.material.dispose();}ecs.destroy(m.id);SaveSystem.save();
+  }
+  function claimQuestInternal(){const p=getPlayer();if(!p||p.dead)return;const state=questState(p),q=QUESTS[state.index];if(state.progress<q.goal)return;
+    state.index=Math.min(QUESTS.length-1,state.index+1);state.progress=0;state.seen=[];state.cycles++;p.gold+=q.gold;gainXP(p,q.xp);SaveSystem.save();renderQuest(p);UI.showItemNotify('의뢰 보상 +'+q.gold+'G · +'+q.xp+'XP');SFX.buySuccess();
+  }
+
+  function dashInternal(){const p=getPlayer();if(!p||p.dead||evolutionLocked||SkillShowcase.active||(!document.getElementById('summon-window').hidden||!document.getElementById('relic-window').hidden||!document.getElementById('growth-window').hidden||!document.getElementById('raid-window').hidden))return;if((p.dashCooldown||0)>0){UI.showItemNotify('회피 준비까지 '+p.dashCooldown.toFixed(1)+'초');return;}
+    let dx=Input.dx,dy=Input.dy;if(!dx&&!dy){dx=0;dy=1;}const len=Math.hypot(dx,dy);[dx,dy]=Camera.movement(dx/len,dy/len);
+    const ox=p.x,oy=p.y;Adventure.move(p,dx*125,dy*125);p.dashCooldown=2.5;p.invincible=Math.max(p.invincible||0,.25);
+    playerSprite.position.set(p.x,p.y,1);particles.emitLine(ox,oy,p.x,p.y,0xb8ffed,18,4);sysRegion();
   }
 
   // ── SYSTEM: Movement ──
@@ -3238,7 +3723,8 @@ const Game=(()=>{
     let dx=Input.dx,dy=Input.dy;
     if(dx&&dy){dx*=Math.SQRT1_2;dy*=Math.SQRT1_2;}
     [dx,dy]=Camera.movement(dx,dy);
-    const effectiveSpd=p.spd+(p._speedBonus||0);
+    p.dashCooldown=Math.max(0,(p.dashCooldown||0)-dt);
+    const effectiveSpd=(p.spd+(p._speedBonus||0))*(Input.sprint?1.55:1);
     Adventure.move(p,dx*effectiveSpd*dt,dy*effectiveSpd*dt);
     p.x=Math.max(-WORLD_W/2+20,Math.min(WORLD_W/2-20,p.x));
     p.y=Math.max(-WORLD_H/2+20,Math.min(WORLD_H/2-20,p.y));
@@ -3261,8 +3747,8 @@ const Game=(()=>{
     const reg=getRegion(p.x,p.y);
     if(reg.id!==lastRegionId){
       const leavingId=lastRegionId;
-      lastRegionId=reg.id;currentRegion=reg;
-      scene.background.set(reg.bgColor);
+      lastRegionId=reg.id;currentRegion=reg;questEvent(p,'visit',reg.id);
+      scene.background.setHex(0x6c8580);
       UI.showRegionTransition(reg);
       // 지역 이동에 연동되던 효과음 제거
       SFX.setZone(reg.isSafeZone);
@@ -3286,12 +3772,17 @@ const Game=(()=>{
     const p=getPlayer();if(p.dead) return;
     for(const m of ecs.query('tag','tmpl')){
       if(m.tag!=='monster') continue;
+      m.sprite.visible=m.hpBar.visible=m.regionId===currentRegion.id;if(!m.sprite.visible)continue;
       if(m.stunTimer>0){
         m.stunTimer-=dt;
         m.sprite.material.color.setHex(0x88ccff);
       }else{
         const dx=p.x-m.x,dy=p.y-m.y,dist=V2.len(dx,dy);
-        if(dist>1){const[nx,ny]=V2.norm(dx,dy);Adventure.move(m,nx*m.spd*dt,ny*m.spd*dt,Math.min(m.radius,24));}
+        if(dist>1){const[nx,ny]=V2.norm(dx,dy),beforeX=m.x,beforeY=m.y,step=m.spd*dt,r=Math.min(m.radius,24);
+          if((m.avoidTime||0)>0){m.avoidTime-=dt;Adventure.move(m,-ny*step*m.avoidSide,nx*step*m.avoidSide,r);}
+          else Adventure.move(m,nx*step,ny*step,r);
+          if(Math.hypot(m.x-beforeX,m.y-beforeY)<step*.2){m.avoidSide=m.avoidSide?-m.avoidSide:(m.id%2?1:-1);m.avoidTime=.65;}
+        }
         const mReg=REGIONS.find(r=>r.id===m.regionId);
         if(mReg){
           m.y=Math.max(mReg.yMin+m.radius+2,Math.min(mReg.yMax-m.radius-2,m.y));
@@ -3305,8 +3796,9 @@ const Game=(()=>{
       const s=m.radius*(m.isBoss?3.8:3.2);
       m.sprite.scale.set(s*bScale,s*bScale,s/bScale);
       m.sprite.rotation.z=Math.atan2(p.x-m.x,-(p.y-m.y));
+      m.sprite.userData.animate?.(t,m.hitFlash>0);
       m.sprite.position.set(m.x,m.y,1);
-      faceHpBar(m.hpBar,m.x,m.y,1+s*1.15);
+      faceHpBar(m.hpBar,m.x,m.y,1+s*(m.sprite.userData.modelHeight||1.15));
       updateHpBar(m.hpBar,m.hp/m.maxHp);
       if(m.attackCd>0) m.attackCd-=dt;
       if(m.contactHitCd>0) m.contactHitCd-=dt;
@@ -3322,6 +3814,7 @@ const Game=(()=>{
     for(const m of ecs.query('tag','tmpl')){
       if(m.tag!=='monster') continue;
       if(m.hp<=0){toRemove.push(m);continue;}
+      if(m.regionId!==currentRegion.id)continue;
       const dist=V2.dist(p.x,p.y,m.x,m.y);
       // Sprite glow extends past the base radius, so use a small contact margin.
       const touch=(currentEvolution.radius+m.radius)*1.15;
@@ -3336,7 +3829,7 @@ const Game=(()=>{
         }
         if(m.hp<=0){toRemove.push(m);continue;}
         if(!currentRegion.isSafeZone&&p.invincible<=0&&m.attackCd<=0&&!(m.stunTimer>0)){
-          const dmg=Math.max(1,Math.floor(m.atk+Math.random()*2));
+          const dmg=Relics.damage(p,m.atk+Math.random()*2);
           p.hp=Math.max(0,p.hp-dmg);
           p.invincible=0.75;m.attackCd=0.9;
           damages.emit(p.x,p.y,dmg,true);
@@ -3350,32 +3843,17 @@ const Game=(()=>{
         }
       }
     }
-    for(const m of toRemove){
-      gainXP(p,m.xp);p.kills++;
-      particles.emit(m.x,m.y,m.tmpl.color,m.isBoss?30:14,m.isBoss?200:120);
-      SFX.monsterDeath(m.isBoss);
-      if(m.isBoss){
-        particles.emitRing(m.x,m.y,0xffffff,24);
-        awardBossWeapon(p,m);
-        onWorldBossKilled();
-        spawnGold(m.x,m.y,rollBossGold(m.regionId));
-      }else{
-        spawnGold(m.x,m.y,stageGoldReward(m.regionId));
-      }
-      if(Math.random()<(m.isBoss?1:.18))spawnItem(m.x+18,m.y,ITEM_TYPES[0]);
-      rollTraitCrystalDrop(m);
-      scene.remove(m.sprite);m.sprite.material.dispose();
-      scene.remove(m.hpBar);ecs.destroy(m.id);
-    }
+    for(const m of toRemove)defeatMonster(p,m);
   }
 
   // ── Death: send the player back to Safe Town instead of a full reset.
   // Level, gold, kills and stat points all survive.
   function respawnAtTown(p){
-    p.x=REGIONS[0].centerX;p.y=REGIONS[0].centerY;
+    const spawn=REGIONS.find(r=>r.id===p.spawnRegionId)||REGIONS[0];
+    p.x=spawn.centerX;p.y=spawn.centerY;
     p.hp=p.maxHp;p.mana=p.maxMana||100;
-    p.invincible=2;
-    p._atkBonus=0;p._atkBonusTimer=0;
+    p.invincible=5;
+    p._awakenShield=p._awakenShieldTimer=0;p._atkBonus=0;p._atkBonusTimer=0;
     p._speedBonus=0;p._speedBonusTimer=0;
     p._regenPerSec=0;p._regenTimer=0;
     playerSprite.position.set(p.x,p.y,1);
@@ -3384,6 +3862,7 @@ const Game=(()=>{
     p.dead=false;
   }
   function handlePlayerDeath(p){
+    if(Raid.active){finishRaidInternal(false,'도전 실패 · 장비를 강화하고 다시 도전하세요.');return;}
     p.dead=true;
     AnimeFX.clear();
     SFX.death();
@@ -3410,6 +3889,7 @@ const Game=(()=>{
       if(V2.dist(p.x,p.y,item.x,item.y)<currentEvolution.radius+item.pickRadius) toPickup.push(item);
     }
     for(const item of toPickup){
+      if(p.level<(item.requiredLevel||1))continue;
       item.itemType.apply(p);UI.showItemNotify(item.itemType.name);
       SFX.itemPickup();
       particles.emit(item.x,item.y,item.itemType.color,12,100);
@@ -3434,9 +3914,10 @@ const Game=(()=>{
       if(V2.dist(p.x,p.y,sd.x,sd.y)<currentEvolution.radius+sd.pickRadius) toPickup.push(sd);
     }
     for(const sd of toPickup){
+      if(p.level<(sd.requiredLevel||1))continue;
       if(!p.skills) p.skills=[];
       const alreadyHave=p.skills.some(s=>s.type.id===sd.skillType.id);
-      if(!alreadyHave&&p.skills.length<25){
+      if(!alreadyHave&&p.skills.length<SKILL_TYPES.length){
         const autoEquip=p.skills.filter(s=>s.equipped).length<3;
         p.skills.push({type:sd.skillType,cd:0,level:1,equipped:autoEquip});
         UI.showItemNotify(`${sd.skillType.rarity} SKILL: ${sd.skillType.name}`);
@@ -3470,12 +3951,14 @@ const Game=(()=>{
       if(V2.dist(p.x,p.y,g.x,g.y)<currentEvolution.radius+g.pickRadius) toPickup.push(g);
     }
     for(const g of toPickup){
+      if(p.level<(g.requiredLevel||1))continue;
       p.gold=(p.gold||0)+g.goldAmount;
       UI.showItemNotify(`+${g.goldAmount}G`);
       SFX.goldPickup();
       particles.emit(g.x,g.y,0xffdd00,8,80);
       scene.remove(g.sprite);g.sprite.material.dispose();ecs.destroy(g.id);
     }
+    if(toPickup.length)SaveSystem.save();
     for(const g of toDespawn){
       scene.remove(g.sprite);g.sprite.material.dispose();ecs.destroy(g.id);
     }
@@ -3483,11 +3966,11 @@ const Game=(()=>{
 
   // ── SYSTEM: Spawn ──
   function sysSpawn(dt){
-    const p=getPlayer();if(p.dead||evolutionLocked) return;
+    const p=getPlayer();if(Raid.active||p.dead||evolutionLocked) return;
     if(currentRegion.isSafeZone||currentRegion.isMine||!currentRegion.monsters.length) return;
     spawnTimer-=dt;
-    const all=ecs.query('tag','tmpl').filter(e=>e.tag==='monster');
-    if(spawnTimer<=0&&all.length<24){
+    const all=ecs.query('tag','tmpl').filter(e=>e.tag==='monster'&&!e.isBoss&&e.regionId===currentRegion.id);
+    if(spawnTimer<=0&&all.length<MAX_NORMAL_MONSTERS){
       spawnMonster(currentRegion,p);spawnTimer=2.0;
     }
   }
@@ -3495,7 +3978,8 @@ const Game=(()=>{
   // ── SYSTEM: Mana & Buffs ──
   function sysMana(dt){
     const p=getPlayer();if(p.dead) return;
-    p.mana=Math.min(p.maxMana||100,(p.mana||0)+5*dt);
+    p._awakenShieldTimer=Math.max(0,(p._awakenShieldTimer||0)-dt);if(!p._awakenShieldTimer)p._awakenShield=0;
+    p.mana=Math.min(p.maxMana||100,(p.mana||0)+(5+Growth.bonuses(p).regen)*dt);
     const trait=UNIQUE_TRAITS.find(t=>t.id===p.uniqueTrait);
     const hpEnhanceLevel=p.enhanceLevels?.hp||0;
     p.hp=Math.min(p.maxHp,(p.hp||0)+hpRegenForEnhance(hpEnhanceLevel)*(trait?.regen||1)*dt);
@@ -3523,16 +4007,17 @@ const Game=(()=>{
     const p=getPlayer();
     if(!p||p.dead) return;
     const equipped=(p.skills||[]).filter(skill=>skill.equipped).slice(0,3);
-    if(index>=equipped.length) return;
+    if(!Number.isInteger(index)||index<0||index>=equipped.length) return;
     const skill=equipped[index];
     if(skill.cd>0){UI.showItemNotify('SKILL COOLDOWN!');SFX.errorBuzz();return;}
-    if((p.mana||0)<skill.type.manaCost){UI.showItemNotify('NOT ENOUGH MANA!');SFX.errorBuzz();return;}
-    const cast=skill.type.apply(p,ecs,particles,damages,skill.level||1);
+    const awakened=Awakening.profile(p,skill);
+    if((p.mana||0)<awakened.mana){UI.showItemNotify('NOT ENOUGH MANA!');SFX.errorBuzz();return;}
+    const cast=Awakening.cast(p,skill,ecs,particles,damages);
     if(!cast){UI.showItemNotify('범위 안에 대상이 없습니다!');SFX.errorBuzz();return;}
-    p.mana-=skill.type.manaCost;
+    p.mana-=awakened.mana;
     SFX.skillCast();
-    SkillCinema.play(skill.type,p,particles);
-    skill.cd=skill.type.cooldown;
+    SkillCinema.play({...skill.type,name:Awakening.name(skill)},p,particles);
+    skill.cd=awakened.cd;UI.updateSkillsPanel(p);
   }
 
   // ── Character stats / terrain teleport / mine ──
@@ -3540,7 +4025,7 @@ const Game=(()=>{
     const p=getPlayer();if(!p)return;
     const summary=document.getElementById('character-summary');
     const trait=UNIQUE_TRAITS.find(t=>t.id===p.uniqueTrait);
-    summary.innerHTML=`LV ${p.level} · 직업 <b>${p.job?JOBS[p.job].name:'미전직'}</b> · 고유 특성 <b>${trait?trait.icon+' '+trait.name:'없음'}</b> · 결정 <b>${p.traitCrystals||0}개</b> <button class="menu-button" onclick="Game.openTraits()">특성 선택</button><br>🗡️ 무기 <b>${p.weaponName||'없음'}</b> · 무기 공격력 <b>${(p.itemAtk||0).toLocaleString()}</b><br>❤️ HP ${Math.floor(p.hp)} / ${p.maxHp}<br>⚔️ 공격 ${p.atk.toLocaleString()}<br>💎 마나 ${Math.floor(p.mana||0)} / ${p.maxMana}<br>💨 속도 ${p.spd}<br>💰 골드 ${p.gold||0}`;
+    summary.innerHTML=`LV ${p.level} · 직업 <b>${p.job?JOBS[p.job].name:'미전직'}</b> · 고유 특성 <b>${trait?trait.icon+' '+trait.name:'없음'}</b> · 결정 <b>${p.traitCrystals||0}개</b> <button class="menu-button" onclick="Game.openTraits()">특성 선택</button><br>🗡️ 무기 <b>${p.weaponName||'없음'}</b> · 무기 공격력 <b>${(p.itemAtk||0).toLocaleString()}</b><br>❤️ HP ${Math.floor(p.hp)} / ${p.maxHp}<br>⚔️ 공격 ${p.atk.toLocaleString()}<br>🛡️ 방어 ${Growth.totalDefense(p)} (피해 감소 ${(Growth.totalDefense(p)/(100+Growth.totalDefense(p))*100).toFixed(1)}%)<br>💎 마나 ${Math.floor(p.mana||0)} / ${p.maxMana}<br>💨 속도 ${p.spd}<br>💰 골드 ${p.gold||0}`;
     document.getElementById('rare-item-summary').innerHTML=MINE_RESOURCES.map(r=>`${r.rare}: ${p[r.key]||0}개`).join('<br>');
     document.getElementById('stat-points-window').innerHTML=`<div class="stat-buttons-window">
       <button class="stat-alloc-btn" onclick="Game.allocStat('atk')">⚔️ 공격<span class="sab-gain">+1</span></button>
@@ -3549,18 +4034,18 @@ const Game=(()=>{
       <button class="stat-alloc-btn" onclick="Game.allocStat('spd')">💨 속도<span class="sab-gain">+3</span></button></div>`;
     document.getElementById('job-actions').innerHTML=Object.entries(JOBS).filter(([id])=>id!=='god').map(([id,j])=>`<button class="job-btn" ${p.level<10||!(p[j.token]>0)||p.job==='god'?'disabled':''} onclick="Game.changeJob('${id}')">${j.name}<br><small>${p[j.token]||0}개 · LV10</small></button>`).join('')+`<div style="width:100%;color:#aaa;font-size:10px;margin-top:5px">신: 전직 아이템 4개를 모두 모아 15스테이지 왼쪽 끝의 비밀통로로 이동</div>`;
   }
-  function toggleStatsInternal(force){
+  function toggleStatsInternal(force){if(Raid.active&&force!==false)return;
     const el=document.getElementById('stats-window'),open=force===undefined?!el.classList.contains('active'):force;
     document.getElementById('teleport-window').classList.remove('active');
     el.classList.toggle('active',open);if(open)refreshStatsWindow();
   }
-  function toggleTeleportInternal(force){
+  function toggleTeleportInternal(force){if(Raid.active&&force!==false)return;
     const el=document.getElementById('teleport-window'),open=force===undefined?!el.classList.contains('active'):force;
     document.getElementById('stats-window').classList.remove('active');
     el.classList.toggle('active',open);
     if(open)document.getElementById('teleport-list').innerHTML=REGIONS.map((r,i)=>`<button class="teleport-btn" onclick="Game.teleport(${i})">${r.isMine?'⛏️':r.isSafeZone?'🏠':'🗺️'} ${r.name}<br><small>${r.sub}${typeof r.id==='number'?` · 특성 결정 ${((r.id+1)*.1).toFixed(1)}%`:''}</small></button>`).join('');
   }
-  function openTraitsInternal(){
+  function openTraitsInternal(){if(Raid.active)return;
     const p=getPlayer();if(!p)return;
     const win=document.getElementById('trait-window');
     document.getElementById('stats-window').classList.remove('active');
@@ -3577,7 +4062,7 @@ const Game=(()=>{
     UI.showItemNotify(`${trait.icon} 고유 특성: ${trait.name}`);SFX.buySuccess();SaveSystem.save();closeTraitsInternal();
   }
   function teleportInternal(index){
-    const p=getPlayer(),reg=REGIONS[index];if(!p||!reg)return;
+    if(Raid.active)return;const p=getPlayer(),reg=REGIONS[index];if(!p||!reg)return;
     AnimeFX.clear();
     p.x=reg.centerX;p.y=reg.centerY;playerSprite.position.set(p.x,p.y,1);
     Camera.follow(p.x,p.y,0,true);
@@ -3598,15 +4083,7 @@ const Game=(()=>{
     const p=getPlayer(),job=JOBS[id];if(!p||!job||id==='god'||p.level<10||(p[job.token]||0)<1||p.job==='god')return;
     p.job=id;p.jobCooldowns=job.skills.map(()=>0);UI.showItemNotify(`${job.name}(으)로 전직했습니다!`);refreshStatsWindow();refreshJobSkills();SaveSystem.save();
   }
-  function removeJobDefeated(p,targets){
-    for(const m of targets.filter(m=>m.hp<=0)){
-      gainXP(p,m.xp);p.kills++;spawnGold(m.x,m.y,m.isBoss?rollBossGold(m.regionId):stageGoldReward(m.regionId));
-      if(Math.random()<(m.isBoss?1:.18))spawnItem(m.x+18,m.y,ITEM_TYPES[0]);
-      rollTraitCrystalDrop(m);
-      particles.emit(m.x,m.y,m.tmpl.color,m.isBoss?30:14,160);scene.remove(m.sprite);scene.remove(m.hpBar);ecs.destroy(m.id);
-      if(m.isBoss){awardBossWeapon(p,m);bossEnt=null;onWorldBossKilled();}
-    }
-  }
+  function removeJobDefeated(p,targets){for(const m of targets.filter(m=>m.hp<=0))defeatMonster(p,m);}
   function useJobSkillInternal(index){
     const p=getPlayer();if(!p||!p.job||p.dead||SkillShowcase.active)return;const job=JOBS[p.job],skill=job.skills[index];if(!skill)return;
     p.jobCooldowns=p.jobCooldowns||job.skills.map(()=>0);if(p.jobCooldowns[index]>0){UI.showItemNotify('아직 재사용할 수 없습니다!');return;}
@@ -3639,7 +4116,7 @@ const Game=(()=>{
     if(q)decorateCreature(playerSprite,q.tier>=4?'dragon':q.style==='spirit'?'spirit':'slime',q.tier);
     playerSprite.position.set(p.x,p.y,1);scene.add(playerSprite);if(old){scene.remove(old);old.material.dispose();}
   }
-  function openSummonsInternal(){const p=getPlayer();if(!p||p.dead||evolutionLocked||SkillShowcase.active)return;ShopUI.close();toggleStatsInternal(false);toggleTeleportInternal(false);document.getElementById('summon-window').hidden=false;SummonUI.render(p);}
+  function openSummonsInternal(){const p=getPlayer();if(Raid.active||!p||p.dead||evolutionLocked||SkillShowcase.active)return;ShopUI.close();toggleStatsInternal(false);toggleTeleportInternal(false);document.getElementById('summon-window').hidden=false;SummonUI.render(p);}
   function summonInternal(count){
     const p=getPlayer();if(!p||p.dead||evolutionLocked||SkillShowcase.active||![1,10].includes(count))return;
     if(!getRegion(p.x,p.y).isSafeZone){UI.showItemNotify('마을에서 소환할 수 있습니다.');return;}
@@ -3704,7 +4181,7 @@ const Game=(()=>{
     bossEnt=null;worldBossTimer=WORLD_BOSS_INTERVAL;spawnTimer=1;
     currentRegion=REGIONS[0];lastRegionId=-1;
     currentEvolution=EVOLUTIONS[0];lastEvolutionLevel=1;evolutionLocked=false;
-    buildWorld();scene.background.set(REGIONS[0].bgColor);
+    buildWorld();scene.background.setHex(0x6c8580);
     const ev=EVOLUTIONS[0];
     const tex=makeCircleTex(ev.color,ev.radius,ev.glowRGB);
     playerSprite=makeCreature3D(ev.color,ev.radius*3.2);
@@ -3730,7 +4207,7 @@ const Game=(()=>{
       _atkBonus:0,_atkBonusTimer:0,
     });
     spawnMineOres();
-    const player=getPlayer();
+    const player=getPlayer();Relics.init(player);Growth.init(player);Raid.init(player);player.spawnRegionId=REGIONS[0].id;
     SaveSystem.restore(player);
     currentEvolution=getEvolution(player.level);lastEvolutionLevel=currentEvolution.level;
     applyEnhancementInternal();refreshSlimeLook();
@@ -3758,23 +4235,21 @@ const Game=(()=>{
     animId=requestAnimationFrame(loop);
     const dt=Math.min((time-lastTime)/1000,.05);lastTime=time;
     const p=getPlayer();
-    if(!document.getElementById('summon-window').hidden){Camera.follow(p.x,p.y,dt);renderer.render(scene,camMode===0?cam:perspCam);return;}
+    if((!document.getElementById('summon-window').hidden||!document.getElementById('relic-window').hidden||!document.getElementById('growth-window').hidden||!document.getElementById('raid-window').hidden)){Camera.follow(p.x,p.y,dt);renderer.render(scene,camMode===0?cam:perspCam);return;}
     if(SkillShowcase.active){
       AnimeFX.update(dt);Camera.follow(p.x,p.y,dt);
       renderer.render(scene,camMode===0?cam:perspCam);AnimeFX.draw();return;
     }
     sysMovement(dt);
-    sysRegion();
-    Adventure.tick(p,currentRegion);
-    if(worldGroup)for(const layer of worldGroup.children){const r=layer.userData.region;if(r)layer.visible=Math.abs(r.centerX-p.x)<1700&&Math.abs(r.centerY-p.y)<1700;}
+    if(!Raid.active){sysRegion();Adventure.tick(p,currentRegion);}
+    renderQuest(p);
+    updateLoadedLandscape(p);
     sysMonsterAI(dt);
-    sysMineOres(dt);
+    if(!Raid.active)sysMineOres(dt);
+    sysRaid(dt);
+    if(!document.getElementById('raid-window').hidden){Camera.follow(p.x,p.y,dt);renderer.render(scene,camMode===0?cam:perspCam);return;}
     sysCombat(dt);
-    sysItems();
-    sysSkillDrops();
-    sysGold();
-    sysSpawn(dt);
-    sysWorldBoss(dt);
+    if(!Raid.active){sysItems();sysSkillDrops();sysGold();sysSpawn(dt);sysWorldBoss(dt);}
     sysMana(dt);
     particles.update(dt);damages.update(dt);AnimeFX.update(dt);
     Camera.follow(p.x,p.y,dt);
@@ -3782,7 +4257,8 @@ const Game=(()=>{
     if(p.invincible>0) playerSprite.visible=Math.floor(performance.now()/80)%2===0;
     else playerSprite.visible=true;
     const boss=getBoss();
-    UI.update(p,boss?ecs.get(bossEnt):null);
+    UI.update(p,boss);
+    p._ownedSkillTick=(p._ownedSkillTick||0)+dt;if(p._ownedSkillTick>=.15){p._ownedSkillTick=0;UI.updateSkillsPanel(p);}
     const allM=ecs.query('tag','tmpl').filter(e=>e.tag==='monster');
     UI.drawMinimap(p,allM,REGIONS);
     renderer.render(scene,camMode===0?cam:perspCam);AnimeFX.draw();
@@ -3791,7 +4267,7 @@ const Game=(()=>{
   // ── Click Attack ──
   function clickAttackInternal(wx,wy,targetId=null){
     const p=getPlayer();
-    if(!p||p.dead||evolutionLocked||SkillShowcase.active||!document.getElementById('summon-window').hidden) return;
+    if(!p||p.dead||evolutionLocked||SkillShowcase.active||(!document.getElementById('summon-window').hidden||!document.getElementById('relic-window').hidden||!document.getElementById('growth-window').hidden||!document.getElementById('raid-window').hidden)) return;
     if((p.attackCd||0)>0) return;
     if(!Number.isFinite(wx)||!Number.isFinite(wy))return;
     let best=null,bestD=70;
@@ -3821,23 +4297,7 @@ const Game=(()=>{
     particles.emit(best.x,best.y,best.tmpl.color,isCrit?10:5,135);
     SFX.hit(isCrit);
     p.attackCd=0.45;
-    if(best.hp<=0){
-      gainXP(p,best.xp);p.kills++;
-      particles.emit(best.x,best.y,best.tmpl.color,best.isBoss?30:14,best.isBoss?200:120);
-      SFX.monsterDeath(best.isBoss);
-      if(best.isBoss){
-        particles.emitRing(best.x,best.y,0xffffff,24);
-        awardBossWeapon(p,best);
-        onWorldBossKilled();
-        spawnGold(best.x,best.y,rollBossGold(best.regionId));
-      }else{
-        spawnGold(best.x,best.y,stageGoldReward(best.regionId));
-      }
-      if(Math.random()<(best.isBoss?1:.18))spawnItem(best.x+18,best.y,ITEM_TYPES[0]);
-      rollTraitCrystalDrop(best);
-      scene.remove(best.sprite);best.sprite.material.dispose();
-      scene.remove(best.hpBar);ecs.destroy(best.id);
-    }
+    if(best.hp<=0)defeatMonster(p,best);
   }
 
   // ── Toggle Camera ──
@@ -3857,7 +4317,7 @@ const Game=(()=>{
 
   return{
     start(){ShopUI.init(()=>getPlayer());UI.init();UI.hideDeath();init();SaveSystem.start(()=>getPlayer());running=true;lastTime=performance.now();animId=requestAnimationFrame(loop);},
-    previewSkills(){const p=getPlayer();if(!p||p.dead||evolutionLocked)return;ShopUI.close();toggleStatsInternal(false);toggleTeleportInternal(false);closeTraitsInternal();SkillShowcase.open(p);},
+    previewSkills(){const p=getPlayer();if(Raid.active||!p||p.dead||evolutionLocked)return;ShopUI.close();toggleStatsInternal(false);toggleTeleportInternal(false);closeTraitsInternal();SkillShowcase.open(p);},
     usePotion(){if(!SkillShowcase.active)usePotionInternal();},
     resetAccount(){
       if(!confirm('아이템, 스킬, 강화, 레벨, 골드 등 모든 게임 진행을 처음 상태로 되돌릴까요?'))return;
@@ -3870,9 +4330,14 @@ const Game=(()=>{
     teleport(index){teleportInternal(index);},
     mine(){mineInternal();},
     changeJob(id){changeJobInternal(id);},
-    useSkill(index){if(!SkillShowcase.active&&document.getElementById('summon-window').hidden)useSkillInternal(index);},
-    useJobSkill(index){useJobSkillInternal(index);},
+    dash(){dashInternal();},
+    claimQuest(){claimQuestInternal();},
+    useSkill(index){if(!SkillShowcase.active&&document.getElementById('summon-window').hidden&&document.getElementById('relic-window').hidden&&document.getElementById('growth-window').hidden&&document.getElementById('raid-window').hidden)useSkillInternal(index);},
+    useJobSkill(index){if(document.getElementById('growth-window').hidden)useJobSkillInternal(index);},
     applyEnhancement(){applyEnhancementInternal();},
+    openRaid(){openRaidInternal();},startRaid(id){startRaidInternal(id);},leaveRaid(){finishRaidInternal(false);},
+    openGrowth(){const p=getPlayer();if(Raid.active||!p||p.dead||evolutionLocked||SkillShowcase.active)return;toggleStatsInternal(false);toggleTeleportInternal(false);closeTraitsInternal();Growth.open(p);},
+    openRelics(){const p=getPlayer();if(Raid.active||!p||p.dead||evolutionLocked||SkillShowcase.active)return;toggleStatsInternal(false);toggleTeleportInternal(false);closeTraitsInternal();Relics.open(p);},
     openSummons(){openSummonsInternal();},summon(count){summonInternal(count);},equipSlime(id){equipSlimeInternal(id);},
     setSlimeColor(hex){
       const p=getPlayer();if(!p||!/^#[0-9a-f]{6}$/i.test(hex)) return;
@@ -3887,14 +4352,14 @@ const Game=(()=>{
       const camera=camMode===0?cam:perspCam;camera.updateMatrixWorld();scene.updateMatrixWorld(true);
       const rect=canvas3d.getBoundingClientRect(),mouse=new THREE.Vector2((sx-rect.left)/rect.width*2-1,-(sy-rect.top)/rect.height*2+1);
       const ray=new THREE.Raycaster();ray.setFromCamera(mouse,camera);
-      const entities=ecs.query('tag','sprite').filter(e=>(e.tag==='monster'||e.tag==='ore')&&e.hp>0);
+      const entities=ecs.query('tag','sprite').filter(e=>((e.tag==='monster'&&e.regionId===currentRegion.id)||(e.tag==='ore'&&currentRegion.isMine))&&e.hp>0);
       const roots=entities.map(e=>e.sprite),hits=ray.intersectObjects(roots,true);
       if(hits.length){let obj=hits[0].object;while(obj.parent&&!roots.includes(obj))obj=obj.parent;const e=entities.find(e=>e.sprite===obj);if(e){clickAttackInternal(e.x,e.y,e.id);return;}}
       const pos=screenToWorldXY(sx,sy);if(pos)clickAttackInternal(pos.x,pos.y);
     },
     toggleCam(){toggleCamInternal();},
     toggleShop(){
-      if(!currentRegion||!currentRegion.isSafeZone) return;
+      if(Raid.active)return;if(!currentRegion||!currentRegion.isSafeZone) return;
       const panel=document.getElementById('shop-panel');
       if(panel&&panel.classList.contains('active')) ShopUI.close();
       else ShopUI.open();
